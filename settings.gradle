@@ -14,3 +14,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "YAPP-ALL-Rounder-Team-2"
 include ':app'
+include ':data'
+include ':domain'
+include ':feature'
+include ':feature:login'
+include ':feature:home'
