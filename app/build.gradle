@@ -12,6 +12,7 @@ android {
     defaultConfig {
         applicationId "com.yapp.gallery"
         minSdk 26
+
         targetSdk 33
         versionCode 1
         versionName "1.0"
