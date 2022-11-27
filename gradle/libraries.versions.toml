@@ -1,0 +1,26 @@
+[versions]
+kotlin = "1.7.20"
+androidGradle = "7.2.0"
+compose = "1.4.0-alpha01"
+hiltNavigationCompose = "1.0.0"
+firebase-auth-ktx = "21.0.2"
+gms-auth = "20.4.0"
+
+[libraries]
+
+kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+android-gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradle" }
+
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose"}
+
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx"}
+gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
+
+[bundles]
+
+compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose" ]
