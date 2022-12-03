@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.yapp.gallery.home.HomeActivity
+import com.yapp.gallery.home.screen.HomeActivity
 import com.yapp.gallery.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 import org.jetbrains.annotations.TestOnly

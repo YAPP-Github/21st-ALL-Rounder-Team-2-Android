@@ -1,4 +1,4 @@
-package com.yapp.gallery.home
+package com.yapp.gallery.home.screen
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,6 +11,7 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             HomeScreen()
+            //ExhibitInfoScreen()
         }
     }
 }

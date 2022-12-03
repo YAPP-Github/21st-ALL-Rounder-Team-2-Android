@@ -7,6 +7,7 @@ firebase-auth-ktx = "21.0.2"
 gms-auth = "20.4.0"
 hilt-core = "2.44"
 hilt-integrations = "1.0.0"
+webview = "0.25.1"
 [libraries]
 
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -26,6 +27,8 @@ hilt-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt-cor
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core"}
 hilt-integrations-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-integrations"}
 hilt-integrations-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-integrations"}
+
+accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "webview"}
 
 [bundles]
 
