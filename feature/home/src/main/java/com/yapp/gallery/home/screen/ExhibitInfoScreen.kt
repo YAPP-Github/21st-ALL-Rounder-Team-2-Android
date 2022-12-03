@@ -57,7 +57,6 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 @OptIn(ExperimentalComposeUiApi::class)
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ExhibitInfoScreen(
 
@@ -293,7 +292,6 @@ fun ExhibitInfoScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 @Preview(showBackground = true)
 fun ExhibitScreenPreview(){
