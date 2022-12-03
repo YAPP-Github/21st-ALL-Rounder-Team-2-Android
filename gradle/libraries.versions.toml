@@ -2,7 +2,8 @@
 kotlin = "1.7.20"
 androidGradle = "7.2.0"
 compose = "1.4.0-alpha01"
-hilt-Navigation-Compose = "1.0.0"
+compose-navigation = "2.5.1"
+hilt-navigation-compose = "1.0.0"
 firebase-auth-ktx = "21.0.2"
 gms-auth = "20.4.0"
 hilt-core = "2.44"
@@ -18,7 +19,8 @@ androidx-compose-foundation = { module = "androidx.compose.foundation:foundation
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-Navigation-Compose"}
+androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation"}
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose"}
 
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx"}
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
@@ -35,4 +37,4 @@ accompanist-webview = { module = "com.google.accompanist:accompanist-webview", v
 hilt-deps = [ "hilt-core", "hilt-integrations-work"]
 hilt-compilers = [ "hilt-compiler", "hilt-integrations-compiler" ]
 
-compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose" ]
+compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose", "androidx-compose-navigation" ]

@@ -9,12 +9,11 @@ import com.yapp.gallery.home.screen.HomeActivity
 import com.yapp.gallery.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 import org.jetbrains.annotations.TestOnly
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val auth: FirebaseAuth by lazy{
-        FirebaseAuth.getInstance()
-    }
+    @Inject lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,11 +23,14 @@ class MainActivity : AppCompatActivity() {
 
     @TestOnly
     private fun startLogin(){
-        Log.e("current User", auth.currentUser.toString())
+        Log.e("current User", auth.currentUser?.uid.toString())
         auth.currentUser?.let {
             startActivity(Intent(this, HomeActivity::class.java))
         } ?: run {
             startActivity(Intent(this, LoginActivity::class.java))
         }
+        //startActivity(Intent(this, LoginActivity::class.java))
+
     }
+
 }

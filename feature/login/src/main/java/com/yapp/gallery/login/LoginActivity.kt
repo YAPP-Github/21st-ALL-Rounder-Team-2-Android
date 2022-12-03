@@ -13,26 +13,25 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.yapp.gallery.login.BuildConfig
-import com.yapp.gallery.login.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity : ComponentActivity(){
+    @Inject lateinit var auth: FirebaseAuth
     private lateinit var oneTapClient : SignInClient
     private lateinit var signInRequest: BeginSignInRequest
-    private val auth: FirebaseAuth by lazy{
-        FirebaseAuth.getInstance()
-    }
 
     // private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var googleResultLauncher: ActivityResultLauncher<IntentSenderRequest>
@@ -143,13 +142,5 @@ class LoginActivity : ComponentActivity(){
 //            }
 //        }
 //    }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun LoginPreview(){
-    MaterialTheme {
-        LoginScreen(googleLogin = {LoginActivity().oneTapGoogleSignIn()})
-    }
 }
 

@@ -3,7 +3,7 @@ package com.yapp.gallery.common.theme
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import com.handson.common.R
+import com.yapp.gallery.common.R
 
 
 val pretendard = FontFamily(

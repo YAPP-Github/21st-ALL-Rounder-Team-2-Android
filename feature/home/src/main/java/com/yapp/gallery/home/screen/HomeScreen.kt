@@ -16,7 +16,9 @@ import com.google.accompanist.web.*
 import com.yapp.gallery.home.R
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(
+    navigateToInfo: () -> Unit
+){
     // Web Client
     val webViewClient = AccompanistWebViewClient()
     val webChromeClient = AccompanistWebChromeClient()
@@ -47,7 +49,7 @@ fun HomeScreen(){
         },
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ },
+            FloatingActionButton(onClick = navigateToInfo,
                 backgroundColor = Color.White,
                 contentColor = Color.Black,
                 shape = CircleShape,
@@ -93,10 +95,4 @@ fun HomeScreen(){
 //            }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview(){
-    HomeScreen()
 }

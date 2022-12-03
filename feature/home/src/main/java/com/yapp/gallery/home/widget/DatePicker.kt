@@ -1,9 +1,8 @@
-package com.yapp.gallery.home
+package com.yapp.gallery.home.widget
 
 import android.os.Build
 import android.view.ContextThemeWrapper
 import android.widget.CalendarView
-import android.widget.DatePicker
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,7 +24,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DatePicker(
     onDateSelected: (LocalDate) -> Unit,

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.handson.common'
+    namespace 'com.yapp.gallery.common'
     compileSdk 33
 
     defaultConfig {

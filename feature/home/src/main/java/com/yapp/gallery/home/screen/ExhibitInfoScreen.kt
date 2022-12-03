@@ -1,8 +1,6 @@
 package com.yapp.gallery.home.screen
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,6 +32,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,14 +43,15 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.yapp.gallery.common.theme.black_4f4f4f
 import com.yapp.gallery.common.theme.grey_bdbdbd
 import com.yapp.gallery.common.theme.pretendard
 import com.handson.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.theme.grey_5e5e5e
-import com.yapp.gallery.home.CategoryDialog
-import com.yapp.gallery.home.DatePicker
+import com.yapp.gallery.home.widget.CategoryDialog
+import com.yapp.gallery.home.widget.DatePicker
 import com.yapp.gallery.home.R
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -59,10 +59,8 @@ import java.util.*
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExhibitInfoScreen(
-
+    navController : NavHostController
 ){
-    val navController = rememberNavController()
-
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -90,7 +88,7 @@ fun ExhibitInfoScreen(
                 backgroundColor = Color.Transparent,
                 elevation = 0.dp,
                 title = {
-                    Text(text = "전시 정보 작성",
+                    Text(text = stringResource(id = R.string.exhibit_title),
                         color = Color.Black,
                         fontFamily = pretendard,
                         fontWeight = FontWeight.SemiBold,
@@ -98,9 +96,9 @@ fun ExhibitInfoScreen(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     ) },
-                navigationIcon = if (navController.previousBackStackEntry == null) {
+                navigationIcon = if (navController.previousBackStackEntry != null) {
                     {
-                        IconButton(onClick = { navController.navigateUp() }) {
+                        IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
                                 contentDescription = "Back"
@@ -112,7 +110,7 @@ fun ExhibitInfoScreen(
                 },
                 actions = {
                     TextButton(onClick = { /*TODO*/ }) {
-                        Text(text = "임시보관함", color = grey_5e5e5e, fontFamily = pretendard, fontSize = 14.sp)
+                        Text(text = stringResource(id = R.string.exhibit_temp), color = grey_5e5e5e, fontFamily = pretendard, fontSize = 14.sp)
                     }
                 }
             )
@@ -127,7 +125,7 @@ fun ExhibitInfoScreen(
             Spacer(modifier = Modifier.height(60.dp))
             // 전시명 입력 부분
             Column {
-                Text(text = "전시명", fontFamily = pretendard, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = stringResource(id = R.string.exhibit_name), fontFamily = pretendard, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(12.dp))
                 BasicTextField(
                     maxLines = 1,
@@ -151,7 +149,7 @@ fun ExhibitInfoScreen(
                             .fillMaxWidth()
                             .focusRequester(focusRequester)) {
                             if (exhibitName.value.isEmpty()) {
-                                Text(text = "기록할 전시회 이름을 작성해주세요", fontFamily = pretendard, color = grey_bdbdbd, fontSize = 16.sp)
+                                Text(text = stringResource(id = R.string.exhibit_name_hint), fontFamily = pretendard, color = grey_bdbdbd, fontSize = 16.sp)
                             }
                         }
                         innerTextField()
@@ -170,7 +168,7 @@ fun ExhibitInfoScreen(
             Spacer(modifier = Modifier.height(42.dp))
             // 전시 카테고리 선택 부분
             Column {
-                Text(text = "전시 카테고리", fontFamily = pretendard, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = stringResource(id = R.string.exhibit_category), fontFamily = pretendard, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier
@@ -187,7 +185,7 @@ fun ExhibitInfoScreen(
                         }
                 ) {
                    if (exhibitCategory.value.isEmpty()){
-                       Text(text = "전시 기록을 보관할 카테고리를 설정해주세요", fontFamily = pretendard, color = grey_bdbdbd, fontSize = 16.sp,
+                       Text(text = stringResource(id = R.string.exhibit_category_hint), fontFamily = pretendard, color = grey_bdbdbd, fontSize = 16.sp,
                            maxLines = 1, modifier = Modifier.weight(1f)
                        )
                    } else{
@@ -220,7 +218,7 @@ fun ExhibitInfoScreen(
             // 관람 날짜 고르기
             Column {
                 Text(
-                    text = "관람 날짜",
+                    text = stringResource(id = R.string.exhibit_date),
                     fontFamily = pretendard,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
@@ -239,7 +237,7 @@ fun ExhibitInfoScreen(
                 ) {
                     if (exhibitDate.value.isEmpty()) {
                         Text(
-                            text = "YYYY/ MM/ DD",
+                            text = stringResource(id = R.string.exhibit_date_hint),
                             fontFamily = pretendard,
                             color = grey_bdbdbd,
                             fontSize = 16.sp,
@@ -281,7 +279,7 @@ fun ExhibitInfoScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = exhibitName.value.isNotEmpty() && exhibitCategory.value.isNotEmpty() && exhibitDate.value.isNotEmpty()
             ) {
-                Text(text = "전시 기록장 생성하기", fontFamily = pretendard, fontSize = 18.sp,
+                Text(text = stringResource(id = R.string.exhibit_create_btn), fontFamily = pretendard, fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold, color = Color.White,
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
@@ -295,7 +293,7 @@ fun ExhibitInfoScreen(
 @Composable
 @Preview(showBackground = true)
 fun ExhibitScreenPreview(){
-    ExhibitInfoScreen()
+    ExhibitInfoScreen(rememberNavController())
 }
 
 val categoryList = listOf("카테고리 예시 01", "카테고리 예시 02", "카테고리 예시 03")
@@ -350,7 +348,7 @@ fun ExhibitCategoryDropDownMenu(
                     Icon(Icons.Default.Add, contentDescription = null)
                 }
                 Spacer(modifier = Modifier.width(12.dp))
-                Text(text = "카테고리 만들기", fontSize = 16.sp, fontFamily = pretendard, fontWeight = FontWeight.SemiBold)
+                Text(text = stringResource(id = R.string.exhibit_category_create_btn), fontSize = 16.sp, fontFamily = pretendard, fontWeight = FontWeight.SemiBold)
             }
         }
     }

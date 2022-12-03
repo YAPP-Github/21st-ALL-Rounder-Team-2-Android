@@ -1,4 +1,4 @@
-package com.yapp.gallery.home
+package com.yapp.gallery.home.widget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,6 +22,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.yapp.gallery.common.theme.black_252525
 import com.yapp.gallery.common.theme.grey_bdbdbd
 import com.yapp.gallery.common.theme.pretendard
+import com.yapp.gallery.home.R
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -49,18 +51,19 @@ fun CategoryDialog(
                     .padding(top = 16.dp)) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = null)
             }
-            Text(text = "카테고리 만들기", fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
+            Text(text = stringResource(id = R.string.category_title), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp
             )
             Spacer(modifier = Modifier.height(24.dp))
             OutlinedTextField(value = categoryName.value,
                 onValueChange = {categoryName.value = it},
-                placeholder = { Text(text = "카테고리 이름을 입력해주세요", color = grey_bdbdbd, fontFamily = pretendard,
+                placeholder = { Text(text = stringResource(id = R.string.category_hint), color = grey_bdbdbd, fontFamily = pretendard,
                     fontSize = 14.sp
                 )},
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black
                 ),
+                isError = categoryName.value.length > 20,
                 trailingIcon = {
                     Text(text = "${categoryName.value.length}/20", modifier = Modifier.padding(end = 4.dp))
                 },
@@ -71,7 +74,7 @@ fun CategoryDialog(
                 shape = RoundedCornerShape(size = 50.dp),
                 enabled = categoryName.value.isNotEmpty() && categoryName.value.length <= 20
             ) {
-                Text(text = "생성하기", fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
+                Text(text = stringResource(id = R.string.category_create_btn), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp, color = Color.White,
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
                 )
