@@ -2,10 +2,11 @@
 kotlin = "1.7.20"
 androidGradle = "7.2.0"
 compose = "1.4.0-alpha01"
-hiltNavigationCompose = "1.0.0"
+hilt-Navigation-Compose = "1.0.0"
 firebase-auth-ktx = "21.0.2"
 gms-auth = "20.4.0"
-
+hilt-core = "2.44"
+hilt-integrations = "1.0.0"
 [libraries]
 
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -16,11 +17,19 @@ androidx-compose-foundation = { module = "androidx.compose.foundation:foundation
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose"}
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-Navigation-Compose"}
 
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx"}
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
 
+hilt-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt-core"}
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core"}
+hilt-integrations-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-integrations"}
+hilt-integrations-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-integrations"}
+
 [bundles]
+
+hilt-deps = [ "hilt-core", "hilt-integrations-work"]
+hilt-compilers = [ "hilt-compiler", "hilt-integrations-compiler" ]
 
 compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose" ]
