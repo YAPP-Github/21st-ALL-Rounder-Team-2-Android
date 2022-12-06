@@ -1,18 +1,24 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     namespace 'com.yapp.gallery.login'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
-        minSdk 21
-        targetSdk 32
+        minSdk 26
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField "String", "FIREBASE_WEB_CLIENT_ID", properties["firebase_web_client_id"]
     }
 
     buildTypes {
@@ -21,6 +27,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.3.2"
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -31,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation project(":common")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -38,4 +54,10 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+
+    implementation libs.bundles.compose
+    implementation libs.firebase.auth.ktx
+    implementation libs.gms.auth
+    implementation libs.bundles.hilt.deps
+    kapt libs.bundles.hilt.compilers
 }

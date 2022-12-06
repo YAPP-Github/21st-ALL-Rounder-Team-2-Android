@@ -6,6 +6,11 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
+    versionCatalogs{
+        create("libs"){
+            from(files("gradle/libraries.versions.toml"))
+        }
+    }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
@@ -24,3 +29,6 @@ include ':navigation:login'
 include ':navigation:detail'
 include ':navigation:core'
 include ':navigation:camera'
+include ':common'
+include ':navigation:home'
+include ':navigation:home'
