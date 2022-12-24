@@ -60,5 +60,6 @@ dependencies {
     implementation libs.firebase.auth.ktx
     implementation libs.gms.auth
     implementation libs.bundles.hilt.deps
+    implementation libs.kakao
     kapt libs.bundles.hilt.compilers
 }

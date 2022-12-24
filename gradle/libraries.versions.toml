@@ -9,6 +9,8 @@ gms-auth = "20.4.0"
 hilt-core = "2.44"
 hilt-integrations = "1.0.0"
 webview = "0.25.1"
+kakao = "2.12.0"
+
 [libraries]
 
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -24,6 +26,8 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx"}
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
+
+kakao = { module = "com.kakao.sdk:v2-all", version.ref ="kakao"}
 
 hilt-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt-core"}
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core"}

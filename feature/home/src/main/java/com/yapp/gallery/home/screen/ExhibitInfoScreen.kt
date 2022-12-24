@@ -5,6 +5,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -66,7 +68,7 @@ fun ExhibitInfoScreen(
     val focusManager = LocalFocusManager.current
 
     var exhibitName = rememberSaveable{ mutableStateOf("") }
-    var exhibitCategory = rememberSaveable { mutableStateOf("") }
+//    var exhibitCategory = rememberSaveable { mutableStateOf("") }
     var exhibitDate = rememberSaveable { mutableStateOf("")}
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -81,6 +83,8 @@ fun ExhibitInfoScreen(
     // rowSize 지정
     var rowSize = remember { mutableStateOf(Size.Zero) }
 
+    val exhibitCategory = mutableListOf<String>()
+    
     Scaffold(
         topBar = {
             CenterTopAppBar(
@@ -168,51 +172,45 @@ fun ExhibitInfoScreen(
             Spacer(modifier = Modifier.height(42.dp))
             // 전시 카테고리 선택 부분
             Column {
-                Text(text = stringResource(id = R.string.exhibit_category), fontFamily = pretendard, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier
-                        .onGloballyPositioned { layoutCoordinates ->
-                            rowSize.value = layoutCoordinates.size.toSize()
-                        }
-                        .clickable(
-                            // ripple color 없애기
-                            indication = null,
-                            interactionSource = interactionSource
-                        ) {
-                            dropDownExpanded.value = !dropDownExpanded.value
-                            focusManager.clearFocus()
-                        }
+                Row(modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                   if (exhibitCategory.value.isEmpty()){
-                       Text(text = stringResource(id = R.string.exhibit_category_hint), fontFamily = pretendard, color = grey_bdbdbd, fontSize = 16.sp,
-                           maxLines = 1, modifier = Modifier.weight(1f)
-                       )
-                   } else{
-                       Text(text = exhibitCategory.value, fontFamily = pretendard, fontSize = 16.sp,
-                           maxLines = 1, modifier = Modifier.weight(1f)
-                       )
-
-                   }
-                    Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null, tint = grey_bdbdbd)
+                    Text(text = stringResource(id = R.string.exhibit_category), fontFamily = pretendard, 
+                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = {
+                        categoryDialogShown.value = !categoryDialogShown.value
+                        focusManager.clearFocus() },
+                    ) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.Gray)
+                        Text(text = "카테고리 만들기", fontFamily = pretendard,
+                            fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.Gray)
+                    }
 
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                Divider(color = black_4f4f4f, modifier = Modifier.fillMaxWidth(), thickness = 1.2.dp)
-
                 // 버튼 클릭 되었을 때 DropDown 메뉴
-                ExhibitCategoryDropDownMenu(isExpanded = dropDownExpanded, onDropDownClick = {
-                    exhibitCategory.value = it
-                    dropDownExpanded.value = false
-                }, rowSize = rowSize.value.width,
-                    interactionSource = interactionSource,
-                    onCreateCategoryClick = {
-                        dropDownExpanded.value = false
-                        categoryDialogShown.value = !categoryDialogShown.value
+//                ExhibitCategoryDropDownMenu(isExpanded = dropDownExpanded, onDropDownClick = {
+//                    exhibitCategory.add(it)
+//                    dropDownExpanded.value = false
+//                }, rowSize = rowSize.value.width,
+//                    interactionSource = interactionSource,
+//                    onCreateCategoryClick = {
+//                        dropDownExpanded.value = false
+//                        categoryDialogShown.value = !categoryDialogShown.value
+//                    }
+//                )
+                LazyRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp)){
+                    items(exhibitCategory) { item ->
+                        Button(onClick = { /*TODO*/ }, shape = RoundedCornerShape(71.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
+                        ) {
+                            Text(text = item, fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp, color = Color.White
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
                     }
-                )
-
-
+                }
             }
             Spacer(modifier = Modifier.height(42.dp))
             // 관람 날짜 고르기
@@ -264,7 +262,10 @@ fun ExhibitInfoScreen(
                     })
                 }
                 if (categoryDialogShown.value){
-                    CategoryDialog(onCreateCategory = {}, onDismissRequest = {categoryDialogShown.value = false})
+                    CategoryDialog(onCreateCategory = {
+                        exhibitCategory.add(it)
+                        categoryDialogShown.value = false },
+                        onDismissRequest = {categoryDialogShown.value = false})
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Divider(color = black_4f4f4f, modifier = Modifier.fillMaxWidth(), thickness = 1.2.dp)
@@ -277,7 +278,7 @@ fun ExhibitInfoScreen(
                     backgroundColor = Color.Black.copy(alpha = 0.72f),
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                enabled = exhibitName.value.isNotEmpty() && exhibitCategory.value.isNotEmpty() && exhibitDate.value.isNotEmpty()
+                enabled = exhibitName.value.isNotEmpty() && exhibitCategory.isNotEmpty() && exhibitDate.value.isNotEmpty()
             ) {
                 Text(text = stringResource(id = R.string.exhibit_create_btn), fontFamily = pretendard, fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold, color = Color.White,

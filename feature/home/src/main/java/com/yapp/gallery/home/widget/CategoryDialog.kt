@@ -70,7 +70,7 @@ fun CategoryDialog(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(backgroundColor = black_252525),
+            Button(onClick = {onCreateCategory(categoryName.value)}, colors = ButtonDefaults.buttonColors(backgroundColor = black_252525),
                 shape = RoundedCornerShape(size = 50.dp),
                 enabled = categoryName.value.isNotEmpty() && categoryName.value.length <= 20
             ) {
