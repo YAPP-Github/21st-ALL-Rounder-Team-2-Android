@@ -1,4 +1,4 @@
-package com.yapp.gallery.camera
+package com.yapp.navigation.camera
 
 import com.yapp.gallery.core.Navigator
 
