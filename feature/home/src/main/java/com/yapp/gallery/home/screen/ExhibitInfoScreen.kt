@@ -16,7 +16,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -29,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -44,14 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.yapp.gallery.common.theme.black_4f4f4f
-import com.yapp.gallery.common.theme.grey_bdbdbd
-import com.yapp.gallery.common.theme.pretendard
-import com.handson.common.widget.CenterTopAppBar
-import com.yapp.gallery.common.theme.grey_5e5e5e
+import com.yapp.gallery.common.widget.CenterTopAppBar
+import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.widget.CategoryDialog
 import com.yapp.gallery.home.widget.DatePicker
 import com.yapp.gallery.home.R
@@ -93,10 +87,10 @@ fun ExhibitInfoScreen(
                 elevation = 0.dp,
                 title = {
                     Text(text = stringResource(id = R.string.exhibit_title),
-                        color = Color.Black,
+                        color = color_white,
                         fontFamily = pretendard,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     ) },
@@ -114,7 +108,10 @@ fun ExhibitInfoScreen(
                 },
                 actions = {
                     TextButton(onClick = { /*TODO*/ }) {
-                        Text(text = stringResource(id = R.string.exhibit_temp), color = grey_5e5e5e, fontFamily = pretendard, fontSize = 14.sp)
+                        Text(text = stringResource(id = R.string.exhibit_temp),
+                            color = color_gray400,
+                            fontFamily = pretendard,
+                            fontSize = 14.sp)
                     }
                 }
             )

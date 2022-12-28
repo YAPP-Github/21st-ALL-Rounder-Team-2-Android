@@ -13,6 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.web.*
+import com.yapp.gallery.common.theme.color_background
+import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.R
 
 @Composable
@@ -28,8 +30,9 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "LOGO",
-                        color = Color.Black,
+                        color = color_white,
                     )},
                 actions = {
                     IconButton(onClick = { /*TODO*/ }) {
@@ -41,10 +44,10 @@ fun HomeScreen(
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(painter = painterResource(id = R.drawable.ic_calendar), contentDescription = null, tint = Color.Black)
                     }
+                    Spacer(modifier = Modifier.width(8.dp))
                 },
-                backgroundColor = Color.White,
                 elevation = 0.dp,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                backgroundColor = MaterialTheme.colors.background
             )
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -54,7 +57,8 @@ fun HomeScreen(
                 contentColor = Color.Black,
                 shape = CircleShape,
                 // 기본 마진 16dp 인듯
-                modifier = Modifier.padding(end = 8.dp, bottom = 48.dp)
+                modifier = Modifier
+                    .padding(end = 8.dp, bottom = 48.dp)
                     .size(72.dp)
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(24.dp))
