@@ -25,6 +25,6 @@ fun GalleryTheme(
     // Todo : 추후 폰트 스타일도 지정
     MaterialTheme(
         content = content,
-        colors = colorScheme
+        colors = colorScheme,
     )
 }

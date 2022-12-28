@@ -5,8 +5,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -25,6 +30,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -44,6 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.flowlayout.FlowColumn
+import com.google.accompanist.flowlayout.FlowRow
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.widget.CategoryDialog
@@ -52,7 +60,7 @@ import com.yapp.gallery.home.R
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ExhibitInfoScreen(
     navController : NavHostController
@@ -77,115 +85,147 @@ fun ExhibitInfoScreen(
     // rowSize 지정
     var rowSize = remember { mutableStateOf(Size.Zero) }
 
+
+    // 카테고리 리스트
     val exhibitCategory = mutableListOf<String>()
-    
-    Scaffold(
-        topBar = {
-            CenterTopAppBar(
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = Color.Transparent,
-                elevation = 0.dp,
-                title = {
-                    Text(text = stringResource(id = R.string.exhibit_title),
-                        color = color_white,
-                        fontFamily = pretendard,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) },
-                navigationIcon = if (navController.previousBackStackEntry != null) {
-                    {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                } else {
-                    null
-                },
-                actions = {
-                    TextButton(onClick = { /*TODO*/ }) {
-                        Text(text = stringResource(id = R.string.exhibit_temp),
-                            color = color_gray400,
-                            fontFamily = pretendard,
-                            fontSize = 14.sp)
-                    }
-                }
-            )
+    val categorySelect = rememberSaveable {
+        mutableStateOf(-1)
+    }
+
+    // Bottom Sheet State
+    val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+
+    ModalBottomSheetLayout(
+        sheetState = modalBottomSheetState,
+        sheetContent = {
+            Text(text = "테스트")
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .fillMaxSize()
-        ) {
-            Spacer(modifier = Modifier.height(60.dp))
-            // 전시명 입력 부분
-            Column {
-                Text(text = stringResource(id = R.string.exhibit_name), fontFamily = pretendard, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                Spacer(modifier = Modifier.height(12.dp))
-                BasicTextField(
-                    maxLines = 1,
-                    value = exhibitName.value,
-                    onValueChange = { exhibitName.value = it },
-                    textStyle = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = pretendard
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    decorationBox = { innerTextField ->
-                        Row(modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester)) {
-                            if (exhibitName.value.isEmpty()) {
-                                Text(text = stringResource(id = R.string.exhibit_name_hint), fontFamily = pretendard, color = grey_bdbdbd, fontSize = 16.sp)
+    ) {
+        Scaffold(
+            topBar = {
+                CenterTopAppBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    backgroundColor = Color.Transparent,
+                    elevation = 0.dp,
+                    title = {
+                        Text(text = stringResource(id = R.string.exhibit_title),
+                            color = color_white,
+                            fontFamily = pretendard,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 18.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) },
+                    navigationIcon = if (navController.previousBackStackEntry != null) {
+                        {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    imageVector = Icons.Filled.ArrowBack,
+                                    contentDescription = "Back"
+                                )
                             }
                         }
-                        innerTextField()
+                    } else {
+                        null
                     },
-                    modifier = Modifier.onKeyEvent { keyEvent ->
-                        if (keyEvent.key != Key.Enter || keyEvent.key != Key.SystemNavigationDown) return@onKeyEvent false
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                        true
+                    actions = {
+                        TextButton(onClick = { /*TODO*/ }) {
+                            Text(text = stringResource(id = R.string.exhibit_temp),
+                                color = color_gray400,
+                                fontFamily = pretendard,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp)
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                Divider(color = black_4f4f4f, modifier = Modifier.fillMaxWidth(), thickness = 1.2.dp)
             }
-
-            Spacer(modifier = Modifier.height(42.dp))
-            // 전시 카테고리 선택 부분
-            Column {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = stringResource(id = R.string.exhibit_category), fontFamily = pretendard, 
-                        fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                    Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = {
-                        categoryDialogShown.value = !categoryDialogShown.value
-                        focusManager.clearFocus() },
-                    ) {
-                        Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color.Gray)
-                        Text(text = "카테고리 만들기", fontFamily = pretendard,
-                            fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.Gray)
-                    }
-
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxSize()
+            ) {
+                Spacer(modifier = Modifier.height(48.dp))
+                // 전시명 입력 부분
+                Column {
+                    Text(text = stringResource(id = R.string.exhibit_name),
+                        fontFamily = pretendard, fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = color_white
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    BasicTextField(
+                        maxLines = 1,
+                        value = exhibitName.value,
+                        onValueChange = { exhibitName.value = it },
+                        textStyle = TextStyle(
+                            fontSize = 16.sp,
+                            fontFamily = pretendard,
+                            color = color_white
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        decorationBox = { innerTextField ->
+                            Row(modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester)) {
+                                if (exhibitName.value.isEmpty()) {
+                                    Text(text = stringResource(id = R.string.exhibit_name_hint),
+                                        fontFamily = pretendard,
+                                        color = color_gray700,
+                                        fontSize = 16.sp)
+                                }
+                            }
+                            innerTextField()
+                        },
+                        modifier = Modifier.onKeyEvent { keyEvent ->
+                            if (keyEvent.key != Key.Enter || keyEvent.key != Key.SystemNavigationDown) return@onKeyEvent false
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                            true
+                        },
+                        cursorBrush = SolidColor(color_white)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider(color = color_gray900, modifier = Modifier.fillMaxWidth(), thickness = 0.8.dp)
                 }
-                // 버튼 클릭 되었을 때 DropDown 메뉴
+
+                Spacer(modifier = Modifier.height(48.dp))
+                // 전시 카테고리 선택 부분
+                Column {
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = stringResource(id = R.string.exhibit_category), fontFamily = pretendard,
+                            fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = color_white)
+                        Spacer(modifier = Modifier.weight(1f))
+                        CompositionLocalProvider(
+                            LocalMinimumTouchTargetEnforcement provides false,
+                        ) {
+                            TextButton(onClick = {
+                                categoryDialogShown.value = !categoryDialogShown.value
+                                focusManager.clearFocus() },
+                                contentPadding = PaddingValues()
+                            ) {
+                                Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = color_mainGreen)
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(text = "카테고리 만들기", fontFamily = pretendard,
+                                    fontSize = 14.sp, fontWeight = FontWeight.Light, color = color_mainGreen)
+                            }
+                        }
+
+
+                    }
+                    // 버튼 클릭 되었을 때 DropDown 메뉴
 //                ExhibitCategoryDropDownMenu(isExpanded = dropDownExpanded, onDropDownClick = {
 //                    exhibitCategory.add(it)
 //                    dropDownExpanded.value = false
@@ -196,96 +236,120 @@ fun ExhibitInfoScreen(
 //                        categoryDialogShown.value = !categoryDialogShown.value
 //                    }
 //                )
-                LazyRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp)){
-                    items(exhibitCategory) { item ->
-                        Button(onClick = { /*TODO*/ }, shape = RoundedCornerShape(71.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
-                        ) {
-                            Text(text = item, fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-                                fontSize = 14.sp, color = Color.White
+                    Spacer(modifier = Modifier.height(10.dp))
+                    FlowRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp),
+                    ){
+                        exhibitCategory.forEachIndexed { index, item ->
+                            Surface(shape = RoundedCornerShape(71.dp),
+                                onClick = {
+                                    if (categorySelect.value == index) categorySelect.value = -1
+                                    else categorySelect.value = index
+                                },
+                                color = if (categorySelect.value == index) MaterialTheme.colors.secondary
+                                else MaterialTheme.colors.background,
+                                contentColor = if (categorySelect.value == index) Color(0xFF282828)
+                                else MaterialTheme.colors.secondary,
+                                border = BorderStroke(1.dp, color = MaterialTheme.colors.secondary)
+
+                            ) {
+                                Text(text = item, fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                                )
+                            }
+
+//                        Button(
+//                            onClick = { if (categorySelect.value == index) categorySelect.value = -1
+//                                else categorySelect.value = index
+//                            }, shape = RoundedCornerShape(71.dp),
+//                            colors = ButtonDefaults.buttonColors(
+//                                backgroundColor = MaterialTheme.colors.secondary,
+//                                contentColor = Color(0xFF282828),
+//                                disabledBackgroundColor = MaterialTheme.colors.background,
+//                                disabledContentColor = MaterialTheme.colors.secondary
+//                            ),
+//                            enabled = categorySelect.value == index
+//                        ) {
+//                            Text(text = item, fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
+//                                fontSize = 14.sp, color = Color.White
+//                            )
+//                        }
+                            Spacer(modifier = Modifier.width(6.dp))
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(42.dp))
+                // 관람 날짜 고르기
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.exhibit_date),
+                        fontFamily = pretendard,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = color_white
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Row(
+                        modifier = Modifier
+                            .clickable(
+                                // ripple color 없애기
+                                indication = null,
+                                interactionSource = interactionSource
+                            ) {
+                                datePickerShown.value = !datePickerShown.value
+                                focusManager.clearFocus()
+                            }
+                    ) {
+                        if (exhibitDate.value.isEmpty()) {
+                            Text(
+                                text = stringResource(id = R.string.exhibit_date_hint),
+                                fontFamily = pretendard,
+                                color = color_gray700,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                modifier = Modifier.weight(1f)
+                            )
+                        } else {
+                            Text(
+                                text = exhibitDate.value, fontFamily = pretendard, fontSize = 16.sp,
+                                maxLines = 1, modifier = Modifier.weight(1f),
+                                color = color_white
                             )
                         }
-                        Spacer(modifier = Modifier.width(12.dp))
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider(color = color_gray900, modifier = Modifier.fillMaxWidth(), thickness = 0.8.dp)
                 }
-            }
-            Spacer(modifier = Modifier.height(42.dp))
-            // 관람 날짜 고르기
-            Column {
-                Text(
-                    text = stringResource(id = R.string.exhibit_date),
-                    fontFamily = pretendard,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier
-                        .clickable(
-                            // ripple color 없애기
-                            indication = null,
-                            interactionSource = interactionSource
-                        ) {
-                            datePickerShown.value = !datePickerShown.value
-                            focusManager.clearFocus()
-                        }
+
+                Spacer(modifier = Modifier.weight(1f))
+                // 전시 기록장 생성하기 버튼
+                Button(onClick = { },
+                    modifier = Modifier.fillMaxWidth(),
+//                enabled = exhibitName.value.isNotEmpty() && exhibitCategory.isNotEmpty() && exhibitDate.value.isNotEmpty()
                 ) {
-                    if (exhibitDate.value.isEmpty()) {
-                        Text(
-                            text = stringResource(id = R.string.exhibit_date_hint),
-                            fontFamily = pretendard,
-                            color = grey_bdbdbd,
-                            fontSize = 16.sp,
-                            maxLines = 1,
-                            modifier = Modifier.weight(1f)
-                        )
-                    } else {
-                        Text(
-                            text = exhibitDate.value, fontFamily = pretendard, fontSize = 16.sp,
-                            maxLines = 1, modifier = Modifier.weight(1f)
-                        )
-
-                    }
-                    Icon(painter = painterResource(id = R.drawable.ic_calendar),
-                        contentDescription = null, tint = grey_bdbdbd
+                    Text(text = stringResource(id = R.string.exhibit_create_btn), fontFamily = pretendard, fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold, color = color_black,
+                        modifier = Modifier.padding(vertical = 12.dp)
                     )
-
                 }
-                if (datePickerShown.value){
-                    DatePicker(onDateSelected = {
-                        exhibitDate.value = it.format(DateTimeFormatter.ofPattern("yyyy/ MM/ dd")).also { d -> Log.e("datePick", d) }
-                    }, onDismissRequest = {
-                        datePickerShown.value = false
-                    })
-                }
-                if (categoryDialogShown.value){
-                    CategoryDialog(onCreateCategory = {
-                        exhibitCategory.add(it)
-                        categoryDialogShown.value = false },
-                        onDismissRequest = {categoryDialogShown.value = false})
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Divider(color = black_4f4f4f, modifier = Modifier.fillMaxWidth(), thickness = 1.2.dp)
+                Spacer(modifier = Modifier.height(63.dp))
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-            // 전시 기록장 생성하기 버튼
-            Button(onClick = { },
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color.Black.copy(alpha = 0.72f),
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                enabled = exhibitName.value.isNotEmpty() && exhibitCategory.isNotEmpty() && exhibitDate.value.isNotEmpty()
-            ) {
-                Text(text = stringResource(id = R.string.exhibit_create_btn), fontFamily = pretendard, fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold, color = Color.White,
-                    modifier = Modifier.padding(vertical = 12.dp)
-                )
+            if (datePickerShown.value){
+                DatePicker(onDateSelected = {
+                    exhibitDate.value = it.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")).also { d -> Log.e("datePick", d) }
+                }, onDismissRequest = {
+                    datePickerShown.value = false
+                })
             }
-            Spacer(modifier = Modifier.height(63.dp))
+            if (categoryDialogShown.value){
+                CategoryDialog(onCreateCategory = {
+                    exhibitCategory.add(it)
+                    categoryDialogShown.value = false },
+                    onDismissRequest = {categoryDialogShown.value = false})
+            }
         }
-
     }
+
 }
 
 @Composable

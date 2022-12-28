@@ -11,6 +11,7 @@ hilt-integrations = "1.0.0"
 webview = "0.25.1"
 kakao = "2.12.0"
 systemuicontroller = "0.23.1"
+flowLayout = "0.28.0"
 
 [libraries]
 
@@ -37,6 +38,7 @@ hilt-integrations-compiler = { module = "androidx.hilt:hilt-compiler", version.r
 
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "webview"}
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "systemuicontroller"}
+accompanist-flowLayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref ="flowLayout"}
 
 [bundles]
 

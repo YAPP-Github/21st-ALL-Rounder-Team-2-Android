@@ -19,9 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.yapp.gallery.common.theme.black_252525
-import com.yapp.gallery.common.theme.grey_bdbdbd
-import com.yapp.gallery.common.theme.pretendard
+import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.R
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -41,45 +39,60 @@ fun CategoryDialog(
                 .background(
                     color = MaterialTheme.colors.surface,
                     shape = RoundedCornerShape(size = 16.dp)
-                )
-                .padding(horizontal = 16.dp),
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
             IconButton(onClick = onDismissRequest,
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(top = 16.dp)) {
-                Icon(imageVector = Icons.Default.Close, contentDescription = null)
-            }
-            Text(text = stringResource(id = R.string.category_title), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            OutlinedTextField(value = categoryName.value,
-                onValueChange = {categoryName.value = it},
-                placeholder = { Text(text = stringResource(id = R.string.category_hint), color = grey_bdbdbd, fontFamily = pretendard,
-                    fontSize = 14.sp
-                )},
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedBorderColor = Color.Black
-                ),
-                isError = categoryName.value.length > 20,
-                trailingIcon = {
-                    Text(text = "${categoryName.value.length}/20", modifier = Modifier.padding(end = 4.dp))
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(onClick = {onCreateCategory(categoryName.value)}, colors = ButtonDefaults.buttonColors(backgroundColor = black_252525),
-                shape = RoundedCornerShape(size = 50.dp),
-                enabled = categoryName.value.isNotEmpty() && categoryName.value.length <= 20
             ) {
-                Text(text = stringResource(id = R.string.category_create_btn), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp, color = Color.White,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
-                )
+                Icon(imageVector = Icons.Default.Close, contentDescription = null,
+                    modifier = Modifier.size(20.dp))
             }
-            Spacer(modifier = Modifier.height(22.dp))
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = stringResource(id = R.string.category_title), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                OutlinedTextField(value = categoryName.value,
+                    onValueChange = {categoryName.value = it},
+                    placeholder = { Text(text = stringResource(id = R.string.category_hint), color = color_gray700, fontFamily = pretendard,
+                        fontSize = 16.sp
+                    )},
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = MaterialTheme.colors.primary,
+                        textColor = color_white
+                    ),
+                    isError = categoryName.value.length > 20,
+                    trailingIcon = {
+                        Row {
+                            Text(text = "${categoryName.value.length}", color = MaterialTheme.colors.primary,
+                                fontSize = 14.sp
+                            )
+                            Text(text = "/20",
+                                modifier = Modifier.padding(end = 10.dp), color = color_gray600,
+                                fontSize = 14.sp
+                            )
+                        }
+
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(49.dp))
+                Button(onClick = {onCreateCategory(categoryName.value)},
+                    shape = RoundedCornerShape(size = 50.dp),
+                    enabled = categoryName.value.isNotEmpty() && categoryName.value.length <= 20
+                ) {
+                    Text(text = stringResource(id = R.string.category_create_btn), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp, color = color_black,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(30.dp))
+            }
+
         }
     }
 }
