@@ -108,7 +108,7 @@ fun ExhibitInfoScreen(
         },
         scrimColor = Color.Transparent,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        sheetBackgroundColor = Color(0xFF191919)
+        sheetBackgroundColor = color_popUpBottom
     ) {
         Scaffold(
             topBar = {

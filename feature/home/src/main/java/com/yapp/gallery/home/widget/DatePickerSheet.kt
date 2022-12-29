@@ -4,6 +4,7 @@ import android.app.DatePickerDialog.OnDateSetListener
 import android.util.AttributeSet
 import android.util.Log
 import android.widget.NumberPicker
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -63,7 +64,7 @@ fun DatePickerSheet(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().background(color = color_popUpBottom),
     ) {
         TextButton(onClick = { onDateSet("${yearIndex.value - 2 + todayYear}/${monthIndex.value + 1}/${dayIndex.value + 1}") },
             modifier = Modifier
