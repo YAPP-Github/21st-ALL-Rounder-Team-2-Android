@@ -29,6 +29,7 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.yapp.gallery.common.theme.GalleryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -49,7 +50,7 @@ class LoginActivity : ComponentActivity(){
         initOneTap()
         initResultLauncher()
         setContent {
-            MaterialTheme {
+            GalleryTheme {
                 LoginScreen(googleLogin = {oneTapGoogleSignIn()}, kakaoLogin = {kakaoLogin()})
             }
         }

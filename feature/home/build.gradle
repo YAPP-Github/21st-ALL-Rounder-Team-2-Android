@@ -57,5 +57,6 @@ dependencies {
     implementation libs.bundles.hilt.deps
     implementation libs.accompanist.webview
     implementation libs.accompanist.flowLayout
+    implementation libs.numberPicker
     kapt libs.bundles.hilt.compilers
 }

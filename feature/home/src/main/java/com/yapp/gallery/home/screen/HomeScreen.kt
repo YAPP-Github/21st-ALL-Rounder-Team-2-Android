@@ -36,13 +36,13 @@ fun HomeScreen(
                     )},
                 actions = {
                     IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_notification), contentDescription = null, tint = Color.Black)
+                        Icon(painter = painterResource(id = R.drawable.ic_notification), contentDescription = null, tint = color_gray400)
                     }
                     IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_profile), contentDescription = null, tint = Color.Black)
+                        Icon(painter = painterResource(id = R.drawable.ic_profile), contentDescription = null, tint = color_gray400)
                     }
                     IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_calendar), contentDescription = null, tint = Color.Black)
+                        Icon(painter = painterResource(id = R.drawable.ic_calendar), contentDescription = null, tint = color_gray400)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                 },

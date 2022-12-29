@@ -34,12 +34,14 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,6 +59,8 @@ import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.widget.CategoryDialog
 import com.yapp.gallery.home.widget.DatePicker
 import com.yapp.gallery.home.R
+import com.yapp.gallery.home.widget.DatePickerSheet
+import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -75,11 +79,6 @@ fun ExhibitInfoScreen(
 
     val interactionSource = remember { MutableInteractionSource() }
 
-    // DropDownExpanded
-    val dropDownExpanded = remember { mutableStateOf(false)}
-    // DatePickerShown
-    val datePickerShown = remember { mutableStateOf(false)}
-    // CategoryDialogShown
     val categoryDialogShown = remember { mutableStateOf(false) }
 
     // rowSize 지정
@@ -94,12 +93,22 @@ fun ExhibitInfoScreen(
 
     // Bottom Sheet State
     val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val scope = rememberCoroutineScope()
+
 
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
-            Text(text = "테스트")
-        }
+            DatePickerSheet(onDateSet = {
+                exhibitDate.value = it
+                scope.launch {
+                    modalBottomSheetState.hide()
+                }
+            })
+        },
+        scrimColor = Color.Transparent,
+        sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        sheetBackgroundColor = Color(0xFF191919)
     ) {
         Scaffold(
             topBar = {
@@ -109,10 +118,7 @@ fun ExhibitInfoScreen(
                     elevation = 0.dp,
                     title = {
                         Text(text = stringResource(id = R.string.exhibit_title),
-                            color = color_white,
-                            fontFamily = pretendard,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         ) },
@@ -131,10 +137,9 @@ fun ExhibitInfoScreen(
                     actions = {
                         TextButton(onClick = { /*TODO*/ }) {
                             Text(text = stringResource(id = R.string.exhibit_temp),
-                                color = color_gray400,
-                                fontFamily = pretendard,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp)
+                                style = MaterialTheme.typography.h3.copy(
+                                    fontWeight = FontWeight.Medium, color = color_gray400),
+                                )
                         }
                         Spacer(modifier = Modifier.width(4.dp))
                     }
@@ -151,20 +156,14 @@ fun ExhibitInfoScreen(
                 // 전시명 입력 부분
                 Column {
                     Text(text = stringResource(id = R.string.exhibit_name),
-                        fontFamily = pretendard, fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = color_white
+                        style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     BasicTextField(
                         maxLines = 1,
                         value = exhibitName.value,
                         onValueChange = { exhibitName.value = it },
-                        textStyle = TextStyle(
-                            fontSize = 16.sp,
-                            fontFamily = pretendard,
-                            color = color_white
-                        ),
+                        textStyle = MaterialTheme.typography.h3,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
@@ -180,9 +179,7 @@ fun ExhibitInfoScreen(
                                 .focusRequester(focusRequester)) {
                                 if (exhibitName.value.isEmpty()) {
                                     Text(text = stringResource(id = R.string.exhibit_name_hint),
-                                        fontFamily = pretendard,
-                                        color = color_gray700,
-                                        fontSize = 16.sp)
+                                       style = MaterialTheme.typography.h3.copy(color = color_gray700))
                                 }
                             }
                             innerTextField()
@@ -205,8 +202,9 @@ fun ExhibitInfoScreen(
                     Row(modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = stringResource(id = R.string.exhibit_category), fontFamily = pretendard,
-                            fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = color_white)
+                        Text(text = stringResource(id = R.string.exhibit_category), style =
+                            MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
+                        )
                         Spacer(modifier = Modifier.weight(1f))
                         CompositionLocalProvider(
                             LocalMinimumTouchTargetEnforcement provides false,
@@ -218,24 +216,15 @@ fun ExhibitInfoScreen(
                             ) {
                                 Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = color_mainGreen)
                                 Spacer(modifier = Modifier.width(2.dp))
-                                Text(text = "카테고리 만들기", fontFamily = pretendard,
-                                    fontSize = 14.sp, fontWeight = FontWeight.Light, color = color_mainGreen)
+                                Text(text = "카테고리 만들기", style = MaterialTheme.typography.h4.copy(
+                                    fontWeight = FontWeight.Medium, color = color_mainGreen
+                                ))
                             }
                         }
 
 
                     }
-                    // 버튼 클릭 되었을 때 DropDown 메뉴
-//                ExhibitCategoryDropDownMenu(isExpanded = dropDownExpanded, onDropDownClick = {
-//                    exhibitCategory.add(it)
-//                    dropDownExpanded.value = false
-//                }, rowSize = rowSize.value.width,
-//                    interactionSource = interactionSource,
-//                    onCreateCategoryClick = {
-//                        dropDownExpanded.value = false
-//                        categoryDialogShown.value = !categoryDialogShown.value
-//                    }
-//                )
+
                     Spacer(modifier = Modifier.height(10.dp))
                     FlowRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp),
                     ){
@@ -247,32 +236,15 @@ fun ExhibitInfoScreen(
                                 },
                                 color = if (categorySelect.value == index) MaterialTheme.colors.secondary
                                 else MaterialTheme.colors.background,
-                                contentColor = if (categorySelect.value == index) Color(0xFF282828)
-                                else MaterialTheme.colors.secondary,
                                 border = BorderStroke(1.dp, color = MaterialTheme.colors.secondary)
 
                             ) {
-                                Text(text = item, fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-                                    fontSize = 14.sp, modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                                Text(text = item, style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,
+                                    color = if (categorySelect.value == index) Color(0xFF282828)
+                                    else MaterialTheme.colors.secondary),
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                                 )
                             }
-
-//                        Button(
-//                            onClick = { if (categorySelect.value == index) categorySelect.value = -1
-//                                else categorySelect.value = index
-//                            }, shape = RoundedCornerShape(71.dp),
-//                            colors = ButtonDefaults.buttonColors(
-//                                backgroundColor = MaterialTheme.colors.secondary,
-//                                contentColor = Color(0xFF282828),
-//                                disabledBackgroundColor = MaterialTheme.colors.background,
-//                                disabledContentColor = MaterialTheme.colors.secondary
-//                            ),
-//                            enabled = categorySelect.value == index
-//                        ) {
-//                            Text(text = item, fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-//                                fontSize = 14.sp, color = Color.White
-//                            )
-//                        }
                             Spacer(modifier = Modifier.width(6.dp))
                         }
                     }
@@ -282,10 +254,7 @@ fun ExhibitInfoScreen(
                 Column {
                     Text(
                         text = stringResource(id = R.string.exhibit_date),
-                        fontFamily = pretendard,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = color_white
+                        style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
                     )
                     Spacer(modifier = Modifier.height(14.dp))
                     Row(
@@ -295,8 +264,10 @@ fun ExhibitInfoScreen(
                                 indication = null,
                                 interactionSource = interactionSource
                             ) {
-                                datePickerShown.value = !datePickerShown.value
-                                focusManager.clearFocus()
+                                scope.launch {
+                                    focusManager.clearFocus()
+                                    modalBottomSheetState.show()
+                                }
                             }
                     ) {
                         if (exhibitDate.value.isEmpty()) {
@@ -334,13 +305,6 @@ fun ExhibitInfoScreen(
                 Spacer(modifier = Modifier.height(63.dp))
             }
 
-            if (datePickerShown.value){
-                DatePicker(onDateSelected = {
-                    exhibitDate.value = it.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")).also { d -> Log.e("datePick", d) }
-                }, onDismissRequest = {
-                    datePickerShown.value = false
-                })
-            }
             if (categoryDialogShown.value){
                 CategoryDialog(onCreateCategory = {
                     exhibitCategory.add(it)
