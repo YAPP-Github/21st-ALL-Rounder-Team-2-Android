@@ -30,12 +30,14 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.yapp.gallery.common.theme.GalleryTheme
+import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity : ComponentActivity(){
     @Inject lateinit var auth: FirebaseAuth
+    @Inject lateinit var homeNavigator: HomeNavigator
     private lateinit var oneTapClient : SignInClient
     private lateinit var signInRequest: BeginSignInRequest
 
@@ -71,19 +73,6 @@ class LoginActivity : ComponentActivity(){
     }
 
     private fun initResultLauncher(){
-//        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-//            if (it.resultCode == RESULT_OK){
-//                val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-//                try{
-//                    val account = task.getResult(ApiException::class.java)
-//                    Log.e("account", "${account.id}, ${account.email}, ${account.givenName}")
-//                    firebaseAuthWithGoogle(account)
-//                } catch (e: ApiException){
-//                    Toast.makeText(this, "구글 로그인 실패", Toast.LENGTH_SHORT).show()
-//                }
-//            }
-//        }
-
         googleResultLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()){
             if (it.resultCode == RESULT_OK){
                 val credential = oneTapClient.getSignInCredentialFromIntent(it.data)
@@ -101,8 +90,7 @@ class LoginActivity : ComponentActivity(){
                                 Log.e("Login", user?.uid.toString())
                                 Toast.makeText(this, "구글 로그인 성공", Toast.LENGTH_SHORT).show()
 
-                                // Todo : Navigation 이용
-//                                startActivity(Intent(this, com.yapp.gallery.home.home.HomeActivity::class.java))
+                                navigateToHome()
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -192,6 +180,12 @@ class LoginActivity : ComponentActivity(){
         }
         // Todo : 커스텀 토큰으로 로그인
         // auth.signInWithCustomToken()
+    }
+
+    private fun navigateToHome(){
+        // Todo : Navigation 이용
+        finishAffinity()
+        startActivity(homeNavigator.navigate(this))
     }
 //    private fun googleSignIn(){
 //        val signInIntent = googleSignInClient.signInIntent
