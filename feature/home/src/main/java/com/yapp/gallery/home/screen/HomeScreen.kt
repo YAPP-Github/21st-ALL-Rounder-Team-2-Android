@@ -27,29 +27,6 @@ fun HomeScreen(
 
     val viewModel = hiltViewModel<HomeViewModel>()
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "LOGO",
-                        color = color_white,
-                    )},
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_notification), contentDescription = null, tint = color_gray400)
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_profile), contentDescription = null, tint = color_gray400)
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_calendar), contentDescription = null, tint = color_gray400)
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                },
-                elevation = 0.dp,
-                backgroundColor = MaterialTheme.colors.background
-            )
-        },
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
             FloatingActionButton(onClick = navigateToInfo,
