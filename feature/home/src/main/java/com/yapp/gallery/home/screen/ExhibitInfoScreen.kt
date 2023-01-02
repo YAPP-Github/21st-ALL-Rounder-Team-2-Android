@@ -64,6 +64,7 @@ import com.yapp.gallery.home.widget.CategoryDialog
 import com.yapp.gallery.home.widget.DatePicker
 import com.yapp.gallery.home.R
 import com.yapp.gallery.home.widget.DatePickerSheet
+import com.yapp.gallery.home.widget.RecordMenuDialog
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -86,6 +87,7 @@ fun ExhibitInfoScreen(
     val interactionSource = remember { MutableInteractionSource() }
 
     val categoryDialogShown = remember { mutableStateOf(false) }
+    val recordMenuDialogShown = remember { mutableStateOf(false) }
 
     // rowSize 지정
     var rowSize = remember { mutableStateOf(Size.Zero) }
@@ -306,7 +308,7 @@ fun ExhibitInfoScreen(
                         if (categorySelect.value == -1 || exhibitName.value.isEmpty() || exhibitDate.value.isEmpty()) {
                             showToast(context, "모든 항목을 입력해주세요.")
                         } else {
-
+                            recordMenuDialogShown.value = true
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -326,6 +328,14 @@ fun ExhibitInfoScreen(
                     categoryDialogShown.value = false },
                     onDismissRequest = {categoryDialogShown.value = false},
                     viewModel = viewModel
+                )
+            }
+
+            if (recordMenuDialogShown.value){
+                RecordMenuDialog(
+                    onCameraClick = {},
+                    onGalleryClick = {},
+                    onDismissRequest = {recordMenuDialogShown.value = false}
                 )
             }
         }
