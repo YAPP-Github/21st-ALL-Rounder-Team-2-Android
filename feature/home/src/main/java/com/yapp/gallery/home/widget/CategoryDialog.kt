@@ -7,6 +7,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -21,16 +23,22 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.R
+import com.yapp.gallery.home.screen.CategoryUiState
+import com.yapp.gallery.home.screen.ExhibitInfoViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CategoryDialog(
     onCreateCategory : (String) -> Unit,
-    onDismissRequest : () -> Unit
+    onDismissRequest : () -> Unit,
+    viewModel: ExhibitInfoViewModel
 ){
+    val categoryState : CategoryUiState? by viewModel.categoryState.collectAsState()
+
     val categoryName = rememberSaveable {
         mutableStateOf("")
     }
+
     Dialog(onDismissRequest = onDismissRequest, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Column(
             modifier = Modifier
@@ -49,44 +57,64 @@ fun CategoryDialog(
                 Icon(imageVector = Icons.Default.Close, contentDescription = null,
                     modifier = Modifier.size(20.dp))
             }
-            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = stringResource(id = R.string.category_title), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
+                Text(text = stringResource(id = R.string.category_title), style = MaterialTheme.typography.h2
+                    .copy(fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                OutlinedTextField(value = categoryName.value,
-                    onValueChange = {categoryName.value = it},
-                    placeholder = { Text(text = stringResource(id = R.string.category_hint), color = color_gray700, fontFamily = pretendard,
-                        fontSize = 16.sp
-                    )},
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = MaterialTheme.colors.primary,
-                        textColor = color_white
-                    ),
-                    isError = categoryName.value.length > 20,
-                    trailingIcon = {
-                        Row {
-                            Text(text = "${categoryName.value.length}", color = MaterialTheme.colors.primary,
-                                fontSize = 14.sp
+                Column {
+                    OutlinedTextField(
+                        value = categoryName.value,
+                        onValueChange = {
+                            categoryName.value = it
+                            viewModel.checkCategory(it)
+                        },
+                        placeholder = {
+                            Text(
+                                text = stringResource(id = R.string.category_hint), style =
+                                MaterialTheme.typography.h3.copy(color = color_gray700)
                             )
-                            Text(text = "/20",
-                                modifier = Modifier.padding(end = 10.dp), color = color_gray600,
-                                fontSize = 14.sp
-                            )
-                        }
+                        },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = MaterialTheme.colors.primary,
+                            textColor = color_white
+                        ),
+                        isError = categoryState is CategoryUiState.Error,
+                        trailingIcon = {
+                            Row {
+                                Text(
+                                    text = "${categoryName.value.length}",
+                                    style = MaterialTheme.typography
+                                        .h4.copy(color = color_mainGreen)
+                                )
+                                Text(
+                                    text = "/20",
+                                    modifier = Modifier.padding(end = 10.dp),
+                                    style = MaterialTheme.typography
+                                        .h4.copy(color = color_gray600)
+                                )
+                            }
 
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (categoryState is CategoryUiState.Error){
+                        Text(text = (categoryState as CategoryUiState.Error).error,
+                            style = MaterialTheme.typography.h4.copy(color = Color.Red)
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(49.dp))
                 Button(onClick = {onCreateCategory(categoryName.value)},
                     shape = RoundedCornerShape(size = 50.dp),
-                    enabled = categoryName.value.isNotEmpty() && categoryName.value.length <= 20
+                    enabled = categoryState is CategoryUiState.Success
                 ) {
-                    Text(text = stringResource(id = R.string.category_create_btn), fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp, color = color_black,
+                    Text(text = stringResource(id = R.string.category_create_btn), style = MaterialTheme.typography.h2.copy(
+                        color = color_black, fontWeight = FontWeight.SemiBold),
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
                     )
                 }

@@ -1,6 +1,8 @@
 package com.yapp.gallery.home.screen
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -35,6 +37,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.modifier.modifierLocalMapOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -50,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.flowlayout.FlowColumn
@@ -69,6 +73,8 @@ import java.util.*
 fun ExhibitInfoScreen(
     navController : NavHostController
 ){
+    val viewModel = hiltViewModel<ExhibitInfoViewModel>()
+
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -85,8 +91,10 @@ fun ExhibitInfoScreen(
     var rowSize = remember { mutableStateOf(Size.Zero) }
 
 
+    val context = LocalContext.current
+
     // 카테고리 리스트
-    val exhibitCategory = mutableListOf<String>()
+    val categoryList : List<String>? by viewModel.categoryList.collectAsState()
     val categorySelect = rememberSaveable {
         mutableStateOf(-1)
     }
@@ -206,29 +214,29 @@ fun ExhibitInfoScreen(
                             MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        CompositionLocalProvider(
-                            LocalMinimumTouchTargetEnforcement provides false,
-                        ) {
-                            TextButton(onClick = {
-                                categoryDialogShown.value = !categoryDialogShown.value
-                                focusManager.clearFocus() },
-                                contentPadding = PaddingValues()
+                        if (categoryList?.size?.compareTo(5) == -1){
+                            CompositionLocalProvider(
+                                LocalMinimumTouchTargetEnforcement provides false,
                             ) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = color_mainGreen)
-                                Spacer(modifier = Modifier.width(2.dp))
-                                Text(text = "카테고리 만들기", style = MaterialTheme.typography.h4.copy(
-                                    fontWeight = FontWeight.Medium, color = color_mainGreen
-                                ))
+                                TextButton(onClick = {
+                                    categoryDialogShown.value = !categoryDialogShown.value
+                                    focusManager.clearFocus() },
+                                    contentPadding = PaddingValues()
+                                ) {
+                                    Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = color_mainGreen)
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text(text = "카테고리 만들기", style = MaterialTheme.typography.h4.copy(
+                                        fontWeight = FontWeight.Medium, color = color_mainGreen
+                                    ))
+                                }
                             }
                         }
-
-
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
                     FlowRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp),
                     ){
-                        exhibitCategory.forEachIndexed { index, item ->
+                        categoryList?.forEachIndexed { index, item ->
                             Surface(shape = RoundedCornerShape(71.dp),
                                 onClick = {
                                     if (categorySelect.value == index) categorySelect.value = -1
@@ -293,7 +301,14 @@ fun ExhibitInfoScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
                 // 전시 기록장 생성하기 버튼
-                Button(onClick = { },
+                Button(
+                    onClick = {
+                        if (categorySelect.value == -1 || exhibitName.value.isEmpty() || exhibitDate.value.isEmpty()) {
+                            showToast(context, "모든 항목을 입력해주세요.")
+                        } else {
+
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
 //                enabled = exhibitName.value.isNotEmpty() && exhibitCategory.isNotEmpty() && exhibitDate.value.isNotEmpty()
                 ) {
@@ -307,19 +322,19 @@ fun ExhibitInfoScreen(
 
             if (categoryDialogShown.value){
                 CategoryDialog(onCreateCategory = {
-                    exhibitCategory.add(it)
+                    viewModel.addCategory(it)
                     categoryDialogShown.value = false },
-                    onDismissRequest = {categoryDialogShown.value = false})
+                    onDismissRequest = {categoryDialogShown.value = false},
+                    viewModel = viewModel
+                )
             }
         }
     }
 
 }
 
-@Composable
-@Preview(showBackground = true)
-fun ExhibitScreenPreview(){
-    ExhibitInfoScreen(rememberNavController())
+fun showToast(context : Context, msg: String){
+    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }
 
 val categoryList = listOf("카테고리 예시 01", "카테고리 예시 02", "카테고리 예시 03")
