@@ -125,6 +125,8 @@ class LoginActivity : ComponentActivity(){
             if (task.isSuccessful) {
                 navigateToHome()
                 Toast.makeText(this, "구글 로그인 성공", Toast.LENGTH_SHORT).show()
+            }else {
+                Log.e("google 로그인", task.exception.toString())
             }
         }
     }

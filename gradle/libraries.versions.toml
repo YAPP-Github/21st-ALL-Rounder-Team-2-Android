@@ -8,11 +8,16 @@ firebase-auth-ktx = "21.0.2"
 gms-auth = "20.4.0"
 hilt-core = "2.44"
 hilt-integrations = "1.0.0"
+javax-inject = "1"
 webview = "0.25.1"
 kakao = "2.12.0"
 systemuicontroller = "0.23.1"
 flowLayout = "0.28.0"
 numberPicker = "1.0.3"
+
+# retrofit, okhttp
+retrofit = "2.9.0"
+okhttp3 = "4.10.0"
 
 [libraries]
 
@@ -36,6 +41,7 @@ hilt-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt-cor
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core"}
 hilt-integrations-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-integrations"}
 hilt-integrations-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-integrations"}
+javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
 
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "webview"}
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "systemuicontroller"}
@@ -43,9 +49,13 @@ accompanist-flowLayout = { module = "com.google.accompanist:accompanist-flowlayo
 
 numberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "numberPicker"}
 
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-convertor-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit"}
 [bundles]
 
 hilt-deps = [ "hilt-core", "hilt-integrations-work"]
 hilt-compilers = [ "hilt-compiler", "hilt-integrations-compiler" ]
 
 compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose", "androidx-compose-navigation" ]
+
+retrofit = [ "retrofit", "retrofit-convertor-gson"]
