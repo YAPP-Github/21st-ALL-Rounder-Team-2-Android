@@ -12,6 +12,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -32,15 +34,13 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity : ComponentActivity(){
+    private val viewModel by viewModels<LoginViewModel>()
     @Inject lateinit var auth: FirebaseAuth
     @Inject lateinit var homeNavigator: HomeNavigator
-    private lateinit var oneTapClient : SignInClient
-    private lateinit var signInRequest: BeginSignInRequest
 
-     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var mGoogleSignInClient : GoogleSignInClient
 
-    private lateinit var googleResultLauncher: ActivityResultLauncher<IntentSenderRequest>
     private val kakaoClient by lazy {
         UserApiClient.instance
     }
@@ -87,32 +87,7 @@ class LoginActivity : ComponentActivity(){
                 firebaseAuthWithGoogle(account.result)
             }
         }
-//        googleResultLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()){
-//            if (it.resultCode == RESULT_OK){
-//                val credential = oneTapClient.getSignInCredentialFromIntent(it.data)
-//                val idToken = credential.googleIdToken
-//                val username = credential.id
-//                idToken?.let {
-//                    val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
-//                    auth.signInWithCredential(firebaseCredential)
-//                        .addOnCompleteListener(this) { task ->
-//                            if (task.isSuccessful) {
-//                                // Sign in success, update UI with the signed-in user's information
-//                                Log.d(TAG, "signInWithCredential:success")
-//                                // Todo : 유저 정보 넘기기
-//                                val user = auth.currentUser
-//                                Log.e("Login", user?.uid.toString())
-//                                Toast.makeText(this, "구글 로그인 성공", Toast.LENGTH_SHORT).show()
-//
-//                                navigateToHome()
-//                            } else {
-//                                // If sign in fails, display a message to the user.
-//                                Log.w(TAG, "signInWithCredential:failure", task.exception)
-//                            }
-//                        }
-//                }
-//            }
-//        }
+
     }
     private fun googleSignIn(){
         val signInIntent = mGoogleSignInClient.signInIntent
@@ -130,29 +105,14 @@ class LoginActivity : ComponentActivity(){
             }
         }
     }
-    // 구글 로그인 객체 생성
-
-//    private fun oneTapGoogleSignIn(){
-//        Log.e(TAG, "One Tap 시작")
-//        oneTapClient.beginSignIn(signInRequest)
-//            .addOnSuccessListener(this) { result ->
-//                try {
-//                    val intentSenderRequest = IntentSenderRequest.Builder(result.pendingIntent.intentSender).build()
-//                    googleResultLauncher.launch(intentSenderRequest)
-//                } catch (e: IntentSender.SendIntentException){
-//                    Log.e(TAG, "One Tap UI 실패 : ${e.localizedMessage}")
-//                }
-//            }.addOnFailureListener(this) {  e->
-//                Log.e(TAG, "One Tap UI 실패 : ${e.localizedMessage}")
-//            }
-//    }
+   
 
     private val kakaoCallback : (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (error != null) {
             Log.e(TAG, "카카오계정으로 로그인 실패", error)
         } else if (token != null) {
             Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-            firebaseKakaoLogin()
+            viewModel.postTokenLogin(token.accessToken)
         }
     }
 
@@ -173,7 +133,7 @@ class LoginActivity : ComponentActivity(){
                     kakaoClient.loginWithKakaoAccount(this, callback = kakaoCallback)
                 } else if (token != null) {
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
-                    firebaseKakaoLogin()
+                    viewModel.postTokenLogin(token.accessToken)
                 }
             }
         } else {

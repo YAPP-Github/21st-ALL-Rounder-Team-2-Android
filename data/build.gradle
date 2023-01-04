@@ -2,7 +2,10 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     namespace 'com.yapp.gallery.data'
@@ -14,6 +17,8 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField "String", "BASE_URL", properties["base_url"]
     }
 
     buildTypes {
@@ -42,5 +47,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
     implementation libs.bundles.retrofit
+    implementation libs.bundles.okhttp3
     implementation libs.javax.inject
+    implementation libs.bundles.hilt.deps
+    kapt libs.bundles.hilt.compilers
 }

@@ -51,6 +51,8 @@ numberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "n
 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-convertor-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit"}
+okhttp3 = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3"}
+okhttp3-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3"}
 [bundles]
 
 hilt-deps = [ "hilt-core", "hilt-integrations-work"]
@@ -59,3 +61,4 @@ hilt-compilers = [ "hilt-compiler", "hilt-integrations-compiler" ]
 compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose", "androidx-compose-navigation" ]
 
 retrofit = [ "retrofit", "retrofit-convertor-gson"]
+okhttp3 = ["okhttp3", "okhttp3-logging"]
