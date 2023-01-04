@@ -1,5 +1,6 @@
 package com.yapp.gallery.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.domain.usecase.login.PostTokenLoginUseCase
@@ -18,12 +19,14 @@ class LoginViewModel @Inject constructor(
         get() = _loginState
 
     fun postTokenLogin(accessToken: String){
+        Log.e("login 전", accessToken)
         viewModelScope.launch {
             runCatching { tokenLoginUseCase(accessToken) }
                 .onSuccess {
                     _loginState.value = LoginState.Success(it)
                 }
                 .onFailure {
+                    Log.e("login 오류", it.message.toString())
                     _loginState.value = LoginState.Failure
                 }
         }

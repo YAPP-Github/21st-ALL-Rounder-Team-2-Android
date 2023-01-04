@@ -29,6 +29,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
@@ -47,30 +48,24 @@ class LoginActivity : ComponentActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        initOneTap()
         initGoogleLogin()
         initResultLauncher()
         setContent {
             GalleryTheme {
                 LoginScreen(googleLogin = {googleSignIn()}, kakaoLogin = {kakaoLogin()})
             }
+            LaunchedEffect(viewModel.loginState){
+                viewModel.loginState.collect{
+                    when (it) {
+                        is LoginState.Success -> {
+                            firebaseKakaoLogin(it.token)
+                        }
+                        else -> {}
+                    }
+                }
+            }
         }
     }
-
-//    private fun initOneTap(){
-//        oneTapClient = Identity.getSignInClient(this)
-//        signInRequest = BeginSignInRequest.builder()
-//            .setAutoSelectEnabled(true)
-//            .setGoogleIdTokenRequestOptions(
-//                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-//                    .setSupported(true)
-//                    // Your server's client ID, not your Android client ID.
-//                    .setServerClientId(BuildConfig.FIREBASE_WEB_CLIENT_ID)
-//                    // Only show accounts previously used to sign in.
-//                    .setFilterByAuthorizedAccounts(false)
-//                    .build())
-//            .build()
-//    }
 
     private fun initGoogleLogin(){
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -142,26 +137,14 @@ class LoginActivity : ComponentActivity(){
 
     }
 
-    private fun firebaseKakaoLogin(){
-        kakaoClient.me { user, error ->
-            val name = user?.kakaoAccount?.profile?.nickname
-            val kakaoId = user?.id
-            Log.e("kakaoName", name.toString())
+    private fun firebaseKakaoLogin(firebaseToken: String){
+        auth.signInWithCustomToken(firebaseToken)
+            .addOnCompleteListener {
+                Toast.makeText(this, "카카오 로그인 성공", Toast.LENGTH_SHORT).show()
+                navigateToHome()
+            }.addOnFailureListener {
 
-            // Todo : 임시
-            auth.signInWithEmailAndPassword("kakao$kakaoId@test.com", "123456")
-                .addOnCompleteListener {
-                    if (it.isSuccessful)
-                        Log.e("kakao", "kakao Login Success")
-                    else{
-                        Log.e("kakao", "kakao Login Fail : ${it.exception}")
-                        auth.createUserWithEmailAndPassword("kakao$kakaoId@test.com", "123456")
-                    }
-                    navigateToHome()
-                }
-        }
-        // Todo : 커스텀 토큰으로 로그인
-        // auth.signInWithCustomToken()
+            }
     }
 
     private fun navigateToHome(){
