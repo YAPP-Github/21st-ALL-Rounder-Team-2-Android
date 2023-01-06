@@ -49,6 +49,7 @@ import com.yapp.gallery.home.widget.CategoryDialog
 import com.yapp.gallery.home.R
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.RecordMenuDialog
+import com.yapp.gallery.home.widget.TempStorageDialog
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
@@ -63,13 +64,13 @@ fun ExhibitInfoScreen(
     val focusManager = LocalFocusManager.current
 
     var exhibitName = rememberSaveable{ mutableStateOf("") }
-//    var exhibitCategory = rememberSaveable { mutableStateOf("") }
     var exhibitDate = rememberSaveable { mutableStateOf("")}
 
     val interactionSource = remember { MutableInteractionSource() }
 
     val categoryDialogShown = remember { mutableStateOf(false) }
     val recordMenuDialogShown = remember { mutableStateOf(false) }
+    val tempStorageDialogShown = remember { mutableStateOf(false)}
 
     // rowSize 지정
     var rowSize = remember { mutableStateOf(Size.Zero) }
@@ -127,7 +128,7 @@ fun ExhibitInfoScreen(
                         null
                     },
                     actions = {
-                        TextButton(onClick = { /*TODO*/ }) {
+                        TextButton(onClick = { tempStorageDialogShown.value = true }) {
                             Text(text = stringResource(id = R.string.exhibit_temp),
                                 style = MaterialTheme.typography.h3.copy(
                                     fontWeight = FontWeight.Medium, color = color_gray400),
@@ -304,6 +305,14 @@ fun ExhibitInfoScreen(
                 Spacer(modifier = Modifier.height(63.dp))
             }
 
+            // 임시 보관함 다이얼로그
+            if (tempStorageDialogShown.value){
+                TempStorageDialog(
+                    onDismissRequest = {tempStorageDialogShown.value = false},
+                    viewModel = viewModel)
+            }
+
+            // 카테고리 다이얼로그
             if (categoryDialogShown.value){
                 CategoryDialog(onCreateCategory = {
                     viewModel.addCategory(it)
@@ -313,6 +322,7 @@ fun ExhibitInfoScreen(
                 )
             }
 
+            // 전시 기록 시작 다이얼로그
             if (recordMenuDialogShown.value){
                 RecordMenuDialog(
                     onCameraClick = {},
