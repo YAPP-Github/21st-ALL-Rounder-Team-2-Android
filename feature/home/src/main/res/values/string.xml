@@ -19,4 +19,7 @@
     <string name="category_hint">카테고리 이름을 입력해주세요</string>
     <string name="category_create_btn">생성하기</string>
 
+    <string name="temp_storage_edit">편집</string>
+    <string name="temp_storage_title">임시보관함</string>
+
 </resources>

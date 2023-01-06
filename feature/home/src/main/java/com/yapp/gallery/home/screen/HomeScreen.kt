@@ -56,6 +56,8 @@ fun HomeScreen(
                             domStorageEnabled = true
                             javaScriptCanOpenWindowsAutomatically = false
                         }
+                        // Todo : JavaScriptInterface
+//                        addJavascriptInterface()
                     }
                 }
             )
