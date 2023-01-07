@@ -1,5 +1,6 @@
 package com.yapp.gallery.home.screen
 
+import android.content.SharedPreferences
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import com.google.accompanist.web.WebContent
@@ -11,10 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    val userName = auth.currentUser?.displayName
-
     // Web View State
     val webViewState = WebViewState(
         WebContent.Url(
@@ -22,4 +22,12 @@ class HomeViewModel @Inject constructor(
             additionalHttpHeaders = emptyMap()
         )
     )
+
+    init {
+        // Todo : 토큰 한시간 마다 만료되서 매 번 리프레시함
+        auth.currentUser?.getIdToken(false)?.addOnCompleteListener {
+            sharedPreferences.edit().putString("idToken", it.result.token).apply()
+        }
+    }
+
 }

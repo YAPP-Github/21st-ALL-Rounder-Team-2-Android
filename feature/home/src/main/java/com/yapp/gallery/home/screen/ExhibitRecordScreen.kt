@@ -55,7 +55,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ExhibitInfoScreen(
+fun ExhibitRecordScreen(
     navController : NavHostController
 ){
     val viewModel = hiltViewModel<ExhibitInfoViewModel>()
@@ -80,7 +80,6 @@ fun ExhibitInfoScreen(
     val context = LocalContext.current
 
     // 카테고리 리스트
-    val categoryList : List<CategoryItem>? by viewModel.categoryList.collectAsState()
     val categorySelect = rememberSaveable {
         mutableStateOf(-1)
     }
@@ -156,7 +155,7 @@ fun ExhibitInfoScreen(
                     BasicTextField(
                         maxLines = 1,
                         value = exhibitName.value,
-                        onValueChange = { exhibitName.value = it },
+                        onValueChange = { if (it.length <= 20) exhibitName.value = it },
                         textStyle = MaterialTheme.typography.h3,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
@@ -200,7 +199,7 @@ fun ExhibitInfoScreen(
                             MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        if (categoryList?.size?.compareTo(5) == -1){
+                        if (viewModel.categoryList.size?.compareTo(5) == -1){
                             CompositionLocalProvider(
                                 LocalMinimumTouchTargetEnforcement provides false,
                             ) {
@@ -222,7 +221,7 @@ fun ExhibitInfoScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                     FlowRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp),
                     ){
-                        categoryList?.forEachIndexed { index, item ->
+                        viewModel.categoryList.forEachIndexed { index, item ->
                             Surface(shape = RoundedCornerShape(71.dp),
                                 onClick = {
                                     if (categorySelect.value == index) categorySelect.value = -1
@@ -338,62 +337,4 @@ fun ExhibitInfoScreen(
 
 fun showToast(context : Context, msg: String){
     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-}
-
-val categoryList = listOf("카테고리 예시 01", "카테고리 예시 02", "카테고리 예시 03")
-
-@Composable
-fun ExhibitCategoryDropDownMenu(
-    isExpanded: MutableState<Boolean>,
-    onDropDownClick : (String) -> Unit,
-    rowSize: Float,
-    interactionSource : MutableInteractionSource,
-    onCreateCategoryClick : () -> Unit
-){
-    MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
-        DropdownMenu(
-            offset = DpOffset(0.dp, 12.dp),
-            modifier = Modifier.width(with(LocalDensity.current) { rowSize.toDp() }),
-            expanded = isExpanded.value,
-            onDismissRequest = { isExpanded.value = false }
-        ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            categoryList.forEach {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    DropdownMenuItem(onClick = { onDropDownClick(it) },
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    ) {
-                        Text(text = it, fontFamily = pretendard, fontSize = 14.sp, modifier = Modifier.padding(start = 8.dp))
-                    }
-                    Divider(color = grey_bdbdbd, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp), thickness = 0.4.dp)
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 21.dp)
-                    .padding(top = 20.dp, bottom = 24.dp)
-                    .fillMaxWidth()
-                    .clickable(
-                        // ripple color 없애기
-                        indication = null,
-                        interactionSource = interactionSource,
-                        onClick = onCreateCategoryClick
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color.White,
-                    modifier = Modifier.size(32.dp),
-                    border = BorderStroke(0.8.dp, Color.Black)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(text = stringResource(id = R.string.exhibit_category_create_btn), fontSize = 16.sp, fontFamily = pretendard, fontWeight = FontWeight.SemiBold)
-            }
-        }
-    }
 }
