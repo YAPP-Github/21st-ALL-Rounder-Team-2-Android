@@ -3,17 +3,24 @@ package com.yapp.gallery.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yapp.gallery.domain.usecase.login.CreateUserUseCase
 import com.yapp.gallery.domain.usecase.login.PostTokenLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.apache.commons.lang3.mutable.Mutable
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val tokenLoginUseCase: PostTokenLoginUseCase
+    private val tokenLoginUseCase: PostTokenLoginUseCase,
+    private val createUserUseCase: CreateUserUseCase
 ): ViewModel(){
+    private var _tokenState = MutableStateFlow<TokenState>(TokenState.None)
+    val tokenState : StateFlow<TokenState>
+        get() = _tokenState
+
     private var _loginState = MutableStateFlow<LoginState>(LoginState.None)
     val loginState : StateFlow<LoginState>
         get() = _loginState
@@ -23,18 +30,25 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { tokenLoginUseCase(accessToken) }
                 .onSuccess {
-                    _loginState.value = LoginState.Success(it)
+                    _tokenState.value = TokenState.Success(it)
                 }
                 .onFailure {
                     Log.e("login 오류", it.message.toString())
+                    _tokenState.value = TokenState.Failure
+                }
+        }
+    }
+
+    fun createUser(idToken: String, firebaseUserId: String) {
+        viewModelScope.launch {
+            runCatching { createUserUseCase(idToken, firebaseUserId) }
+                .onSuccess {
+                    _loginState.value = LoginState.Success(it)
+                }
+                .onFailure {
+                    Log.e("error", it.message.toString())
                     _loginState.value = LoginState.Failure
                 }
         }
     }
-}
-
-sealed class LoginState {
-    object None : LoginState()
-    data class Success(val token: String) : LoginState()
-    object Failure : LoginState()
 }

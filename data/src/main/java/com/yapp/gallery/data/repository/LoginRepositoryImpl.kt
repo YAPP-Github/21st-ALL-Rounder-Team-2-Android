@@ -11,7 +11,7 @@ class LoginRepositoryImpl @Inject constructor(
         return loginRemoteDataSource.tokenLogin(accessToken).firebase_token
     }
 
-    override suspend fun createUser(firebaseUserId: String): Long {
-        TODO("Not yet implemented")
+    override suspend fun createUser(idToken: String, firebaseUserId: String): Long {
+        return loginRemoteDataSource.createUser(idToken, firebaseUserId).id
     }
 }

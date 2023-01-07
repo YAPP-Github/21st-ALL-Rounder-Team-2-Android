@@ -4,6 +4,7 @@ import android.R.attr.data
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.IntentSender
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -54,11 +55,27 @@ class LoginActivity : ComponentActivity(){
             GalleryTheme {
                 LoginScreen(googleLogin = {googleSignIn()}, kakaoLogin = {kakaoLogin()})
             }
+            LaunchedEffect(viewModel.tokenState){
+                viewModel.tokenState.collect{
+                    when (it) {
+                        is TokenState.Success -> {
+                            firebaseKakaoLogin(it.token)
+                        }
+                        else -> {}
+                    }
+                }
+            }
+
             LaunchedEffect(viewModel.loginState){
                 viewModel.loginState.collect{
-                    when (it) {
+                    when(it){
                         is LoginState.Success -> {
-                            firebaseKakaoLogin(it.token)
+                            // Todo : uid 저장
+                            navigateToHome()
+                        }
+                        is LoginState.Loading -> {
+                            // Todo : 로딩 화면 만들기
+
                         }
                         else -> {}
                     }
@@ -93,8 +110,12 @@ class LoginActivity : ComponentActivity(){
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                navigateToHome()
-                Toast.makeText(this, "구글 로그인 성공", Toast.LENGTH_SHORT).show()
+                Log.e("uid", task.result.user?.uid.toString())
+                task.result.user?.apply {
+                    getIdToken(false).addOnCompleteListener {
+                        uid.let { id -> it.result.token?.let { token -> viewModel.createUser(token, id) } }
+                    }
+                }
             }else {
                 Log.e("google 로그인", task.exception.toString())
             }
@@ -139,9 +160,13 @@ class LoginActivity : ComponentActivity(){
 
     private fun firebaseKakaoLogin(firebaseToken: String){
         auth.signInWithCustomToken(firebaseToken)
-            .addOnCompleteListener {
+            .addOnCompleteListener { task ->
                 Toast.makeText(this, "카카오 로그인 성공", Toast.LENGTH_SHORT).show()
-                navigateToHome()
+                task.result.user?.apply {
+                    getIdToken(false).addOnCompleteListener {
+                        uid.let { id -> it.result.token?.let { token -> viewModel.createUser(token, id) } }
+                    }
+                }
             }.addOnFailureListener {
 
             }
