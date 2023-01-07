@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.yapp.navigation.camera'
+    namespace 'com.yapp.navigator.saver'
     compileSdk 32
 
     defaultConfig {
@@ -31,7 +31,7 @@ android {
 }
 
 dependencies {
-    api(project(":navigation:core"))
+    api(project(':navigation:core'))
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
