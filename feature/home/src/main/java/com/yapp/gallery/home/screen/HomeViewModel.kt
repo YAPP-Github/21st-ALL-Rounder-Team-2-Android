@@ -22,12 +22,4 @@ class HomeViewModel @Inject constructor(
             additionalHttpHeaders = emptyMap()
         )
     )
-
-    init {
-        // Todo : 토큰 한시간 마다 만료되서 매 번 리프레시함
-        auth.currentUser?.getIdToken(false)?.addOnCompleteListener {
-            sharedPreferences.edit().putString("idToken", it.result.token).apply()
-        }
-    }
-
 }

@@ -2,6 +2,7 @@ package com.yapp.gallery.di
 
 import com.yapp.gallery.home.navigation.HomeNavigatorImpl
 import com.yapp.gallery.navigation.home.HomeNavigator
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,10 +11,8 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object NavigationModule {
-    @Provides
+abstract class NavigationModule {
+    @Binds
     @Singleton
-    fun provideHomeNavigator() : HomeNavigator{
-        return HomeNavigatorImpl()
-    }
+    abstract fun bindHomeNavigator(navigatorImpl: HomeNavigatorImpl) : HomeNavigator
 }
