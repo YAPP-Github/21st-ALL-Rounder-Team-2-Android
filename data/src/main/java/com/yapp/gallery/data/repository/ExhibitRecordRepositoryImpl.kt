@@ -11,4 +11,8 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
     override suspend fun getCategoryList(): List<CategoryItem> {
         return remoteDataSource.getCategoryList()
     }
+
+    override suspend fun createCategory(category: String): Long {
+        return remoteDataSource.createCategory(category)
+    }
 }

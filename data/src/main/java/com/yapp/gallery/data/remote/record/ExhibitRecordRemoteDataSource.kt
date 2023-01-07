@@ -4,4 +4,5 @@ import com.yapp.gallery.domain.entity.home.CategoryItem
 
 interface ExhibitRecordRemoteDataSource {
     suspend fun getCategoryList() : List<CategoryItem>
+    suspend fun createCategory(category: String) : Long
 }
