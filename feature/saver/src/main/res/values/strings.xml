@@ -1,1 +1,4 @@
-<resources></resources>
+<resources>
+    <string name="saver_continuation">계속 촬영하기</string>
+    <string name="saver_save_to_file">기록하기</string>
+</resources>

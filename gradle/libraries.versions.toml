@@ -10,6 +10,7 @@ hilt-core = "2.44"
 hilt-integrations = "1.0.0"
 webview = "0.25.1"
 camera = "1.1.0-beta01"
+coil = "1.4.0"
 
 [libraries]
 
@@ -37,6 +38,7 @@ hilt-integrations-work = { module = "androidx.hilt:hilt-work", version.ref = "hi
 hilt-integrations-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-integrations"}
 
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "webview"}
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil"}
 
 [bundles]
 
@@ -48,3 +50,4 @@ compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-comp
     "androidx-compose-icon"
 ]
 androidx = [ "androidx-camera", "androidx-camera-view", "androidx-camera-lifecycle" ]
+coil = [ "coil-compose" ]
