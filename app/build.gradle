@@ -3,7 +3,11 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     namespace 'com.yapp.gallery'
@@ -12,6 +16,7 @@ android {
     defaultConfig {
         applicationId "com.yapp.gallery"
         minSdk 26
+
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -37,6 +42,11 @@ android {
 dependencies {
     implementation project(":feature:login")
     implementation project(":feature:home")
+    implementation project(":navigation:home")
+    implementation project(":navigation:login")
+
+    implementation project(":domain")
+    implementation project(":data")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -49,6 +59,7 @@ dependencies {
     implementation libs.firebase.auth.ktx
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
+    implementation libs.kakao
     kapt libs.bundles.hilt.compilers
 }
 

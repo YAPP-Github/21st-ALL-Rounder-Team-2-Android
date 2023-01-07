@@ -13,6 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.web.*
+import com.yapp.gallery.common.theme.color_background
+import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.R
 
 @Composable
@@ -25,28 +27,6 @@ fun HomeScreen(
 
     val viewModel = hiltViewModel<HomeViewModel>()
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "LOGO",
-                        color = Color.Black,
-                    )},
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_notification), contentDescription = null, tint = Color.Black)
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_profile), contentDescription = null, tint = Color.Black)
-                    }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_calendar), contentDescription = null, tint = Color.Black)
-                    }
-                },
-                backgroundColor = Color.White,
-                elevation = 0.dp,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-        },
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
             FloatingActionButton(onClick = navigateToInfo,
@@ -54,7 +34,8 @@ fun HomeScreen(
                 contentColor = Color.Black,
                 shape = CircleShape,
                 // 기본 마진 16dp 인듯
-                modifier = Modifier.padding(end = 8.dp, bottom = 48.dp)
+                modifier = Modifier
+                    .padding(end = 8.dp, bottom = 48.dp)
                     .size(72.dp)
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(24.dp))
@@ -75,6 +56,8 @@ fun HomeScreen(
                             domStorageEnabled = true
                             javaScriptCanOpenWindowsAutomatically = false
                         }
+                        // Todo : JavaScriptInterface
+//                        addJavascriptInterface()
                     }
                 }
             )

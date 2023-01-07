@@ -1,4 +1,4 @@
-package com.handson.common.widget
+package com.yapp.gallery.common.widget
 
 import android.content.res.Resources
 import android.util.TypedValue

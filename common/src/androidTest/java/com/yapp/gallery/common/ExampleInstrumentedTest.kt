@@ -1,4 +1,4 @@
-package com.handson.common
+package com.yapp.gallery.common
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

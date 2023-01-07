@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.home.navigation.HomeNavHost
 import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,8 +22,10 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             navController = rememberNavController()
+            GalleryTheme {
+                HomeNavHost(navHostController = navController)
+            }
             //HomeScreen()
-            HomeNavHost(navHostController = navController)
         }
     }
 

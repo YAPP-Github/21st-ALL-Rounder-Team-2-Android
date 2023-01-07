@@ -1,4 +1,4 @@
-package com.handson.common
+package com.yapp.gallery.common
 
 import org.junit.Test
 
