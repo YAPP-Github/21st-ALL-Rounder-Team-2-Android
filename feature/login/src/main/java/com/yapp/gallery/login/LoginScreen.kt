@@ -21,7 +21,8 @@ import com.yapp.gallery.common.theme.pretendard
 
 @Composable
 fun LoginScreen(
-    googleLogin : () -> Unit
+    googleLogin : () -> Unit,
+    kakaoLogin: () -> Unit
 ){
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -54,11 +55,15 @@ fun LoginScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = "서비스 슬로건 슬로건", fontFamily = pretendard, fontSize = 16.sp)
-                // Todo : 소셜 로그인 버튼들
-
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 Row {
+                    Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = "kakao",
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clickable(onClick = kakaoLogin)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
                     Image(painter = painterResource(id = R.drawable.ic_google_login), contentDescription = "google",
                         modifier = Modifier
                             .size(72.dp)
@@ -67,7 +72,7 @@ fun LoginScreen(
                 }
                 Spacer(modifier = Modifier.height(120.dp))
             }
-            
+
         }
     }
 }

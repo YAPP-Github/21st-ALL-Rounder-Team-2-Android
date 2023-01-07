@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         startLogin()
     }
 
+
     @TestOnly
     private fun startLogin(){
         Log.e("current User", auth.currentUser?.uid.toString())

@@ -1,4 +1,4 @@
-package com.yapp.gallery.login
+package com.yapp.gallery.navigation.login
 
 import com.yapp.gallery.core.Navigator
 

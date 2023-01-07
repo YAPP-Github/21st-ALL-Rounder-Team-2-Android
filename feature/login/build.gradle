@@ -3,9 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 android {
     namespace 'com.yapp.gallery.login'
@@ -13,12 +12,11 @@ android {
 
     defaultConfig {
         minSdk 26
+        minSdk 21
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-
-        buildConfigField "String", "FIREBASE_WEB_CLIENT_ID", properties["firebase_web_client_id"]
     }
 
     buildTypes {
@@ -47,6 +45,9 @@ android {
 
 dependencies {
     implementation project(":common")
+    implementation project(":domain")
+    implementation project(":navigation:login")
+    implementation project(":navigation:home")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -59,5 +60,6 @@ dependencies {
     implementation libs.firebase.auth.ktx
     implementation libs.gms.auth
     implementation libs.bundles.hilt.deps
+    implementation libs.kakao
     kapt libs.bundles.hilt.compilers
 }

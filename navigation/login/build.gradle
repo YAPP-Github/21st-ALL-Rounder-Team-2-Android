@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.yapp.gallery.login'
+    namespace 'com.yapp.gallery.navigation.login'
     compileSdk 32
 
     defaultConfig {
@@ -31,5 +31,5 @@ android {
 }
 
 dependencies {
-    implementation(project(":navigation:core"))
+    api(project(":navigation:core"))
 }
