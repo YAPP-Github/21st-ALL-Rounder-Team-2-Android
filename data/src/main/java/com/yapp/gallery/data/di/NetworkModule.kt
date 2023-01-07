@@ -1,6 +1,7 @@
 package com.yapp.gallery.data.di
 
 import com.yapp.gallery.data.BuildConfig
+import com.yapp.gallery.data.utils.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import kotlin.math.log
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -26,6 +28,10 @@ object NetworkModule {
     @Retention(AnnotationRetention.BINARY)
     annotation class ArtieRetrofit
 
+    // 아르티 서비스 클라이언트
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class ArtieClient
 
     @Singleton
     @Provides
@@ -41,7 +47,7 @@ object NetworkModule {
     @Singleton
     @Provides
     @ArtieRetrofit
-    fun providesLoginRetrofit(gsonConverterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit {
+    fun providesLoginRetrofit(gsonConverterFactory: GsonConverterFactory, @ArtieClient client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(gsonConverterFactory)
@@ -59,6 +65,20 @@ object NetworkModule {
     fun provideHttpClient(loggingInterceptor: HttpLoggingInterceptor) : OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(authInterceptor: AuthInterceptor) : Interceptor = authInterceptor
+
+    @Provides
+    @Singleton
+    @ArtieClient
+    fun provideArtieHttpClient(loggingInterceptor: HttpLoggingInterceptor, interceptor: Interceptor) : OkHttpClient{
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(interceptor)
             .build()
     }
 

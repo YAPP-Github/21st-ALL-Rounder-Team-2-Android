@@ -1,6 +1,6 @@
 package com.yapp.gallery.data.di
 
-import com.yapp.gallery.data.api.ArtieLoginSerivce
+import com.yapp.gallery.data.api.ArtieSerivce
 import com.yapp.gallery.data.api.ArtieTokenService
 import dagger.Module
 import dagger.Provides
@@ -20,7 +20,7 @@ object ServiceModule {
 
     @Singleton
     @Provides
-    fun provideArtieService(@NetworkModule.ArtieRetrofit retrofit: Retrofit) : ArtieLoginSerivce {
-        return retrofit.create(ArtieLoginSerivce::class.java)
+    fun provideArtieService(@NetworkModule.ArtieRetrofit retrofit: Retrofit) : ArtieSerivce {
+        return retrofit.create(ArtieSerivce::class.java)
     }
 }

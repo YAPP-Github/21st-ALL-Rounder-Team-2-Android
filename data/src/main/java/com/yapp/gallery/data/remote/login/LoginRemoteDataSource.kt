@@ -5,5 +5,5 @@ import com.yapp.gallery.domain.entity.login.FirebaseToken
 
 interface LoginRemoteDataSource {
     suspend fun tokenLogin(accessToken: String) : FirebaseToken
-    suspend fun createUser(idToken: String, firebaseUserId: String) : CreateUserResponse
+    suspend fun createUser(firebaseUserId: String) : CreateUserResponse
 }

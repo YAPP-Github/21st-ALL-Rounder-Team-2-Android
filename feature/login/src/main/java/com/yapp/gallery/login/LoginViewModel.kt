@@ -43,9 +43,9 @@ class LoginViewModel @Inject constructor(
         _loginState.value = LoginState.Loading
     }
 
-    fun createUser(idToken: String, firebaseUserId: String) {
+    fun createUser(firebaseUserId: String) {
         viewModelScope.launch {
-            runCatching { createUserUseCase(idToken, firebaseUserId) }
+            runCatching { createUserUseCase(firebaseUserId) }
                 .onSuccess {
                     _loginState.value = LoginState.Success(it)
                 }

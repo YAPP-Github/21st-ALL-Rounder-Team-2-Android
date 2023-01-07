@@ -5,10 +5,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface ArtieLoginSerivce {
+interface ArtieSerivce {
     @POST("/user")
-    suspend fun createUser(
-        @Header("Authorization") idToken: String,
-        @Query("uid") userId: String
-    ) : CreateUserResponse
+    suspend fun createUser(@Query("uid") userId: String) : CreateUserResponse
 }

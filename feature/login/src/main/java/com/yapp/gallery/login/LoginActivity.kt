@@ -40,6 +40,7 @@ class LoginActivity : ComponentActivity(){
     private val viewModel by viewModels<LoginViewModel>()
     @Inject lateinit var auth: FirebaseAuth
     @Inject lateinit var homeNavigator: HomeNavigator
+    @Inject lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var mGoogleSignInClient : GoogleSignInClient
@@ -120,8 +121,9 @@ class LoginActivity : ComponentActivity(){
             if (task.isSuccessful) {
                 Log.e("uid", task.result.user?.uid.toString())
                 task.result.user?.apply {
-                    getIdToken(false).addOnCompleteListener {
-                        uid.let { id -> it.result.token?.let { token -> viewModel.createUser(token, id) } }
+                    getIdToken(false).addOnCompleteListener { t ->
+                        sharedPreferences.edit().putString("idToken", t.result.token).apply()
+                        uid.let { viewModel.createUser(it)}
                     }
                 }
             }else {
@@ -172,8 +174,9 @@ class LoginActivity : ComponentActivity(){
             .addOnCompleteListener { task ->
                 Toast.makeText(this, "카카오 로그인 성공", Toast.LENGTH_SHORT).show()
                 task.result.user?.apply {
-                    getIdToken(false).addOnCompleteListener {
-                        uid.let { id -> it.result.token?.let { token -> viewModel.createUser(token, id) } }
+                    getIdToken(false).addOnCompleteListener { t->
+                        sharedPreferences.edit().putString("idToken", t.result.token).apply()
+                        uid.let { viewModel.createUser(it)}
                     }
                 }
             }.addOnFailureListener {
