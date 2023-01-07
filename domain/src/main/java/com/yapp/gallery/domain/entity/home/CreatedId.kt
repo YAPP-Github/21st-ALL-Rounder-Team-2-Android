@@ -1,5 +1,5 @@
 package com.yapp.gallery.domain.entity.home
 
-data class CategoryCreated(
+data class CreatedId(
     val id : Long
 )

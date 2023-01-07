@@ -1,7 +1,8 @@
 package com.yapp.gallery.data.api
 
 import com.yapp.gallery.data.body.CategoryCreateBody
-import com.yapp.gallery.domain.entity.home.CategoryCreated
+import com.yapp.gallery.data.body.CreateRecordBody
+import com.yapp.gallery.domain.entity.home.CreatedId
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.login.CreateUserResponse
 import retrofit2.http.*
@@ -17,5 +18,9 @@ interface ArtieSerivce {
 
     // 카테고리 생성
     @POST("/category")
-    suspend fun createCategory(@Body categoryCreateBody: CategoryCreateBody) : CategoryCreated
+    suspend fun createCategory(@Body categoryCreateBody: CategoryCreateBody) : CreatedId
+
+    // 전시 생성
+    @POST("/post")
+    suspend fun createRecord(@Body createRecordBody: CreateRecordBody) : CreatedId
 }

@@ -1,6 +1,7 @@
 package com.yapp.gallery.home.screen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -81,7 +82,7 @@ fun ExhibitRecordScreen(
 
     // 카테고리 리스트
     val categorySelect = rememberSaveable {
-        mutableStateOf(-1)
+        mutableStateOf(-1L)
     }
 
     // Bottom Sheet State
@@ -221,19 +222,19 @@ fun ExhibitRecordScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                     FlowRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp),
                     ){
-                        viewModel.categoryList.forEachIndexed { index, item ->
+                        viewModel.categoryList.forEach { item ->
                             Surface(shape = RoundedCornerShape(71.dp),
                                 onClick = {
-                                    if (categorySelect.value == index) categorySelect.value = -1
-                                    else categorySelect.value = index
+                                    if (categorySelect.value == item.id) categorySelect.value = -1
+                                    else categorySelect.value = item.id
                                 },
-                                color = if (categorySelect.value == index) MaterialTheme.colors.secondary
+                                color = if (categorySelect.value == item.id) MaterialTheme.colors.secondary
                                 else MaterialTheme.colors.background,
                                 border = BorderStroke(1.dp, color = MaterialTheme.colors.secondary)
 
                             ) {
                                 Text(text = item.name, style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,
-                                    color = if (categorySelect.value == index) Color(0xFF282828)
+                                    color = if (categorySelect.value == item.id) Color(0xFF282828)
                                     else MaterialTheme.colors.secondary),
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                                 )
@@ -288,14 +289,13 @@ fun ExhibitRecordScreen(
                 // 전시 기록장 생성하기 버튼
                 Button(
                     onClick = {
-                        if (categorySelect.value == -1 || exhibitName.value.isEmpty() || exhibitDate.value.isEmpty()) {
+                        if (categorySelect.value == -1L || exhibitName.value.isEmpty() || exhibitDate.value.isEmpty()) {
                             showToast(context, "모든 항목을 입력해주세요.")
                         } else {
                             recordMenuDialogShown.value = true
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-//                enabled = exhibitName.value.isNotEmpty() && exhibitCategory.isNotEmpty() && exhibitDate.value.isNotEmpty()
                 ) {
                     Text(text = stringResource(id = R.string.exhibit_create_btn), fontFamily = pretendard, fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold, color = color_black,
@@ -325,7 +325,10 @@ fun ExhibitRecordScreen(
             // 전시 기록 시작 다이얼로그
             if (recordMenuDialogShown.value){
                 RecordMenuDialog(
-                    onCameraClick = {},
+                    onCameraClick = {
+                        // Todo : 카메라 촬영으로 이동
+//                        viewModel.createRecord(exhibitName.value, categorySelect.value, changeDateFormat(exhibitDate.value) )
+                    },
                     onGalleryClick = {},
                     onDismissRequest = {recordMenuDialogShown.value = false}
                 )
@@ -333,6 +336,11 @@ fun ExhibitRecordScreen(
         }
     }
 
+}
+
+fun changeDateFormat(postDate: String) : String{
+    var dateList = postDate.split('/')
+    return String.format("%4d-%02d-%02d", dateList[0].toInt(), dateList[1].toInt(), dateList[2].toInt())
 }
 
 fun showToast(context : Context, msg: String){

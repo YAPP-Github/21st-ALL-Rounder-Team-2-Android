@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.home.ExhibitInfo
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
+import com.yapp.gallery.domain.usecase.record.CreateRecordUseCase
 import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ExhibitInfoViewModel @Inject constructor(
     private val getCategoryListUseCase: GetCategoryListUseCase,
-    private val createCategoryUseCase: CreateCategoryUseCase
+    private val createCategoryUseCase: CreateCategoryUseCase,
+    private val createRecordUseCase: CreateRecordUseCase
 ) : ViewModel(){
     private var _categoryList = mutableStateListOf<CategoryItem>()
     val categoryList : List<CategoryItem>
@@ -71,6 +73,14 @@ class ExhibitInfoViewModel @Inject constructor(
 
     fun deleteTempStorageItem(index: Int){
         _tempStorageList.removeAt(index)
+    }
+
+    fun createRecord(name: String, categoryId: Long, postDate: String) {
+        viewModelScope.launch {
+            runCatching { createRecordUseCase(name, categoryId, postDate) }
+                .onSuccess {  }
+                .onFailure {  }
+        }
     }
 }
 
