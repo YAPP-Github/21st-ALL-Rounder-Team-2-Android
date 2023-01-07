@@ -20,6 +20,7 @@
     <string name="category_create_btn">생성하기</string>
 
     <string name="temp_storage_edit">편집</string>
+    <string name="temp_storage_close">취소</string>
     <string name="temp_storage_edit_finish">완료</string>
     <string name="temp_storage_title">임시보관함</string>
 

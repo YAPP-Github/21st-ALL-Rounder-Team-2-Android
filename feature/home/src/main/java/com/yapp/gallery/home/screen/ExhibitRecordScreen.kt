@@ -45,6 +45,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowRow
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.theme.*
+import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.home.widget.CategoryDialog
 import com.yapp.gallery.home.R
 import com.yapp.gallery.home.widget.DatePickerSheet
@@ -79,7 +80,7 @@ fun ExhibitInfoScreen(
     val context = LocalContext.current
 
     // 카테고리 리스트
-    val categoryList : List<String>? by viewModel.categoryList.collectAsState()
+    val categoryList : List<CategoryItem>? by viewModel.categoryList.collectAsState()
     val categorySelect = rememberSaveable {
         mutableStateOf(-1)
     }
@@ -232,7 +233,7 @@ fun ExhibitInfoScreen(
                                 border = BorderStroke(1.dp, color = MaterialTheme.colors.secondary)
 
                             ) {
-                                Text(text = item, style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,
+                                Text(text = item.name, style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,
                                     color = if (categorySelect.value == index) Color(0xFF282828)
                                     else MaterialTheme.colors.secondary),
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
