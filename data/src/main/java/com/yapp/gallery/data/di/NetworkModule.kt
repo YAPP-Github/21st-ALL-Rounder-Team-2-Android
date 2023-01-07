@@ -10,14 +10,38 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
+    // Firebase Custom 토큰 서비스 담당 레트로핏
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class ArtieTokenRetrofit
+
+    // 아르티 서비스 API 담당 레트로핏
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class ArtieRetrofit
+
+
     @Singleton
     @Provides
-    fun providesRetrofit(gsonConverterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit {
+    @ArtieTokenRetrofit
+    fun providesTokenRetrofit(gsonConverterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.TOKEN_SERVER_BASE_URL)
+            .addConverterFactory(gsonConverterFactory)
+            .client(client)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    @ArtieRetrofit
+    fun providesLoginRetrofit(gsonConverterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(gsonConverterFactory)
