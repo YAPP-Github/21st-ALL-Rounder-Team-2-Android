@@ -15,6 +15,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -43,6 +44,8 @@ class LoginActivity : ComponentActivity(){
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var mGoogleSignInClient : GoogleSignInClient
 
+    private var isLoading = mutableStateOf(false)
+
     private val kakaoClient by lazy {
         UserApiClient.instance
     }
@@ -53,8 +56,9 @@ class LoginActivity : ComponentActivity(){
         initResultLauncher()
         setContent {
             GalleryTheme {
-                LoginScreen(googleLogin = {googleSignIn()}, kakaoLogin = {kakaoLogin()})
+                LoginScreen(googleLogin = {googleSignIn()}, kakaoLogin = {kakaoLogin()}, isLoading = isLoading)
             }
+
             LaunchedEffect(viewModel.tokenState){
                 viewModel.tokenState.collect{
                     when (it) {
@@ -65,17 +69,20 @@ class LoginActivity : ComponentActivity(){
                     }
                 }
             }
-
             LaunchedEffect(viewModel.loginState){
                 viewModel.loginState.collect{
                     when(it){
                         is LoginState.Success -> {
                             // Todo : uid 저장
                             navigateToHome()
+                            isLoading.value = false
                         }
                         is LoginState.Loading -> {
                             // Todo : 로딩 화면 만들기
-
+                            isLoading.value = true
+                        }
+                        is LoginState.Failure -> {
+                            isLoading.value = false
                         }
                         else -> {}
                     }
@@ -97,6 +104,7 @@ class LoginActivity : ComponentActivity(){
             if (it.resultCode == RESULT_OK){
                 val account = GoogleSignIn.getSignedInAccountFromIntent(it.data)
                 firebaseAuthWithGoogle(account.result)
+                viewModel.setLoading()
             }
         }
 
@@ -159,6 +167,7 @@ class LoginActivity : ComponentActivity(){
     }
 
     private fun firebaseKakaoLogin(firebaseToken: String){
+        viewModel.setLoading()
         auth.signInWithCustomToken(firebaseToken)
             .addOnCompleteListener { task ->
                 Toast.makeText(this, "카카오 로그인 성공", Toast.LENGTH_SHORT).show()
