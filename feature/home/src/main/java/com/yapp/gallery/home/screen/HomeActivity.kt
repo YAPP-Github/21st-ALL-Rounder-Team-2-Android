@@ -17,7 +17,12 @@ class HomeActivity : ComponentActivity() {
     private lateinit var navController : NavHostController
     private var backKeyPressedTime: Long = 0
 
-    //    @Inject lateinit var homeNavigator: HomeNavigator
+    override fun onStart() {
+        super.onStart()
+        if (intent.hasExtra("fromLogin")){
+
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
