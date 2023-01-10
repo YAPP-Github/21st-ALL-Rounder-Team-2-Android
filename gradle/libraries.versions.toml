@@ -79,8 +79,6 @@ compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-comp
 androidx = [ "androidx-camera", "androidx-camera-view", "androidx-camera-lifecycle" ]
 coil = [ "coil-compose" ]
 
-compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose", "androidx-compose-navigation" ]
-
 retrofit = [ "retrofit", "retrofit-convertor-gson"]
 okhttp3 = ["okhttp3", "okhttp3-logging"]
 
