@@ -2,6 +2,9 @@ package com.yapp.gallery.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.yapp.gallery.home.navigation.HomeNavigatorImpl
+import com.yapp.gallery.navigation.home.HomeNavigator
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -18,5 +18,4 @@ class ExhibitRecordRemoteDataSourceImpl @Inject constructor(
     override suspend fun createRecord(name: String, categoryId: Long, postDate: String): Long {
         return artieSerivce.createRecord(CreateRecordBody(name, categoryId, postDate)).id
     }
-
 }
