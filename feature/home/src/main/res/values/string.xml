@@ -18,6 +18,8 @@
     <string name="category_title">카테고리 만들기</string>
     <string name="category_hint">카테고리 이름을 입력해주세요</string>
     <string name="category_create_btn">생성하기</string>
+    <string name="category_empty_guide">전시 기록을 위한 나만의\n카테고리를 만들어주세요!</string>
+    <string name="category_create_guide">전시 카테고리는 5개까지 만들 수 있어요!</string>
 
     <string name="temp_storage_edit">편집</string>
     <string name="temp_storage_close">취소</string>

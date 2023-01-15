@@ -17,10 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.R
 import com.yapp.gallery.home.screen.CategoryUiState
@@ -102,13 +104,20 @@ fun CategoryDialog(
                         },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    if (categoryState is CategoryUiState.Error){
-                        Text(text = (categoryState as CategoryUiState.Error).error,
-                            style = MaterialTheme.typography.h4.copy(color = Color.Red)
-                        )
+                    Spacer(modifier = Modifier.height(10.dp))
+                    when(categoryState){
+                        is CategoryUiState.Error ->
+                            Text(text = (categoryState as CategoryUiState.Error).error,
+                                style = MaterialTheme.typography.h4.copy(color = Color.Red),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        else -> Text(text = stringResource(id = R.string.category_create_guide),
+                                style = MaterialTheme.typography.h4.copy(color = color_mainGreen),
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
                     }
                 }
-                Spacer(modifier = Modifier.height(49.dp))
+                Spacer(modifier = Modifier.height(22.dp))
                 Button(onClick = {onCreateCategory(categoryName.value)},
                     shape = RoundedCornerShape(size = 50.dp),
                     enabled = categoryState is CategoryUiState.Success
@@ -118,7 +127,7 @@ fun CategoryDialog(
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
                     )
                 }
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(32.dp))
             }
 
         }
