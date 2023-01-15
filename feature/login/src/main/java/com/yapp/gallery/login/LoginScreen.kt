@@ -1,5 +1,7 @@
 package com.yapp.gallery.login
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +26,7 @@ import com.yapp.gallery.common.theme.*
 
 @Composable
 fun LoginScreen(
+    naverLogin: () -> Unit,
     googleLogin : () -> Unit,
     kakaoLogin: () -> Unit,
     isLoading : MutableState<Boolean>
@@ -63,10 +66,18 @@ fun LoginScreen(
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 Row {
+                    Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = "kakao",
+                        modifier = Modifier
+                            .size(72.dp)
+                            .modifyIf(!isLoading.value) {
+                                clickable(onClick = naverLogin)
+                            }
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
                     Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = "kakao",
                         modifier = Modifier
                             .size(72.dp)
-                            .modifyIf(!isLoading.value){
+                            .modifyIf(!isLoading.value) {
                                 clickable(onClick = kakaoLogin)
                             }
                     )
@@ -74,7 +85,7 @@ fun LoginScreen(
                     Image(painter = painterResource(id = R.drawable.ic_google_login), contentDescription = "google",
                         modifier = Modifier
                             .size(72.dp)
-                            .modifyIf(!isLoading.value){
+                            .modifyIf(!isLoading.value) {
                                 clickable(onClick = googleLogin)
                             }
 
@@ -86,7 +97,9 @@ fun LoginScreen(
             // 로딩 스크린
             if (isLoading.value){
                 Column(
-                    modifier = Modifier.fillMaxSize().background(color = color_gray300.copy(alpha = 0.2f)),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = color_gray300.copy(alpha = 0.2f)),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -101,3 +114,10 @@ fun LoginScreen(
 
 fun Modifier.modifyIf(condition: Boolean, modify: Modifier.() -> Modifier) =
     if (condition) modify() else this
+
+@SuppressLint("UnrememberedMutableState")
+@Composable
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+fun LoginPreview(){
+    LoginScreen(naverLogin = { /*TODO*/}, googleLogin = { /*TODO*/ }, kakaoLogin = { /*TODO*/ }, isLoading = mutableStateOf(false))
+}

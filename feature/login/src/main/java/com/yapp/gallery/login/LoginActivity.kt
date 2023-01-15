@@ -28,6 +28,7 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
+import com.navercorp.nid.NaverIdLoginSDK
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,7 +43,8 @@ class LoginActivity : ComponentActivity(){
     @Inject lateinit var homeNavigator: HomeNavigator
     @Inject lateinit var sharedPreferences: SharedPreferences
 
-    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var naverResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var googleResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var mGoogleSignInClient : GoogleSignInClient
 
     private var isLoading = mutableStateOf(false)
@@ -53,11 +55,11 @@ class LoginActivity : ComponentActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initGoogleLogin()
+        initLogin()
         initResultLauncher()
         setContent {
             GalleryTheme {
-                LoginScreen(googleLogin = {googleSignIn()}, kakaoLogin = {kakaoLogin()}, isLoading = isLoading)
+                LoginScreen(naverLogin =  {naverLogin()}, googleLogin = {googleSignIn()}, kakaoLogin = {kakaoLogin()}, isLoading = isLoading)
             }
 
             LaunchedEffect(viewModel.tokenState){
@@ -92,27 +94,44 @@ class LoginActivity : ComponentActivity(){
         }
     }
 
-    private fun initGoogleLogin(){
+    private fun initLogin(){
+        NaverIdLoginSDK.initialize(this, BuildConfig.NAVER_OAUTH_CLIENT_ID, BuildConfig.NAVER_OAUTH_CLIENT_SECRET,
+            "아르티"
+        )
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(BuildConfig.FIREBASE_WEB_CLIENT_ID)
             .requestEmail()
             .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     private fun initResultLauncher(){
-        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        googleResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
             if (it.resultCode == RESULT_OK){
                 val account = GoogleSignIn.getSignedInAccountFromIntent(it.data)
                 firebaseAuthWithGoogle(account.result)
                 viewModel.setLoading()
             }
         }
+        naverResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when(result.resultCode) {
+                RESULT_OK -> {
+                    // 네이버 로그인 인증이 성공했을 때 수행할 코드 추가
+
+                }
+                RESULT_CANCELED -> {
+                    // 실패 or 에러
+                    val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                    val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                    Toast.makeText(this, "errorCode:$errorCode, errorDesc:$errorDescription", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
     }
     private fun googleSignIn(){
         val signInIntent = mGoogleSignInClient.signInIntent
-        activityResultLauncher.launch(signInIntent)
+        googleResultLauncher.launch(signInIntent)
     }
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
@@ -130,6 +149,10 @@ class LoginActivity : ComponentActivity(){
                 Log.e("google 로그인", task.exception.toString())
             }
         }
+    }
+
+    private fun naverLogin(){
+        NaverIdLoginSDK.authenticate(this, naverResultLauncher)
     }
    
 

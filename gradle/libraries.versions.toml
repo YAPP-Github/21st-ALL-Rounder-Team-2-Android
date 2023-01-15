@@ -9,13 +9,15 @@ gms-auth = "20.4.0"
 hilt-core = "2.44"
 hilt-integrations = "1.0.0"
 javax-inject = "1"
-webview = "0.25.1"
-
 camera = "1.1.0-beta01"
 coil = "1.4.0"
 
+# social login
 kakao = "2.12.0"
+naver = "5.3.0"
+# compose layout
 systemuicontroller = "0.23.1"
+webview = "0.25.1"
 flowLayout = "0.28.0"
 numberPicker = "1.0.3"
 
@@ -45,6 +47,7 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
 
 kakao = { module = "com.kakao.sdk:v2-all", version.ref ="kakao"}
+naver = { module = "com.navercorp.nid:oauth", version.ref ="naver"}
 
 hilt-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt-core"}
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core"}
