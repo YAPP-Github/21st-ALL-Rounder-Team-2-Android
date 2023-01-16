@@ -9,20 +9,17 @@ import androidx.navigation.compose.rememberNavController
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.home.navigation.HomeNavHost
 import com.yapp.gallery.navigation.home.HomeNavigator
+import com.yapp.navigation.camera.CameraNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : ComponentActivity() {
+//    @Inject lateinit var cameraNavigator: CameraNavigator
+
     private lateinit var navController : NavHostController
     private var backKeyPressedTime: Long = 0
 
-    override fun onStart() {
-        super.onStart()
-        if (intent.hasExtra("fromLogin")){
-
-        }
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

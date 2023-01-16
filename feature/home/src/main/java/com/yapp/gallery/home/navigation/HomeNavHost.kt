@@ -1,7 +1,9 @@
 package com.yapp.gallery.home.navigation
 
-import android.widget.Toast
+import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,12 +12,21 @@ import com.yapp.gallery.home.screen.HomeScreen
 
 @Composable
 fun HomeNavHost(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+//    cameraNavigator: CameraNavigator,
 ){
+    val context = LocalContext.current
     NavHost(navController = navHostController, startDestination = "home"){
         composable("home"){ HomeScreen(
-            navigateToInfo = { navHostController.navigate("info")}
+            navigateToInfo = { navHostController.navigate("record")}
         ) }
-        composable("info"){ ExhibitRecordScreen(navHostController) }
+        composable("record"){ ExhibitRecordScreen(
+            navController = navHostController,
+            navigateToCamera = { },
+        ) }
     }
+}
+
+fun navigateToScreen(context: Context, intent: Intent){
+    context.startActivity(intent)
 }

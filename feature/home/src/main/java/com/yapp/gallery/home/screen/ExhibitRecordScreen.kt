@@ -51,6 +51,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExhibitRecordScreen(
     navController: NavHostController,
+    navigateToCamera: () -> Unit,
     viewModel: ExhibitInfoViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -333,7 +334,7 @@ fun ExhibitRecordScreen(
                         contentColor = color_black
                     ),
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {},
+                    onClick = {recordMenuDialogShown.value = true},
                     enabled = exhibitName.value.isNotEmpty() && categorySelect.value != -1L && exhibitDate.value.isNotEmpty()
                 ) {
                     Text(
@@ -370,11 +371,9 @@ fun ExhibitRecordScreen(
             // 전시 기록 시작 다이얼로그
             if (recordMenuDialogShown.value) {
                 RecordMenuDialog(
-                    onCameraClick = {
-                        // Todo : 카메라 촬영으로 이동
-//                        viewModel.createRecord(exhibitName.value, categorySelect.value, changeDateFormat(exhibitDate.value) )
-                    },
-                    onGalleryClick = {},
+                    onCameraClick = { navigateToCamera() },
+                    onGalleryClick = {
+                        recordMenuDialogShown.value = false },
                     onDismissRequest = { recordMenuDialogShown.value = false }
                 )
             }
