@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.home.navigation.HomeNavHost
 import com.yapp.gallery.navigation.home.HomeNavigator
+import com.yapp.gallery.navigation.profile.ProfileNavigator
 import com.yapp.navigation.camera.CameraNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class HomeActivity : ComponentActivity() {
 //    @Inject lateinit var cameraNavigator: CameraNavigator
 
+    @Inject lateinit var profileNavigator: ProfileNavigator
     private lateinit var navController : NavHostController
     private var backKeyPressedTime: Long = 0
 
@@ -29,6 +31,8 @@ class HomeActivity : ComponentActivity() {
             }
             //HomeScreen()
         }
+        // Todo : 나중에 버튼으로 이동 변경
+        startActivity(profileNavigator.navigate(this))
     }
 
     override fun onBackPressed() {
