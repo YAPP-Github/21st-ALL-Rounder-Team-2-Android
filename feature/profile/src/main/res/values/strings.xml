@@ -10,4 +10,9 @@
     <string name="feature_private_legacy">개인정보 이용 약관</string>
     <string name="feature_logout">로그아웃</string>
     <string name="feature_withdraw">탈퇴하기</string>
+
+    <string name="category_add">추가</string>
+    <string name="category_exhibit_cnt">개의 전시기록</string>
+    <string name="category_edit">편집</string>
+    <string name="category_remove">삭제</string>
 </resources>

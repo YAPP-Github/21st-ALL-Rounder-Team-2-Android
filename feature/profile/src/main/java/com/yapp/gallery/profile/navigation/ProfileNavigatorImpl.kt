@@ -3,7 +3,7 @@ package com.yapp.gallery.profile.navigation
 import android.content.Context
 import android.content.Intent
 import com.yapp.gallery.navigation.profile.ProfileNavigator
-import com.yapp.gallery.profile.screen.ProfileActivity
+import com.yapp.gallery.profile.screen.profile.ProfileActivity
 import javax.inject.Inject
 
 class ProfileNavigatorImpl @Inject constructor() : ProfileNavigator {
