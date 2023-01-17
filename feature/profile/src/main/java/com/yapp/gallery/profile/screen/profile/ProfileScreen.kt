@@ -1,4 +1,4 @@
-package com.yapp.gallery.profile.screen
+package com.yapp.gallery.profile.screen.profile
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
@@ -16,14 +16,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yapp.gallery.common.theme.color_background
-import com.yapp.gallery.common.theme.color_gray400
 import com.yapp.gallery.common.theme.color_gray600
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.profile.R
 
 @Composable
 fun ProfileScreen(
-    popBackStack : () -> Unit
+    popBackStack : () -> Unit,
+    navigateToManage: () -> Unit
 ){
     Scaffold(
         topBar = {
@@ -57,8 +57,15 @@ fun ProfileScreen(
             // 기본 닉네임 및 회원정보 row
             Row(modifier = Modifier
                 .fillMaxWidth()) {
-                Text(text = "기본 닉네임")
+                Column {
+                    Row {
+                        Text(text = "기본 닉네임", style = MaterialTheme.typography.h1.copy(fontWeight = FontWeight.SemiBold))
+                        Text(text = "이", style = MaterialTheme.typography.h1)
+                    }
+                    Text(text = "기록한 전시", style = MaterialTheme.typography.h1)
+                }
                 Spacer(modifier = Modifier.weight(1f))
+                Text(text = "00개의 전시 기록", style = MaterialTheme.typography.h3)
             }
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -66,7 +73,7 @@ fun ProfileScreen(
             Button(
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ }) {
+                onClick = navigateToManage) {
                 Text(text = stringResource(id = R.string.category_manage_btn), style = MaterialTheme.typography.h3.copy(
                     color = color_background, fontWeight = FontWeight.SemiBold), modifier = Modifier.padding(vertical = 10.dp))
             }
@@ -89,17 +96,13 @@ fun ProfileFeature(
     onFeatureClick : () -> Unit,
     isLast: Boolean
 ){
-    Column(modifier = Modifier.fillMaxWidth().clickable(onClick = onFeatureClick)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = onFeatureClick)) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = featureName, style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Medium))
         Spacer(modifier = Modifier.height(16.dp))
         if (!isLast)
             Divider(color = color_gray600, thickness = 0.4.dp, modifier = Modifier.fillMaxWidth())
     }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun ProfilePreview(){
-    ProfileScreen(popBackStack = {})
 }
