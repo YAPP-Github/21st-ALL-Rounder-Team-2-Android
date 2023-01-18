@@ -3,10 +3,9 @@ package com.yapp.gallery.profile.screen.category
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -28,6 +27,7 @@ import com.yapp.gallery.common.theme.color_gray500
 import com.yapp.gallery.common.theme.color_gray700
 import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
+import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.profile.R
 import com.yapp.gallery.profile.widget.CategoryDeleteDialog
 
@@ -38,8 +38,6 @@ fun CategoryManageScreen(
     val viewModel : CategoryManageViewModel = hiltViewModel()
 
     val categoryCreateDialogShown = remember { mutableStateOf(false) }
-
-    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
@@ -75,12 +73,13 @@ fun CategoryManageScreen(
     ) { paddingValues ->
         Column(modifier = Modifier
             .padding(paddingValues)
-            .verticalScroll(scrollState)
         ) {
             Spacer(modifier = Modifier.height(36.dp))
             // Todo : 임시 코드
-            viewModel.categoryList.forEach {
-                CategoryListTile(categoryName = it.name, categoryCnt = it.id.toInt(), isLast = it.id.toInt() == 5)
+            LazyColumn{
+                items(viewModel.categoryList){ item ->
+                    CategoryListTile(category = item, isLast = item.id.toInt() == 5, onDelete = {viewModel.deleteCategory(item)})
+                }
             }
         }
 
@@ -97,9 +96,9 @@ fun CategoryManageScreen(
 
 @Composable
 fun CategoryListTile(
-    categoryName: String,
-    categoryCnt: Int,
-    isLast: Boolean
+    category : CategoryItem,
+    isLast: Boolean,
+    onDelete : () -> Unit
 ){
     val tempList = listOf("전시01", "전시02", "전시03", "전시04", "전시05")
     val categoryDeleteDialogShown = remember { mutableStateOf(false) }
@@ -115,12 +114,12 @@ fun CategoryListTile(
                 )
             }
             Text(
-                text = categoryName,
+                text = category.name,
                 style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = "$categoryCnt${stringResource(id = R.string.category_exhibit_cnt)}",
+                text = "${category.id}${stringResource(id = R.string.category_exhibit_cnt)}",
                 style = MaterialTheme.typography.h4.copy(color = color_gray500)
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -177,7 +176,10 @@ fun CategoryListTile(
         if (categoryDeleteDialogShown.value){
             CategoryDeleteDialog(
                 onDismissRequest = {categoryDeleteDialogShown.value = false},
-                onDelete = {}
+                onDelete = {
+                    categoryDeleteDialogShown.value = false
+                    onDelete()
+                }
             )
         }
     }

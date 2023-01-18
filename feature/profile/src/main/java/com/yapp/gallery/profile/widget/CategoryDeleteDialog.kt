@@ -61,7 +61,7 @@ fun CategoryDeleteDialog(
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 45.dp)) {
-                    Button(onClick = {},
+                    Button(onClick = onDelete,
                         shape = RoundedCornerShape(size = 50.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = color_gray600),
                         modifier = Modifier.weight(1f)

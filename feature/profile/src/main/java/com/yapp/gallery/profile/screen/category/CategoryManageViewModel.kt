@@ -42,4 +42,8 @@ class CategoryManageViewModel @Inject constructor(
         else
             _categoryState.value = CategoryUiState.Success
     }
+
+    fun deleteCategory(category : CategoryItem){
+        _categoryList.remove(category)
+    }
 }
