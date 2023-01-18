@@ -18,4 +18,7 @@
 
     <string name="category_delete_title">카테고리를 삭제하시겠습니까?</string>
     <string name="category_delete_guide">(해당되는 모든 사진이 삭제됩니다.)</string>
+
+    <string name="category_manage_empty_guide">아직 카테고리가 없어요!\n하단 버튼을 통해 카테고리를 만들어 보아요.</string>
+    <string name="category_manage_create">카테고리 만들기</string>
 </resources>

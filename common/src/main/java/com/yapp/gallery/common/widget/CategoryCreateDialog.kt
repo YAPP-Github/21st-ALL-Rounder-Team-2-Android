@@ -112,7 +112,9 @@ fun CategoryCreateDialog(
                     }
                 }
                 Spacer(modifier = Modifier.height(22.dp))
-                Button(onClick = {onCreateCategory(categoryName.value)},
+                Button(onClick = {
+                        onCreateCategory(categoryName.value)
+                        onDismissRequest() },
                     shape = RoundedCornerShape(size = 50.dp),
                     enabled = categoryState.value is  CategoryUiState.Success
                 ) {

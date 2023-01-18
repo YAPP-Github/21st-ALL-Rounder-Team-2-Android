@@ -1,41 +1,42 @@
 package com.yapp.gallery.profile.screen.category
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.yapp.gallery.common.theme.color_gray300
-import com.yapp.gallery.common.theme.color_gray500
-import com.yapp.gallery.common.theme.color_gray700
+import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.profile.R
 import com.yapp.gallery.profile.widget.CategoryDeleteDialog
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CategoryManageScreen(
-    popBackStack : () -> Unit
+    popBackStack : () -> Unit,
+    viewModel : CategoryManageViewModel = hiltViewModel()
 ){
-    val viewModel : CategoryManageViewModel = hiltViewModel()
+    val categoryScreenState : CategoryScreenState? by viewModel.categoryManageState.collectAsState()
 
     val categoryCreateDialogShown = remember { mutableStateOf(false) }
 
@@ -71,21 +72,72 @@ fun CategoryManageScreen(
             )
         }
     ) { paddingValues ->
-        Column(modifier = Modifier
-            .padding(paddingValues)
-        ) {
-            Spacer(modifier = Modifier.height(36.dp))
-            // Todo : 임시 코드
-            LazyColumn{
-                items(viewModel.categoryList){ item ->
-                    CategoryListTile(category = item, isLast = item.id.toInt() == 5, onDelete = {viewModel.deleteCategory(item)})
+        categoryScreenState?.let {state ->
+            when(state){
+                // 카테고리가 있는 경우
+                is CategoryScreenState.NotEmpty -> {
+                    Column(modifier = Modifier
+                        .padding(paddingValues)
+                    ) {
+                        Spacer(modifier = Modifier.height(36.dp))
+                        // Todo : 임시 코드
+                        LazyColumn{
+                            itemsIndexed(viewModel.categoryList){ index, item ->
+                                CategoryListTile(category = item, isLast = index == viewModel.categoryList.size - 1,
+                                    onDelete = {viewModel.deleteCategory(item)}
+                                )
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    Column( modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (state is CategoryScreenState.Loading){
+                            // 로딩 중
+                            CircularProgressIndicator(modifier = Modifier.size(50.dp), color = color_mainBlue)
+                        } else {
+                            // 카테고리 리스트가 빈 리스트인 경우
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(paddingValues),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = stringResource(id = R.string.category_manage_empty_guide),
+                                    style = MaterialTheme.typography.h3.copy(color = color_gray600),
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                // 카테고리 만들기 버튼
+                                Surface(
+                                    shape = RoundedCornerShape(71.dp),
+                                    color = MaterialTheme.colors.background,
+                                    border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
+                                    onClick = {categoryCreateDialogShown.value = true}
+                                ){
+                                    Text(text = stringResource(id = R.string.category_manage_create),
+                                        style = MaterialTheme.typography.h3.copy(
+                                            color = Color(0xFFA7C5F9), fontWeight = FontWeight.Medium
+                                        ),
+                                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
         if (categoryCreateDialogShown.value){
             CategoryCreateDialog(
-                onCreateCategory = {},
+                onCreateCategory = { viewModel.createCategory(it)},
                 onDismissRequest = { categoryCreateDialogShown.value = false },
                 checkCategory = { viewModel.checkCategory(it)},
                 categoryState = viewModel.categoryState.collectAsState()
