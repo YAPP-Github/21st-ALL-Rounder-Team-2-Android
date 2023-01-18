@@ -12,6 +12,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,9 +22,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.theme.color_gray300
 import com.yapp.gallery.common.theme.color_gray500
 import com.yapp.gallery.common.theme.color_gray700
+import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.profile.R
 
@@ -29,6 +34,10 @@ import com.yapp.gallery.profile.R
 fun CategoryManageScreen(
     popBackStack : () -> Unit
 ){
+    val viewModel : CategoryManageViewModel = hiltViewModel()
+
+    val categoryCreateDialogShown = remember { mutableStateOf(false) }
+
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -51,7 +60,7 @@ fun CategoryManageScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = {  }) {
+                    TextButton(onClick = { categoryCreateDialogShown.value = true }) {
                         Text(
                             text = stringResource(id = R.string.category_add),
                             style = MaterialTheme.typography.h3.copy(
@@ -68,11 +77,19 @@ fun CategoryManageScreen(
             .verticalScroll(scrollState)
         ) {
             Spacer(modifier = Modifier.height(36.dp))
-            CategoryListTile(categoryName = "카테고리1", categoryCnt = 5, false)
-            CategoryListTile(categoryName = "카테고리2", categoryCnt = 5, false)
-            CategoryListTile(categoryName = "카테고리3", categoryCnt = 5, false)
-            CategoryListTile(categoryName = "카테고리4", categoryCnt = 5, false)
-            CategoryListTile(categoryName = "카테고리5", categoryCnt = 5, true)
+            // Todo : 임시 코드
+            viewModel.categoryList.forEach {
+                CategoryListTile(categoryName = it.name, categoryCnt = it.id.toInt(), isLast = it.id.toInt() != 5)
+            }
+        }
+
+        if (categoryCreateDialogShown.value){
+            CategoryCreateDialog(
+                onCreateCategory = {},
+                onDismissRequest = { categoryCreateDialogShown.value = false },
+                checkCategory = { viewModel.checkCategory(it)},
+                categoryState = viewModel.categoryState.collectAsState()
+            )
         }
     }
 }

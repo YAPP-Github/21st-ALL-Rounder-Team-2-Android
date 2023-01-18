@@ -23,15 +23,14 @@ import com.yapp.gallery.common.theme.color_gray400
 import com.yapp.gallery.common.theme.color_gray700
 import com.yapp.gallery.common.theme.color_gray900
 import com.yapp.gallery.common.theme.color_mainBlue
-import com.yapp.gallery.domain.entity.home.ExhibitInfo
 import com.yapp.gallery.home.R
-import com.yapp.gallery.home.screen.ExhibitInfoViewModel
+import com.yapp.gallery.home.screen.ExhibitRecordViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TempStorageDialog(
     onDismissRequest : () -> Unit,
-    viewModel : ExhibitInfoViewModel
+    viewModel : ExhibitRecordViewModel
 ){
     val editMode = remember { mutableStateOf(false) }
     Dialog(onDismissRequest = onDismissRequest, properties = DialogProperties(usePlatformDefaultWidth = false)){

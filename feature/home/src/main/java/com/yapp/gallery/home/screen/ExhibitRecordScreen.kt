@@ -39,9 +39,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowRow
 import com.yapp.gallery.common.theme.*
+import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.home.R
-import com.yapp.gallery.home.widget.CategoryDialog
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.RecordMenuDialog
 import com.yapp.gallery.home.widget.TempStorageDialog
@@ -52,7 +52,7 @@ import kotlinx.coroutines.launch
 fun ExhibitRecordScreen(
     navController: NavHostController,
     navigateToCamera: () -> Unit,
-    viewModel: ExhibitInfoViewModel = hiltViewModel(),
+    viewModel: ExhibitRecordViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
@@ -358,13 +358,14 @@ fun ExhibitRecordScreen(
 
             // 카테고리 다이얼로그
             if (categoryDialogShown.value) {
-                CategoryDialog(
+                CategoryCreateDialog(
                     onCreateCategory = {
                         viewModel.addCategory(it)
                         categoryDialogShown.value = false
                     },
                     onDismissRequest = { categoryDialogShown.value = false },
-                    viewModel = viewModel
+                    categoryState = viewModel.categoryState.collectAsState(),
+                    checkCategory = { viewModel.checkCategory(it) }
                 )
             }
 

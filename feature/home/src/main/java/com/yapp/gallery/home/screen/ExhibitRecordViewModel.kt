@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yapp.gallery.common.widget.model.CategoryUiState
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.home.ExhibitInfo
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ExhibitInfoViewModel @Inject constructor(
+class ExhibitRecordViewModel @Inject constructor(
     private val getCategoryListUseCase: GetCategoryListUseCase,
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val createRecordUseCase: CreateRecordUseCase
@@ -84,8 +85,3 @@ class ExhibitInfoViewModel @Inject constructor(
     }
 }
 
-sealed class CategoryUiState{
-    object Success : CategoryUiState()
-    object Empty : CategoryUiState()
-    data class Error(val error: String) : CategoryUiState()
-}
