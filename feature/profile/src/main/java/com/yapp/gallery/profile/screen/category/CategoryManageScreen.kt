@@ -29,6 +29,7 @@ import com.yapp.gallery.common.theme.color_gray700
 import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.profile.R
+import com.yapp.gallery.profile.widget.CategoryDeleteDialog
 
 @Composable
 fun CategoryManageScreen(
@@ -79,7 +80,7 @@ fun CategoryManageScreen(
             Spacer(modifier = Modifier.height(36.dp))
             // Todo : 임시 코드
             viewModel.categoryList.forEach {
-                CategoryListTile(categoryName = it.name, categoryCnt = it.id.toInt(), isLast = it.id.toInt() != 5)
+                CategoryListTile(categoryName = it.name, categoryCnt = it.id.toInt(), isLast = it.id.toInt() == 5)
             }
         }
 
@@ -101,6 +102,8 @@ fun CategoryListTile(
     isLast: Boolean
 ){
     val tempList = listOf("전시01", "전시02", "전시03", "전시04", "전시05")
+    val categoryDeleteDialogShown = remember { mutableStateOf(false) }
+
 
     Column (modifier = Modifier.fillMaxWidth()){
         // 카테고리 브리프 정보 및 첫 행
@@ -134,7 +137,7 @@ fun CategoryListTile(
                 Text(text = stringResource(id = R.string.category_remove),
                     style = MaterialTheme.typography.h4.copy(color = color_gray500),
                     modifier = Modifier
-                        .clickable { }
+                        .clickable { categoryDeleteDialogShown.value = true }
                         .padding(8.dp)
                 )
             }
@@ -167,6 +170,14 @@ fun CategoryListTile(
                 .padding(horizontal = 16.dp),
                 color = color_gray700,
                 thickness = 0.4.dp
+            )
+        }
+
+        // 카테고리 삭제 다이얼로그
+        if (categoryDeleteDialogShown.value){
+            CategoryDeleteDialog(
+                onDismissRequest = {categoryDeleteDialogShown.value = false},
+                onDelete = {}
             )
         }
     }
