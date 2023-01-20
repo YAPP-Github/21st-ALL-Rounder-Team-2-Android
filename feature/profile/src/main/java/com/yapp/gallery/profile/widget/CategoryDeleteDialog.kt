@@ -61,22 +61,22 @@ fun CategoryDeleteDialog(
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 45.dp)) {
-                    Button(onClick = onDelete,
+                    Button(onClick = onDismissRequest,
                         shape = RoundedCornerShape(size = 50.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = color_gray600),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(text = "예", style = MaterialTheme.typography.h2.copy(
+                        Text(text = "아니오", style = MaterialTheme.typography.h2.copy(
                             color = color_black, fontWeight = FontWeight.SemiBold),
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
-                    Button(onClick = onDismissRequest,
+                    Button(onClick = onDelete,
                         shape = RoundedCornerShape(size = 50.dp),
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text(text = "아니오", style = MaterialTheme.typography.h2.copy(
+                        Text(text = "예", style = MaterialTheme.typography.h2.copy(
                             color = color_black, fontWeight = FontWeight.SemiBold),
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
                         )

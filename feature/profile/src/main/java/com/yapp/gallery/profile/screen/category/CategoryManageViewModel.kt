@@ -32,16 +32,12 @@ class CategoryManageViewModel @Inject constructor(
 
     init {
         // Todo : 임시 카테고리 리스트
-//        _categoryList.addAll(
-//            listOf(CategoryItem(1, "카테고리 1"), CategoryItem(2, "카테고리 2"),
-//                CategoryItem(3, "카테고리 3"), CategoryItem(4, "카테고리 4"),
-//                CategoryItem(5, "카테고리 5")
-//            )
-//        )
-        viewModelScope.launch {
-            delay(2000)
-            _categoryManageState.value = CategoryScreenState.Empty
-        }
+        _categoryList.addAll(
+            listOf(CategoryItem(1, "카테고리 1"), CategoryItem(2, "카테고리 2"),
+                CategoryItem(3, "카테고리 3")
+            )
+        )
+        _categoryManageState.value = CategoryScreenState.NotEmpty
     }
     fun checkCategory(category: String){
         if (_categoryList.find { it.name == category } != null){
@@ -61,9 +57,13 @@ class CategoryManageViewModel @Inject constructor(
     }
 
     fun createCategory(categoryName: String){
-        _categoryList.add(CategoryItem(1, categoryName))
+        _categoryList.add(CategoryItem(5, categoryName))
         if (_categoryManageState.value is CategoryScreenState.Empty)
             _categoryManageState.value = CategoryScreenState.NotEmpty
+    }
+
+    fun reorderItem(from: Int, to: Int){
+        _categoryList.add(to, _categoryList.removeAt(from))
     }
 
 }
@@ -73,3 +73,4 @@ sealed class CategoryScreenState{
     object Empty : CategoryScreenState()
     object NotEmpty: CategoryScreenState()
 }
+

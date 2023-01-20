@@ -1,13 +1,14 @@
 package com.yapp.gallery.profile.screen.category
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import android.util.Log
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -16,11 +17,14 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.theme.*
@@ -28,17 +32,29 @@ import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.profile.R
+import com.yapp.gallery.profile.utils.DraggableItem
+import com.yapp.gallery.profile.utils.rememberDragDropState
 import com.yapp.gallery.profile.widget.CategoryDeleteDialog
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun CategoryManageScreen(
-    popBackStack : () -> Unit,
-    viewModel : CategoryManageViewModel = hiltViewModel()
-){
-    val categoryScreenState : CategoryScreenState? by viewModel.categoryManageState.collectAsState()
+    popBackStack: () -> Unit,
+    viewModel: CategoryManageViewModel = hiltViewModel(),
+) {
+    val categoryScreenState: CategoryScreenState? by viewModel.categoryManageState.collectAsState()
 
     val categoryCreateDialogShown = remember { mutableStateOf(false) }
+
+    var overscrollJob by remember { mutableStateOf<Job?>(null) }
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+
+    val dragDropState = rememberDragDropState(lazyListState = listState){ from, to ->
+        viewModel.reorderItem(from, to)
+    }
 
     Scaffold(
         topBar = {
@@ -50,7 +66,10 @@ fun CategoryManageScreen(
                     Text(
                         text = stringResource(id = R.string.category_manage_btn),
                         style = MaterialTheme.typography.h2.copy(
-                            fontWeight = FontWeight.SemiBold)) },
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = popBackStack) {
                         Icon(
@@ -60,7 +79,10 @@ fun CategoryManageScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = { categoryCreateDialogShown.value = true }) {
+                    TextButton(
+                        onClick = { categoryCreateDialogShown.value = true },
+                        enabled = categoryScreenState != CategoryScreenState.Loading
+                    ) {
                         Text(
                             text = stringResource(id = R.string.category_add),
                             style = MaterialTheme.typography.h3.copy(
@@ -72,33 +94,79 @@ fun CategoryManageScreen(
             )
         }
     ) { paddingValues ->
-        categoryScreenState?.let {state ->
-            when(state){
+        categoryScreenState?.let { state ->
+            when (state) {
                 // 카테고리가 있는 경우
                 is CategoryScreenState.NotEmpty -> {
-                    Column(modifier = Modifier
-                        .padding(paddingValues)
+                    Column(
+                        modifier = Modifier
+                            .padding(paddingValues)
                     ) {
                         Spacer(modifier = Modifier.height(36.dp))
                         // Todo : 임시 코드
-                        LazyColumn{
-                            itemsIndexed(viewModel.categoryList){ index, item ->
-                                CategoryListTile(category = item, isLast = index == viewModel.categoryList.size - 1,
-                                    onDelete = {viewModel.deleteCategory(item)}
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.pointerInput(dragDropState){
+                                detectDragGesturesAfterLongPress(
+                                    onDrag = { change, offset ->
+                                        change.consume()
+                                        dragDropState.onDrag(offset = offset)
+
+                                        if (overscrollJob?.isActive == true)
+                                            return@detectDragGesturesAfterLongPress
+
+                                        dragDropState
+                                            .checkForOverScroll()
+                                            .takeIf { it != 0f }
+                                            ?.let {
+                                                overscrollJob =
+                                                    scope.launch {
+                                                        dragDropState.state.animateScrollBy(
+                                                            it*2f, tween(easing = FastOutLinearInEasing)
+                                                        )
+                                                    }
+                                            }
+                                            ?: run { overscrollJob?.cancel() }
+                                    },
+                                    onDragStart = { offset -> dragDropState.onDragStart(offset) },
+                                    onDragEnd = {
+                                        dragDropState.onDragInterrupted()
+                                        overscrollJob?.cancel()
+                                    },
+                                    onDragCancel = {
+                                        dragDropState.onDragInterrupted()
+                                        overscrollJob?.cancel()
+                                    }
                                 )
+                            }
+                        ) {
+                            itemsIndexed(viewModel.categoryList) { index, item ->
+                                DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
+                                    val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
+                                    CategoryListTile(
+                                        category = item,
+                                        isLast = index == viewModel.categoryList.size - 1,
+                                        elevation = elevation
+                                    ) { viewModel.deleteCategory(item) }
+                                }
                             }
                         }
                     }
                 }
                 else -> {
-                    Column( modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (state is CategoryScreenState.Loading){
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (state is CategoryScreenState.Loading) {
                             // 로딩 중
-                            CircularProgressIndicator(modifier = Modifier.size(50.dp), color = color_mainBlue)
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(50.dp),
+                                color = color_mainBlue
+                            )
                         } else {
                             // 카테고리 리스트가 빈 리스트인 경우
                             Column(
@@ -108,7 +176,8 @@ fun CategoryManageScreen(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text(text = stringResource(id = R.string.category_manage_empty_guide),
+                                Text(
+                                    text = stringResource(id = R.string.category_manage_empty_guide),
                                     style = MaterialTheme.typography.h3.copy(color = color_gray600),
                                     textAlign = TextAlign.Center
                                 )
@@ -119,13 +188,18 @@ fun CategoryManageScreen(
                                     shape = RoundedCornerShape(71.dp),
                                     color = MaterialTheme.colors.background,
                                     border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
-                                    onClick = {categoryCreateDialogShown.value = true}
-                                ){
-                                    Text(text = stringResource(id = R.string.category_manage_create),
+                                    onClick = { categoryCreateDialogShown.value = true }
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.category_manage_create),
                                         style = MaterialTheme.typography.h3.copy(
-                                            color = Color(0xFFA7C5F9), fontWeight = FontWeight.Medium
+                                            color = Color(0xFFA7C5F9),
+                                            fontWeight = FontWeight.Medium
                                         ),
-                                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+                                        modifier = Modifier.padding(
+                                            horizontal = 24.dp,
+                                            vertical = 12.dp
+                                        )
                                     )
                                 }
                             }
@@ -135,11 +209,11 @@ fun CategoryManageScreen(
             }
         }
 
-        if (categoryCreateDialogShown.value){
+        if (categoryCreateDialogShown.value) {
             CategoryCreateDialog(
-                onCreateCategory = { viewModel.createCategory(it)},
+                onCreateCategory = { viewModel.createCategory(it) },
                 onDismissRequest = { categoryCreateDialogShown.value = false },
-                checkCategory = { viewModel.checkCategory(it)},
+                checkCategory = { viewModel.checkCategory(it) },
                 categoryState = viewModel.categoryState.collectAsState()
             )
         }
@@ -148,15 +222,15 @@ fun CategoryManageScreen(
 
 @Composable
 fun CategoryListTile(
-    category : CategoryItem,
+    category: CategoryItem,
     isLast: Boolean,
-    onDelete : () -> Unit
-){
+    elevation: Dp,
+    onDelete: () -> Unit,
+) {
     val tempList = listOf("전시01", "전시02", "전시03", "전시04", "전시05")
     val categoryDeleteDialogShown = remember { mutableStateOf(false) }
 
-
-    Column (modifier = Modifier.fillMaxWidth()){
+    Column(modifier = Modifier.fillMaxWidth().shadow(elevation).background(color = color_background)) {
         // 카테고리 브리프 정보 및 첫 행
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { /*TODO*/ }) {
@@ -196,38 +270,42 @@ fun CategoryListTile(
         Spacer(modifier = Modifier.height(22.dp))
         // 카테고리에 담긴 전시 정보
         LazyRow(modifier = Modifier.padding(start = 48.dp, end = 16.dp)) {
-            items(tempList){item ->
+            items(tempList) { item ->
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(end = 6.dp)
                 ) {
-                    Image(painter = painterResource(id = R.drawable.exhibit_test),
+                    Image(
+                        painter = painterResource(id = R.drawable.exhibit_test),
                         contentDescription = null,
                         modifier = Modifier.size(80.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = item, style = MaterialTheme.typography.h4.copy(
-                        fontWeight = FontWeight.Medium,
-                        color = color_gray300)
+                    Text(
+                        text = item, style = MaterialTheme.typography.h4.copy(
+                            fontWeight = FontWeight.Medium,
+                            color = color_gray300
+                        )
                     )
                 }
 
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
-        if (!isLast){
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+        if (!isLast) {
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 color = color_gray700,
                 thickness = 0.4.dp
             )
         }
 
         // 카테고리 삭제 다이얼로그
-        if (categoryDeleteDialogShown.value){
+        if (categoryDeleteDialogShown.value) {
             CategoryDeleteDialog(
-                onDismissRequest = {categoryDeleteDialogShown.value = false},
+                onDismissRequest = { categoryDeleteDialogShown.value = false },
                 onDelete = {
                     categoryDeleteDialogShown.value = false
                     onDelete()
