@@ -44,7 +44,10 @@ dependencies {
     implementation project(":common")
     implementation project(":data")
     implementation project(":domain")
+    // 로그아웃, 회원탈퇴 시 모듈 사용
+    implementation project(":feature:login")
     implementation project(":navigation:profile")
+    implementation project(":navigation:login")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'
@@ -52,6 +55,11 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    implementation libs.firebase.auth.ktx
+    implementation libs.gms.auth
+    implementation libs.kakao
+    implementation libs.naver
 
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps

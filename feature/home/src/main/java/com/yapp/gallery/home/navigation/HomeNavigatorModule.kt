@@ -4,13 +4,12 @@ import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ActivityComponent
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityComponent::class)
 abstract class HomeNavigatorModule {
     @Binds
-    @Singleton
     abstract fun bindHomeNavigator(navigatorImpl: HomeNavigatorImpl) : HomeNavigator
 }

@@ -30,11 +30,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
+import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.profile.R
 import com.yapp.gallery.profile.utils.DraggableItem
 import com.yapp.gallery.profile.utils.rememberDragDropState
-import com.yapp.gallery.profile.widget.CategoryDeleteDialog
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -230,7 +230,10 @@ fun CategoryListTile(
     val tempList = listOf("전시01", "전시02", "전시03", "전시04", "전시05")
     val categoryDeleteDialogShown = remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.fillMaxWidth().shadow(elevation).background(color = color_background)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .shadow(elevation)
+        .background(color = color_background)) {
         // 카테고리 브리프 정보 및 첫 행
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { /*TODO*/ }) {
@@ -304,9 +307,11 @@ fun CategoryListTile(
 
         // 카테고리 삭제 다이얼로그
         if (categoryDeleteDialogShown.value) {
-            CategoryDeleteDialog(
+            ConfirmDialog(
+                title = stringResource(id = R.string.category_delete_title),
+                subTitle = stringResource(id = R.string.category_delete_guide),
                 onDismissRequest = { categoryDeleteDialogShown.value = false },
-                onDelete = {
+                onConfirm = {
                     categoryDeleteDialogShown.value = false
                     onDelete()
                 }

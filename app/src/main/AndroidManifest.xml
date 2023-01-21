@@ -33,7 +33,7 @@
         <activity android:name=".profile.screen.category.CategoryManageActivity"
             android:exported="true"/>
 
-        <activity android:name=".login.LoginActivity"
+        <activity android:name=".login.screen.LoginActivity"
             android:exported="true"></activity>
         <activity android:name=".home.screen.HomeActivity"
             android:exported="true"></activity>

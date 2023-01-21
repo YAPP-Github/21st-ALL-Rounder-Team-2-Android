@@ -1,6 +1,7 @@
 package com.yapp.gallery.profile.screen.profile
 
-import android.content.res.Configuration
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,23 +9,32 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yapp.gallery.common.theme.color_background
 import com.yapp.gallery.common.theme.color_gray600
 import com.yapp.gallery.common.widget.CenterTopAppBar
+import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.profile.R
 
 @Composable
 fun ProfileScreen(
     popBackStack : () -> Unit,
-    navigateToManage: () -> Unit
+    navigateToManage: () -> Unit,
+    viewModel : ProfileViewModel
 ){
+
+    val context = LocalContext.current
+
+    val logoutDialogShown = remember { mutableStateOf(false) }
+    val withdrawalDialogShown = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             CenterTopAppBar(
@@ -84,8 +94,19 @@ fun ProfileScreen(
             ProfileFeature(featureName = stringResource(id = R.string.feature_announce), onFeatureClick = { /*TODO*/ }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_service_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_private_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_logout), onFeatureClick = { /*TODO*/ }, isLast = false)
+            ProfileFeature(featureName = stringResource(id = R.string.feature_logout), onFeatureClick = { logoutDialogShown.value = true }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_withdraw), onFeatureClick = { /*TODO*/ }, isLast = true)
+
+
+            // 로그아웃 다이얼로그
+            if (logoutDialogShown.value){
+                ConfirmDialog(
+                    title = stringResource(id = R.string.logout_dialog_title),
+                    subTitle = stringResource(id = R.string.logout_dialog_guide),
+                    onDismissRequest = { logoutDialogShown.value = false },
+                    onConfirm = { viewModel.logout() }
+                )
+            }
         }
     }
 }
@@ -105,4 +126,8 @@ fun ProfileFeature(
         if (!isLast)
             Divider(color = color_gray600, thickness = 0.4.dp, modifier = Modifier.fillMaxWidth())
     }
+}
+
+fun showToast(context: Context, msg: String){
+    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }
