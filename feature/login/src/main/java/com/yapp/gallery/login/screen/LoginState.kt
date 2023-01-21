@@ -1,4 +1,4 @@
-package com.yapp.gallery.login
+package com.yapp.gallery.login.screen
 
 sealed class TokenState {
     object None : TokenState()

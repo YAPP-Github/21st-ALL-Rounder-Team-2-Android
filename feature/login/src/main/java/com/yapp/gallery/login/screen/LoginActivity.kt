@@ -1,9 +1,7 @@
-package com.yapp.gallery.login
+package com.yapp.gallery.login.screen
 
-import android.R.attr.data
 import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.IntentSender
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -11,12 +9,10 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -30,6 +26,7 @@ import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.yapp.gallery.common.theme.GalleryTheme
+import com.yapp.gallery.login.BuildConfig
 import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -43,15 +40,14 @@ class LoginActivity : ComponentActivity(){
     @Inject lateinit var homeNavigator: HomeNavigator
     @Inject lateinit var sharedPreferences: SharedPreferences
 
+    @Inject lateinit var googleSignInClient: GoogleSignInClient
+    @Inject lateinit var kakaoClient: UserApiClient
+
     private lateinit var naverResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var googleResultLauncher: ActivityResultLauncher<Intent>
-    private lateinit var mGoogleSignInClient : GoogleSignInClient
 
     private var isLoading = mutableStateOf(false)
 
-    private val kakaoClient by lazy {
-        UserApiClient.instance
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,14 +91,11 @@ class LoginActivity : ComponentActivity(){
     }
 
     private fun initLogin(){
-        NaverIdLoginSDK.initialize(this, BuildConfig.NAVER_OAUTH_CLIENT_ID, BuildConfig.NAVER_OAUTH_CLIENT_SECRET,
+        NaverIdLoginSDK.initialize(this,
+            BuildConfig.NAVER_OAUTH_CLIENT_ID,
+            BuildConfig.NAVER_OAUTH_CLIENT_SECRET,
             "아르티"
         )
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(BuildConfig.FIREBASE_WEB_CLIENT_ID)
-            .requestEmail()
-            .build()
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     private fun initResultLauncher(){
@@ -130,7 +123,7 @@ class LoginActivity : ComponentActivity(){
 
     }
     private fun googleSignIn(){
-        val signInIntent = mGoogleSignInClient.signInIntent
+        val signInIntent = googleSignInClient.signInIntent
         googleResultLauncher.launch(signInIntent)
     }
 
@@ -141,7 +134,11 @@ class LoginActivity : ComponentActivity(){
                 Log.e("uid", task.result.user?.uid.toString())
                 task.result.user?.apply {
                     getIdToken(false).addOnCompleteListener { t ->
-                        sharedPreferences.edit().putString("idToken", t.result.token).apply()
+                        sharedPreferences.edit().apply {
+                            putString("idToken", t.result.token)
+                            putString("loginType", "google")
+                        }.apply()
+
                         uid.let { viewModel.createUser(it)}
                     }
                 }
@@ -198,7 +195,11 @@ class LoginActivity : ComponentActivity(){
                 Toast.makeText(this, "카카오 로그인 성공", Toast.LENGTH_SHORT).show()
                 task.result.user?.apply {
                     getIdToken(false).addOnCompleteListener { t->
-                        sharedPreferences.edit().putString("idToken", t.result.token).apply()
+                        sharedPreferences.edit().apply {
+                            putString("idToken", t.result.token)
+                            // Todo : 로그인 타입 설정
+                            putString("loginType", "kakao")
+                        }.apply()
                         uid.let { viewModel.createUser(it)}
                     }
                 }
