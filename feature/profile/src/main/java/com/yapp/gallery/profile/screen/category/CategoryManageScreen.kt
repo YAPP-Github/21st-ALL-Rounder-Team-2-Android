@@ -1,6 +1,5 @@
 package com.yapp.gallery.profile.screen.category
 
-import android.util.Log
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
@@ -44,7 +44,7 @@ fun CategoryManageScreen(
     popBackStack: () -> Unit,
     viewModel: CategoryManageViewModel = hiltViewModel(),
 ) {
-    val categoryScreenState: CategoryScreenState? by viewModel.categoryManageState.collectAsState()
+    val categoryScreenState: BaseState<Boolean> by viewModel.categoryManageState.collectAsState()
 
     val categoryCreateDialogShown = remember { mutableStateOf(false) }
 
@@ -81,7 +81,7 @@ fun CategoryManageScreen(
                 actions = {
                     TextButton(
                         onClick = { categoryCreateDialogShown.value = true },
-                        enabled = categoryScreenState != CategoryScreenState.Loading
+                        enabled = categoryScreenState != BaseState.Loading
                     ) {
                         Text(
                             text = stringResource(id = R.string.category_add),
@@ -94,66 +94,77 @@ fun CategoryManageScreen(
             )
         }
     ) { paddingValues ->
-        categoryScreenState?.let { state ->
-            when (state) {
-                // 카테고리가 있는 경우
-                is CategoryScreenState.NotEmpty -> {
-                    Column(
-                        modifier = Modifier
-                            .padding(paddingValues)
-                    ) {
-                        Spacer(modifier = Modifier.height(36.dp))
-                        // Todo : 임시 코드
-                        LazyColumn(
-                            state = listState,
-                            modifier = Modifier.pointerInput(dragDropState){
-                                detectDragGesturesAfterLongPress(
-                                    onDrag = { change, offset ->
-                                        change.consume()
-                                        dragDropState.onDrag(offset = offset)
+        if ((categoryScreenState as? BaseState.Success<Boolean>)?.value == true){
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+            ) {
+                Spacer(modifier = Modifier.height(36.dp))
+                // Todo : 임시 코드
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.pointerInput(dragDropState){
+                        detectDragGesturesAfterLongPress(
+                            onDrag = { change, offset ->
+                                change.consume()
+                                dragDropState.onDrag(offset = offset)
 
-                                        if (overscrollJob?.isActive == true)
-                                            return@detectDragGesturesAfterLongPress
+                                if (overscrollJob?.isActive == true)
+                                    return@detectDragGesturesAfterLongPress
 
-                                        dragDropState
-                                            .checkForOverScroll()
-                                            .takeIf { it != 0f }
-                                            ?.let {
-                                                overscrollJob =
-                                                    scope.launch {
-                                                        dragDropState.state.animateScrollBy(
-                                                            it*2f, tween(easing = FastOutLinearInEasing)
-                                                        )
-                                                    }
+                                dragDropState
+                                    .checkForOverScroll()
+                                    .takeIf { it != 0f }
+                                    ?.let {
+                                        overscrollJob =
+                                            scope.launch {
+                                                dragDropState.state.animateScrollBy(
+                                                    it*2f, tween(easing = FastOutLinearInEasing)
+                                                )
                                             }
-                                            ?: run { overscrollJob?.cancel() }
-                                    },
-                                    onDragStart = { offset -> dragDropState.onDragStart(offset) },
-                                    onDragEnd = {
-                                        dragDropState.onDragInterrupted()
-                                        overscrollJob?.cancel()
-                                    },
-                                    onDragCancel = {
-                                        dragDropState.onDragInterrupted()
-                                        overscrollJob?.cancel()
                                     }
-                                )
+                                    ?: run { overscrollJob?.cancel() }
+                            },
+                            onDragStart = { offset -> dragDropState.onDragStart(offset) },
+                            onDragEnd = {
+                                dragDropState.onDragInterrupted()
+                                overscrollJob?.cancel()
+                            },
+                            onDragCancel = {
+                                dragDropState.onDragInterrupted()
+                                overscrollJob?.cancel()
                             }
-                        ) {
-                            itemsIndexed(viewModel.categoryList) { index, item ->
-                                DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
-                                    val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
-                                    CategoryListTile(
-                                        category = item,
-                                        isLast = index == viewModel.categoryList.size - 1,
-                                        elevation = elevation
-                                    ) { viewModel.deleteCategory(item) }
-                                }
-                            }
+                        )
+                    }
+                ) {
+                    itemsIndexed(viewModel.categoryList) { index, item ->
+                        DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
+                            val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
+                            CategoryListTile(
+                                category = item,
+                                isLast = index == viewModel.categoryList.size - 1,
+                                elevation = elevation
+                            ) { viewModel.deleteCategory(item) }
                         }
                     }
                 }
-                else -> {
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (categoryScreenState is BaseState.Loading) {
+                    // 로딩 중
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(50.dp),
+                        color = color_mainBlue
+                    )
+                } else {
+                    // 카테고리 리스트가 빈 리스트인 경우
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -161,48 +172,31 @@ fun CategoryManageScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (state is CategoryScreenState.Loading) {
-                            // 로딩 중
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(50.dp),
-                                color = color_mainBlue
-                            )
-                        } else {
-                            // 카테고리 리스트가 빈 리스트인 경우
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(paddingValues),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.category_manage_empty_guide),
-                                    style = MaterialTheme.typography.h3.copy(color = color_gray600),
-                                    textAlign = TextAlign.Center
-                                )
-                                Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = stringResource(id = R.string.category_manage_empty_guide),
+                            style = MaterialTheme.typography.h3.copy(color = color_gray600),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
 
-                                // 카테고리 만들기 버튼
-                                Surface(
-                                    shape = RoundedCornerShape(71.dp),
-                                    color = MaterialTheme.colors.background,
-                                    border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
-                                    onClick = { categoryCreateDialogShown.value = true }
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.category_manage_create),
-                                        style = MaterialTheme.typography.h3.copy(
-                                            color = Color(0xFFA7C5F9),
-                                            fontWeight = FontWeight.Medium
-                                        ),
-                                        modifier = Modifier.padding(
-                                            horizontal = 24.dp,
-                                            vertical = 12.dp
-                                        )
-                                    )
-                                }
-                            }
+                        // 카테고리 만들기 버튼
+                        Surface(
+                            shape = RoundedCornerShape(71.dp),
+                            color = MaterialTheme.colors.background,
+                            border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
+                            onClick = { categoryCreateDialogShown.value = true }
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.category_manage_create),
+                                style = MaterialTheme.typography.h3.copy(
+                                    color = Color(0xFFA7C5F9),
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                modifier = Modifier.padding(
+                                    horizontal = 24.dp,
+                                    vertical = 12.dp
+                                )
+                            )
                         }
                     }
                 }

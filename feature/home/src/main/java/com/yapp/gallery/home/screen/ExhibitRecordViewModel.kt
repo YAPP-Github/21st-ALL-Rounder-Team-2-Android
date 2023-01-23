@@ -1,10 +1,9 @@
 package com.yapp.gallery.home.screen
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberCompositionContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yapp.gallery.common.widget.model.CategoryUiState
+import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.home.ExhibitInfo
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
@@ -26,8 +25,8 @@ class ExhibitRecordViewModel @Inject constructor(
     val categoryList : List<CategoryItem>
         get() = _categoryList
 
-    private var _categoryState = MutableStateFlow<CategoryUiState>(CategoryUiState.Empty)
-    val categoryState : StateFlow<CategoryUiState>
+    private var _categoryState = MutableStateFlow<BaseState<Boolean>>(BaseState.Loading)
+    val categoryState : StateFlow<BaseState<Boolean>>
         get() = _categoryState
 
     private var _tempStorageList = mutableStateListOf<ExhibitInfo>()
@@ -55,7 +54,7 @@ class ExhibitRecordViewModel @Inject constructor(
     fun addCategory(category: String){
         viewModelScope.launch {
             runCatching { createCategoryUseCase(category) }
-                .onSuccess { _categoryList.add(CategoryItem(it, category)) }
+                .onSuccess { _categoryList.add(CategoryItem(it, category, _categoryList.size)) }
                 .onFailure {  }
         }
     }
@@ -63,13 +62,11 @@ class ExhibitRecordViewModel @Inject constructor(
 
     fun checkCategory(category: String){
         if (_categoryList.find { it.name == category } != null){
-            _categoryState.value = CategoryUiState.Error("이미 존재하는 카테고리입니다.")
+            _categoryState.value = BaseState.Error("이미 존재하는 카테고리입니다.")
         } else if (category.length > 10)
-            _categoryState.value = CategoryUiState.Error("카테고리는 10자 이하이어야 합니다.")
-        else if (category.isEmpty())
-            _categoryState.value = CategoryUiState.Empty
+            _categoryState.value = BaseState.Error("카테고리는 10자 이하이어야 합니다.")
         else
-            _categoryState.value = CategoryUiState.Success
+            _categoryState.value = BaseState.Success(category.isNotEmpty())
     }
 
     fun deleteTempStorageItem(index: Int){
