@@ -1,7 +1,8 @@
 package com.yapp.gallery.data.api
 
-import com.yapp.gallery.data.body.CategoryCreateBody
-import com.yapp.gallery.data.body.CreateRecordBody
+import com.yapp.gallery.data.model.CategoryCreateBody
+import com.yapp.gallery.data.model.CreateRecordBody
+import com.yapp.gallery.data.model.UserResponse
 import com.yapp.gallery.domain.entity.home.CreatedId
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.login.CreateUserResponse
@@ -23,4 +24,8 @@ interface ArtieSerivce {
     // 전시 생성
     @POST("/post")
     suspend fun createRecord(@Body createRecordBody: CreateRecordBody) : CreatedId
+
+    // 유저 조회
+    @GET("/user/me")
+    suspend fun getUserData() : UserResponse
 }

@@ -25,6 +25,7 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
+import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.login.BuildConfig
 import com.yapp.gallery.navigation.home.HomeNavigator
@@ -61,8 +62,8 @@ class LoginActivity : ComponentActivity(){
             LaunchedEffect(viewModel.tokenState){
                 viewModel.tokenState.collect{
                     when (it) {
-                        is TokenState.Success -> {
-                            firebaseKakaoLogin(it.token)
+                        is BaseState.Success -> {
+                            firebaseKakaoLogin(it.value)
                         }
                         else -> {}
                     }
@@ -71,16 +72,16 @@ class LoginActivity : ComponentActivity(){
             LaunchedEffect(viewModel.loginState){
                 viewModel.loginState.collect{
                     when(it){
-                        is LoginState.Success -> {
+                        is BaseState.Success -> {
                             // Todo : uid 저장
                             navigateToHome()
                             isLoading.value = false
                         }
-                        is LoginState.Loading -> {
+                        is BaseState.Loading -> {
                             // Todo : 로딩 화면 만들기
                             isLoading.value = true
                         }
-                        is LoginState.Failure -> {
+                        is BaseState.Error -> {
                             isLoading.value = false
                         }
                         else -> {}

@@ -25,6 +25,8 @@ numberPicker = "1.0.3"
 retrofit = "2.9.0"
 okhttp3 = "4.10.0"
 
+# coroutines-core
+coroutines-core = "1.6.4"
 
 [libraries]
 
@@ -58,6 +60,8 @@ javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inje
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "webview"}
 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil"}
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-core"}
 
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "systemuicontroller"}
 accompanist-flowLayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref ="flowLayout"}

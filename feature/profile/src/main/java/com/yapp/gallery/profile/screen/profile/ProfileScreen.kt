@@ -8,9 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -18,10 +16,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.color_background
 import com.yapp.gallery.common.theme.color_gray600
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
+import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.profile.R
 
 @Composable
@@ -30,6 +30,7 @@ fun ProfileScreen(
     navigateToManage: () -> Unit,
     viewModel : ProfileViewModel
 ){
+    val user : BaseState<User> by viewModel.userData.collectAsState()
 
     val context = LocalContext.current
 
@@ -69,7 +70,8 @@ fun ProfileScreen(
                 .fillMaxWidth()) {
                 Column {
                     Row {
-                        Text(text = "기본 닉네임", style = MaterialTheme.typography.h1.copy(fontWeight = FontWeight.SemiBold))
+                        Text(text = (user as? BaseState.Success<User>)?.value?.name ?: "",
+                            style = MaterialTheme.typography.h1.copy(fontWeight = FontWeight.SemiBold))
                         Text(text = "이", style = MaterialTheme.typography.h1)
                     }
                     Text(text = "기록한 전시", style = MaterialTheme.typography.h1)

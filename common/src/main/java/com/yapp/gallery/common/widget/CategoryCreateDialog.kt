@@ -21,7 +21,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.yapp.gallery.common.R
 import com.yapp.gallery.common.theme.*
-import com.yapp.gallery.common.widget.model.CategoryUiState
+import com.yapp.gallery.common.model.BaseState
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -29,7 +29,7 @@ fun CategoryCreateDialog(
     onCreateCategory: (String) -> Unit,
     onDismissRequest: () -> Unit,
     checkCategory: (String) -> Unit,
-    categoryState: State<CategoryUiState>
+    categoryState: State<BaseState<Boolean>>
 ){
     val categoryName = rememberSaveable {
         mutableStateOf("")
@@ -79,7 +79,7 @@ fun CategoryCreateDialog(
                             focusedBorderColor = MaterialTheme.colors.primary,
                             textColor = color_white
                         ),
-                        isError = categoryState.value is CategoryUiState.Error,
+                        isError = categoryState.value is BaseState.Error,
                         trailingIcon = {
                             Row {
                                 Text(
@@ -100,8 +100,8 @@ fun CategoryCreateDialog(
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     when(categoryState.value){
-                        is CategoryUiState.Error ->
-                            Text(text = (categoryState.value as CategoryUiState.Error).error,
+                        is BaseState.Error ->
+                            Text(text = (categoryState.value as BaseState.Error).message ?: "",
                                 style = MaterialTheme.typography.h4.copy(color = Color.Red),
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
@@ -116,7 +116,7 @@ fun CategoryCreateDialog(
                         onCreateCategory(categoryName.value)
                         onDismissRequest() },
                     shape = RoundedCornerShape(size = 50.dp),
-                    enabled = categoryState.value is  CategoryUiState.Success
+                    enabled = (categoryState.value as? BaseState.Success<Boolean>)?.value ?: false
                 ) {
                     Text(text = stringResource(id = R.string.category_create_btn), style = MaterialTheme.typography.h2.copy(
                         color = color_black, fontWeight = FontWeight.SemiBold),

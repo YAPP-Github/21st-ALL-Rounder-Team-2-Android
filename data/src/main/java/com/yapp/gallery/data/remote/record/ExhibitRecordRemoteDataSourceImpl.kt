@@ -1,8 +1,8 @@
 package com.yapp.gallery.data.remote.record
 
 import com.yapp.gallery.data.api.ArtieSerivce
-import com.yapp.gallery.data.body.CategoryCreateBody
-import com.yapp.gallery.data.body.CreateRecordBody
+import com.yapp.gallery.data.model.CategoryCreateBody
+import com.yapp.gallery.data.model.CreateRecordBody
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import javax.inject.Inject
 
