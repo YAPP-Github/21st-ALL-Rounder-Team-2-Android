@@ -143,8 +143,10 @@ fun CategoryManageScreen(
                             CategoryListTile(
                                 category = item,
                                 isLast = index == viewModel.categoryList.size - 1,
-                                elevation = elevation
-                            ) { viewModel.deleteCategory(item) }
+                                elevation = elevation,
+                                onDelete = { viewModel.deleteCategory(item) },
+                                data = emptyList()
+                            )
                         }
                     }
                 }
@@ -214,14 +216,15 @@ fun CategoryManageScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryListTile(
     category: CategoryItem,
     isLast: Boolean,
     elevation: Dp,
     onDelete: () -> Unit,
+    data: List<String>
 ) {
-    val tempList = listOf("전시01", "전시02", "전시03", "전시04", "전시05")
     val categoryDeleteDialogShown = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier
@@ -230,7 +233,10 @@ fun CategoryListTile(
         .background(color = color_background)) {
         // 카테고리 브리프 정보 및 첫 행
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.combinedClickable(
+                onLongClick = {},
+                onClick = {}
+            )) {
                 Icon(
                     imageVector = Icons.Default.Menu, contentDescription = null,
                     tint = color_gray500, modifier = Modifier.size(16.dp)
@@ -264,30 +270,42 @@ fun CategoryListTile(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(22.dp))
         // 카테고리에 담긴 전시 정보
-        LazyRow(modifier = Modifier.padding(start = 48.dp, end = 16.dp)) {
-            items(tempList) { item ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(end = 6.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.exhibit_test),
-                        contentDescription = null,
-                        modifier = Modifier.size(80.dp)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = item, style = MaterialTheme.typography.h4.copy(
-                            fontWeight = FontWeight.Medium,
-                            color = color_gray300
+        if (data.isNotEmpty()){
+            // 전시 정보가 존재 하는 경우
+            Spacer(modifier = Modifier.height(22.dp))
+            LazyRow(modifier = Modifier.padding(start = 48.dp, end = 16.dp)) {
+                items(data) { item ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(end = 6.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.exhibit_test),
+                            contentDescription = null,
+                            modifier = Modifier.size(80.dp)
                         )
-                    )
-                }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = item, style = MaterialTheme.typography.h4.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = color_gray300
+                            )
+                        )
+                    }
 
+                }
             }
+        } else {
+            Text(text = stringResource(id = R.string.category_exhibit_empty),
+                style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Medium),
+                modifier = Modifier
+                    .padding(vertical = 40.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+
         }
+
         Spacer(modifier = Modifier.height(24.dp))
         if (!isLast) {
             Divider(

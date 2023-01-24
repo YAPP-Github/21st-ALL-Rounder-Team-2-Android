@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching { createUserUseCase(firebaseUserId) }
                 .onSuccess {
-                    _loginState.value = BaseState.Loading
+                    _loginState.value = BaseState.Success(it)
                 }
                 .onFailure {
                     Log.e("error", it.message.toString())
