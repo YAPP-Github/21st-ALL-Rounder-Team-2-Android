@@ -16,24 +16,20 @@ class ProfileViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    private var _loginType = MutableStateFlow("")
-    val loginType : StateFlow<String>
-        get() = _loginType
-
     private var _userData = MutableStateFlow<BaseState<User>>(BaseState.Loading)
     val userData : StateFlow<BaseState<User>> get() = _userData
+
+    val loginType = sharedPreferences.getString("loginType", "").toString()
 
     init {
         getUser()
     }
 
-    fun logout(){
-        val type = sharedPreferences.getString("loginType", "").toString()
+    fun removeSpf(){
         sharedPreferences.edit().apply {
             remove("idToken")
             remove("loginType")
         }.apply()
-        _loginType.value = type
     }
 
     private fun getUser(){

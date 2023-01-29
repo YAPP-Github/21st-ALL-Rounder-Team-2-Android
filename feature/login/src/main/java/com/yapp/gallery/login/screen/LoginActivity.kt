@@ -49,7 +49,6 @@ class LoginActivity : ComponentActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initLogin()
         initResultLauncher()
         setContent {
             GalleryTheme {
@@ -86,14 +85,6 @@ class LoginActivity : ComponentActivity(){
                 }
             }
         }
-    }
-
-    private fun initLogin(){
-        NaverIdLoginSDK.initialize(this,
-            BuildConfig.NAVER_OAUTH_CLIENT_ID,
-            BuildConfig.NAVER_OAUTH_CLIENT_SECRET,
-            "아르티"
-        )
     }
 
     private fun initResultLauncher(){

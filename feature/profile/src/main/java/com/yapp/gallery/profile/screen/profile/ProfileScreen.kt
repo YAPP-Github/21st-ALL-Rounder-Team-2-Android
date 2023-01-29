@@ -28,11 +28,11 @@ import com.yapp.gallery.profile.R
 fun ProfileScreen(
     popBackStack : () -> Unit,
     navigateToManage: () -> Unit,
+    logout : () -> Unit,
+    withdrawal : () -> Unit,
     viewModel : ProfileViewModel
 ){
     val user : BaseState<User> by viewModel.userData.collectAsState()
-
-    val context = LocalContext.current
 
     val logoutDialogShown = remember { mutableStateOf(false) }
     val withdrawalDialogShown = remember { mutableStateOf(false) }
@@ -97,7 +97,7 @@ fun ProfileScreen(
             ProfileFeature(featureName = stringResource(id = R.string.feature_service_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_private_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_logout), onFeatureClick = { logoutDialogShown.value = true }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_withdraw), onFeatureClick = { /*TODO*/ }, isLast = true)
+            ProfileFeature(featureName = stringResource(id = R.string.feature_withdraw), onFeatureClick = { withdrawalDialogShown.value = true }, isLast = true)
 
 
             // 로그아웃 다이얼로그
@@ -106,7 +106,18 @@ fun ProfileScreen(
                     title = stringResource(id = R.string.logout_dialog_title),
                     subTitle = stringResource(id = R.string.logout_dialog_guide),
                     onDismissRequest = { logoutDialogShown.value = false },
-                    onConfirm = { viewModel.logout() }
+                    onConfirm = logout
+                )
+            }
+
+            // 회원탈퇴 다이얼로그
+            if (withdrawalDialogShown.value){
+                // Todo : 서버에서 탈퇴까지 구현해야함
+                ConfirmDialog(
+                    title = stringResource(id = R.string.withdrawal_dialog_title),
+                    subTitle = stringResource(id = R.string.withdrawal_dialog_guide),
+                    onDismissRequest = { withdrawalDialogShown.value = false },
+                    onConfirm = withdrawal
                 )
             }
         }
