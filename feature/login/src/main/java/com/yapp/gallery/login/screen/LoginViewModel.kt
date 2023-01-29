@@ -5,7 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.domain.usecase.login.CreateUserUseCase
-import com.yapp.gallery.domain.usecase.login.PostTokenLoginUseCase
+import com.yapp.gallery.domain.usecase.login.PostKakaoLoginUseCase
+import com.yapp.gallery.domain.usecase.login.PostNaverLoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val tokenLoginUseCase: PostTokenLoginUseCase,
+    private val tokenKakaoLoginUseCase: PostKakaoLoginUseCase,
+    private val tokenNaverLoginUseCase: PostNaverLoginUseCase,
     private val createUserUseCase: CreateUserUseCase
 ): ViewModel(){
     private var _tokenState = MutableStateFlow<BaseState<String>>(BaseState.None)
@@ -25,10 +27,25 @@ class LoginViewModel @Inject constructor(
     val loginState : StateFlow<BaseState<Long>>
         get() = _loginState
 
-    fun postTokenLogin(accessToken: String){
+    fun postKakaoLogin(accessToken: String){
         Log.e("login 전", accessToken)
+        setLoading()
         viewModelScope.launch {
-            runCatching { tokenLoginUseCase(accessToken) }
+            runCatching { tokenKakaoLoginUseCase(accessToken) }
+                .onSuccess {
+                    _tokenState.value = BaseState.Success(it)
+                }
+                .onFailure {
+                    Log.e("login 오류", it.message.toString())
+                    _tokenState.value = BaseState.Error(it.message)
+                }
+        }
+    }
+
+    fun postNaverLogin(accessToken: String){
+        setLoading()
+        viewModelScope.launch {
+            runCatching { tokenNaverLoginUseCase(accessToken) }
                 .onSuccess {
                     _tokenState.value = BaseState.Success(it)
                 }

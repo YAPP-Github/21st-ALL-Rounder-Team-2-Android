@@ -45,7 +45,7 @@ class LoginActivity : ComponentActivity(){
     private lateinit var googleResultLauncher: ActivityResultLauncher<Intent>
 
     private var isLoading = mutableStateOf(false)
-
+    private var loginType : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +60,7 @@ class LoginActivity : ComponentActivity(){
                 viewModel.tokenState.collect{
                     when (it) {
                         is BaseState.Success -> {
-                            firebaseKakaoLogin(it.value)
+                            firebaseTokenLogin(it.value)
                         }
                         else -> {}
                     }
@@ -107,8 +107,9 @@ class LoginActivity : ComponentActivity(){
         naverResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when(result.resultCode) {
                 RESULT_OK -> {
-                    // 네이버 로그인 인증이 성공했을 때 수행할 코드 추가
-
+                    NaverIdLoginSDK.getAccessToken()?.let {
+                        viewModel.postNaverLogin(it)
+                    }
                 }
                 RESULT_CANCELED -> {
                     // 실패 or 에러
@@ -121,6 +122,7 @@ class LoginActivity : ComponentActivity(){
 
     }
     private fun googleSignIn(){
+        loginType = "google"
         val signInIntent = googleSignInClient.signInIntent
         googleResultLauncher.launch(signInIntent)
     }
@@ -147,6 +149,7 @@ class LoginActivity : ComponentActivity(){
     }
 
     private fun naverLogin(){
+        loginType = "naver"
         NaverIdLoginSDK.authenticate(this, naverResultLauncher)
     }
    
@@ -156,11 +159,12 @@ class LoginActivity : ComponentActivity(){
             Log.e(TAG, "카카오계정으로 로그인 실패", error)
         } else if (token != null) {
             Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-            viewModel.postTokenLogin(token.accessToken)
+            viewModel.postKakaoLogin(token.accessToken)
         }
     }
 
     private fun kakaoLogin(){
+        loginType = "kakao"
         // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
         if (kakaoClient.isKakaoTalkLoginAvailable(this)) {
             kakaoClient.loginWithKakaoTalk(this) { token, error ->
@@ -177,7 +181,7 @@ class LoginActivity : ComponentActivity(){
                     kakaoClient.loginWithKakaoAccount(this, callback = kakaoCallback)
                 } else if (token != null) {
                     Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
-                    viewModel.postTokenLogin(token.accessToken)
+                    viewModel.postKakaoLogin(token.accessToken)
                 }
             }
         } else {
@@ -186,17 +190,15 @@ class LoginActivity : ComponentActivity(){
 
     }
 
-    private fun firebaseKakaoLogin(firebaseToken: String){
-        viewModel.setLoading()
+    // 카카오, 네이버 로그인
+    private fun firebaseTokenLogin(firebaseToken: String){
         auth.signInWithCustomToken(firebaseToken)
             .addOnCompleteListener { task ->
-                Toast.makeText(this, "카카오 로그인 성공", Toast.LENGTH_SHORT).show()
                 task.result.user?.apply {
                     getIdToken(false).addOnCompleteListener { t->
                         sharedPreferences.edit().apply {
                             putString("idToken", t.result.token)
-                            // Todo : 로그인 타입 설정
-                            putString("loginType", "kakao")
+                            loginType?.let { putString("loginType", it) }
                         }.apply()
                         uid.let { viewModel.createUser(it)}
                     }

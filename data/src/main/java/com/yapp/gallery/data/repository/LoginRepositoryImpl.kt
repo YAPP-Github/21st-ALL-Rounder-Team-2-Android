@@ -7,9 +7,14 @@ import javax.inject.Inject
 class LoginRepositoryImpl @Inject constructor(
     private val loginRemoteDataSource: LoginRemoteDataSource
 ) : LoginRepository{
-    override suspend fun tokenLogin(accessToken: String): String {
-        return loginRemoteDataSource.tokenLogin(accessToken).firebase_token
+    override suspend fun kakaoLogin(accessToken: String): String {
+        return loginRemoteDataSource.kakaoLogin(accessToken).firebase_token
     }
+
+    override suspend fun naverLogin(accessToken: String): String {
+        return loginRemoteDataSource.naverLogin(accessToken).firebase_token
+    }
+
 
     override suspend fun createUser(firebaseUserId: String): Long {
         return loginRemoteDataSource.createUser(firebaseUserId).id

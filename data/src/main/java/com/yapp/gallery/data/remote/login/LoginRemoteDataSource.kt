@@ -4,6 +4,7 @@ import com.yapp.gallery.domain.entity.login.CreateUserResponse
 import com.yapp.gallery.domain.entity.login.FirebaseToken
 
 interface LoginRemoteDataSource {
-    suspend fun tokenLogin(accessToken: String) : FirebaseToken
+    suspend fun kakaoLogin(accessToken: String) : FirebaseToken
+    suspend fun naverLogin(accessToken: String) : FirebaseToken
     suspend fun createUser(firebaseUserId: String) : CreateUserResponse
 }

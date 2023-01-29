@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,26 +43,15 @@ fun LoginScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(
-                            RoundedCornerShape(9.dp)
-                        )
-                        .background(color = Color.LightGray),
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(text = "LOGO")
-                }
-                Spacer(modifier = Modifier.height(15.dp))
-                Text(text = "서비스 이름", fontFamily = pretendard, fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp
-                )
+                Image(painter = painterResource(id = R.drawable.ic_logo), contentDescription = "logo",
+                    alignment = Alignment.Center)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "서비스 슬로건 슬로건", fontFamily = pretendard, fontSize = 16.sp)
+                Text(text = stringResource(id = R.string.service_name), fontSize = 18.sp)
+                Spacer(modifier = Modifier.height(38.dp))
+                Text(text = stringResource(id = R.string.service_slogan), fontSize = 16.sp)
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 Row {

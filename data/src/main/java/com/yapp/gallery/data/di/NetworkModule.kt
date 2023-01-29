@@ -18,10 +18,15 @@ import kotlin.math.log
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
-    // Firebase Custom 토큰 서비스 담당 레트로핏
+    // Firebase 카카오 Custom 토큰 서비스 담당 레트로핏
     @Qualifier
     @Retention(AnnotationRetention.BINARY)
-    annotation class ArtieTokenRetrofit
+    annotation class ArtieKakaoRetrofit
+
+    // Firebase 네이버 Custom 토큰 서비스 담당 레트로핏
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class ArtieNaverRetrofit
 
     // 아르티 서비스 API 담당 레트로핏
     @Qualifier
@@ -35,10 +40,21 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    @ArtieTokenRetrofit
-    fun providesTokenRetrofit(gsonConverterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit {
+    @ArtieKakaoRetrofit
+    fun providesKakaoRetrofit(gsonConverterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.TOKEN_SERVER_BASE_URL)
+            .baseUrl(BuildConfig.KAKAO_TOKEN_SERVER_URL)
+            .addConverterFactory(gsonConverterFactory)
+            .client(client)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    @ArtieNaverRetrofit
+    fun providesNaverRetrofit(gsonConverterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.NAVER_TOKEN_SERVER_URL)
             .addConverterFactory(gsonConverterFactory)
             .client(client)
             .build()

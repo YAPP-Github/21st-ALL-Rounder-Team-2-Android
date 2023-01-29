@@ -145,7 +145,7 @@ fun CategoryManageScreen(
                                 isLast = index == viewModel.categoryList.size - 1,
                                 elevation = elevation,
                                 onDelete = { viewModel.deleteCategory(item) },
-                                data = emptyList()
+                                data = listOf("전시 01", "전시 02a")
                             )
                         }
                     }
