@@ -1,5 +1,8 @@
 package com.yapp.gallery.home.screen
 
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -8,14 +11,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.web.*
-import com.yapp.gallery.common.theme.color_background
-import com.yapp.gallery.common.theme.*
-import com.yapp.gallery.home.R
+import com.yapp.gallery.home.screen.jsInterface.EditJsObject
 
 @Composable
 fun HomeScreen(
@@ -46,36 +46,32 @@ fun HomeScreen(
             modifier = Modifier
                 .padding(paddingValues)
         ) {
-            WebView(state = viewModel.webViewState,
-                client = webViewClient,
-                chromeClient = webChromeClient,
-                onCreated = { webView ->
-                    with(webView) {
-                        settings.run {
-                            javaScriptEnabled = true
-                            domStorageEnabled = true
-                            javaScriptCanOpenWindowsAutomatically = false
-                        }
-                        // Todo : JavaScriptInterface
-//                        addJavascriptInterface()
-                    }
+            AndroidView(factory = {
+                WebView(it).apply {
+                    settings.javaScriptEnabled = true
+                    setWebViewClient(WebViewClient())
+                    setWebChromeClient(WebChromeClient())
+                    loadUrl("https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home")
+                    loadUrl("javascript: window.onload=function(){ window.android.postMessage('testing!'); }")
+                    addJavascriptInterface(EditJsObject(it), "android")
                 }
-            )
-//            Spacer(modifier = Modifier.height(24.dp))
-//            Row() {
-//                Button(onClick = { /*TODO*/ },
-//                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
-//                    shape = RoundedCornerShape(70.dp)
-//                ) {
-//                    Text(text = "전체 기록",
-//                        color = Color.White,
-//                        fontSize = 14.sp,
-//                        fontFamily = pretendard,
-//                        fontWeight = FontWeight.SemiBold
-//                    )
-//
+            })
+//            WebView(state = viewModel.webViewState,
+//                client = webViewClient,
+//                chromeClient = webChromeClient,
+//                onCreated = { webView ->
+//                    with(webView) {
+//                        settings.run {
+//                            javaScriptEnabled = true
+//                            domStorageEnabled = true
+//                            javaScriptCanOpenWindowsAutomatically = true
+//                        }
+//                        addJavascriptInterface(EditJsObject(navigateToInfo), "Android")
+//                    }
 //                }
-//            }
+//            )
         }
     }
+
 }
+

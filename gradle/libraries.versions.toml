@@ -9,13 +9,15 @@ gms-auth = "20.4.0"
 hilt-core = "2.44"
 hilt-integrations = "1.0.0"
 javax-inject = "1"
-webview = "0.25.1"
-
 camera = "1.1.0-beta01"
 coil = "1.4.0"
 
+# social login
 kakao = "2.12.0"
+naver = "5.3.0"
+# compose layout
 systemuicontroller = "0.23.1"
+webview = "0.25.1"
 flowLayout = "0.28.0"
 numberPicker = "1.0.3"
 
@@ -23,6 +25,8 @@ numberPicker = "1.0.3"
 retrofit = "2.9.0"
 okhttp3 = "4.10.0"
 
+# coroutines-core
+coroutines-core = "1.6.4"
 
 [libraries]
 
@@ -45,6 +49,7 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
 
 kakao = { module = "com.kakao.sdk:v2-all", version.ref ="kakao"}
+naver = { module = "com.navercorp.nid:oauth", version.ref ="naver"}
 
 hilt-core = { module = "com.google.dagger:hilt-android", version.ref = "hilt-core"}
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-core"}
@@ -55,6 +60,8 @@ javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inje
 accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "webview"}
 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil"}
+
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-core"}
 
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "systemuicontroller"}
 accompanist-flowLayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref ="flowLayout"}
@@ -78,8 +85,6 @@ compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-comp
 ]
 androidx = [ "androidx-camera", "androidx-camera-view", "androidx-camera-lifecycle" ]
 coil = [ "coil-compose" ]
-
-compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material", "androidx-compose-uiTooling", "androidx-hilt-navigation-compose", "androidx-compose-navigation" ]
 
 retrofit = [ "retrofit", "retrofit-convertor-gson"]
 okhttp3 = ["okhttp3", "okhttp3-logging"]

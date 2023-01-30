@@ -91,7 +91,7 @@ fun DatePickerSheet(
                     list = yearList,
                     dividersColor = Color(android.graphics.Color.TRANSPARENT),
                     textStyle = MaterialTheme.typography.h2.copy(
-                        color = color_mainBlue, fontWeight = FontWeight.SemiBold
+                        color = color_mainGreen, fontWeight = FontWeight.SemiBold
                     )
                 )
             }
@@ -113,7 +113,7 @@ fun DatePickerSheet(
                     list = monthList,
                     dividersColor = Color(android.graphics.Color.TRANSPARENT),
                     textStyle = MaterialTheme.typography.h2.copy(
-                        color = color_mainBlue, fontWeight = FontWeight.SemiBold
+                        color = color_mainGreen, fontWeight = FontWeight.SemiBold
                     )
                 )
             }
@@ -133,7 +133,7 @@ fun DatePickerSheet(
                     list = dayList.value,
                     dividersColor = Color(android.graphics.Color.TRANSPARENT),
                     textStyle = MaterialTheme.typography.h2.copy(
-                        color = color_mainBlue, fontWeight = FontWeight.SemiBold
+                        color = color_mainGreen, fontWeight = FontWeight.SemiBold
                     )
                 )
             }

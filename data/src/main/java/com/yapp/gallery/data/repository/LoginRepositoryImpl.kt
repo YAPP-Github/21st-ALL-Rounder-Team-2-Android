@@ -10,4 +10,13 @@ class LoginRepositoryImpl @Inject constructor(
     override suspend fun kakaoLogin(accessToken: String): String {
         return loginRemoteDataSource.kakaoLogin(accessToken).firebase_token
     }
+
+    override suspend fun naverLogin(accessToken: String): String {
+        return loginRemoteDataSource.naverLogin(accessToken).firebase_token
+    }
+
+
+    override suspend fun createUser(firebaseUserId: String): Long {
+        return loginRemoteDataSource.createUser(firebaseUserId).id
+    }
 }

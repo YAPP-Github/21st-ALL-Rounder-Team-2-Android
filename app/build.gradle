@@ -6,9 +6,6 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 android {
     namespace 'com.yapp.gallery'
     compileSdk 33
@@ -47,8 +44,11 @@ dependencies {
     implementation project(":feature:home")
     implementation project(":feature:camera")
     implementation project(":feature:saver")
+    implementation project(":feature:profile")
+    implementation project(":navigation:profile")
     implementation project(":navigation:saver")
     implementation project(":navigation:camera")
+    implementation project(":navigation:home")
     implementation project(":domain")
     implementation project(":data")
 
@@ -65,6 +65,7 @@ dependencies {
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
     implementation libs.kakao
+    implementation libs.naver
     kapt libs.bundles.hilt.compilers
 }
 

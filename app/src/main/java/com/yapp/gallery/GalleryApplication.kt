@@ -5,7 +5,9 @@ import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
+import com.navercorp.nid.NaverIdLoginSDK
 import com.yapp.gallery.BuildConfig.KAKAO_NATIVE_APP_KEY
+import com.yapp.gallery.login.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -16,6 +18,12 @@ class GalleryApplication : Application() {
 
         // 카카오 SDK init
         KakaoSdk.init(this, KAKAO_NATIVE_APP_KEY)
+        // 네이버 SDK init
+        NaverIdLoginSDK.initialize(this,
+            BuildConfig.NAVER_OAUTH_CLIENT_ID,
+            BuildConfig.NAVER_OAUTH_CLIENT_SECRET,
+            "아르티"
+        )
         val keyHash = Utility.getKeyHash(this)
         Log.e("keyHash", keyHash)
     }

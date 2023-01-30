@@ -1,24 +1,32 @@
 package com.yapp.gallery.home.screen
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberCompositionContext
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.yapp.gallery.common.model.BaseState
+import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.home.ExhibitInfo
+import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
+import com.yapp.gallery.domain.usecase.record.CreateRecordUseCase
+import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ExhibitInfoViewModel @Inject constructor(
-
+class ExhibitRecordViewModel @Inject constructor(
+    private val getCategoryListUseCase: GetCategoryListUseCase,
+    private val createCategoryUseCase: CreateCategoryUseCase,
+    private val createRecordUseCase: CreateRecordUseCase
 ) : ViewModel(){
-    private var _categoryList = MutableStateFlow(mutableListOf<String>())
-    val categoryList : StateFlow<List<String>>
+    private var _categoryList = mutableStateListOf<CategoryItem>()
+    val categoryList : List<CategoryItem>
         get() = _categoryList
 
-    private var _categoryState = MutableStateFlow<CategoryUiState>(CategoryUiState.Empty)
-    val categoryState : StateFlow<CategoryUiState>
+    private var _categoryState = MutableStateFlow<BaseState<Boolean>>(BaseState.Loading)
+    val categoryState : StateFlow<BaseState<Boolean>>
         get() = _categoryState
 
     private var _tempStorageList = mutableStateListOf<ExhibitInfo>()
@@ -26,8 +34,8 @@ class ExhibitInfoViewModel @Inject constructor(
         get() = _tempStorageList
 
     init {
-        // Todo : 임시 리스트
-        _categoryList.value = mutableListOf("카테고리 1", "카테고리 2", "카테고리 3")
+        getCategoryList()
+
         _tempStorageList = mutableStateListOf(
             ExhibitInfo("전시명 1", "2023.01.06"),
             ExhibitInfo("전시명 2", "2023.01.06"),
@@ -35,29 +43,42 @@ class ExhibitInfoViewModel @Inject constructor(
         )
     }
 
+    private fun getCategoryList(){
+        viewModelScope.launch {
+            runCatching { getCategoryListUseCase() }
+                .onSuccess { _categoryList.addAll(it) }
+                .onFailure {  }
+        }
+    }
+
     fun addCategory(category: String){
-        _categoryList.value.add(category)
+        viewModelScope.launch {
+            runCatching { createCategoryUseCase(category) }
+                .onSuccess { _categoryList.add(CategoryItem(it, category, _categoryList.size)) }
+                .onFailure {  }
+        }
     }
 
 
     fun checkCategory(category: String){
-        if (category in _categoryList.value){
-            _categoryState.value = CategoryUiState.Error("이미 존재하는 카테고리입니다.")
-        } else if (category.length > 20)
-            _categoryState.value = CategoryUiState.Error("카테고리는 20자 이하이어야 합니다.")
-        else if (category.isEmpty())
-            _categoryState.value = CategoryUiState.Empty
+        if (_categoryList.find { it.name == category } != null){
+            _categoryState.value = BaseState.Error("이미 존재하는 카테고리입니다.")
+        } else if (category.length > 10)
+            _categoryState.value = BaseState.Error("카테고리는 10자 이하이어야 합니다.")
         else
-            _categoryState.value = CategoryUiState.Success
+            _categoryState.value = BaseState.Success(category.isNotEmpty())
     }
 
     fun deleteTempStorageItem(index: Int){
         _tempStorageList.removeAt(index)
     }
+
+    fun createRecord(name: String, categoryId: Long, postDate: String) {
+        viewModelScope.launch {
+            runCatching { createRecordUseCase(name, categoryId, postDate) }
+                .onSuccess {  }
+                .onFailure {  }
+        }
+    }
 }
 
-sealed class CategoryUiState{
-    object Success : CategoryUiState()
-    object Empty : CategoryUiState()
-    data class Error(val error: String) : CategoryUiState()
-}

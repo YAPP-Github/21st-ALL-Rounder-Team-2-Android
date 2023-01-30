@@ -1,5 +1,6 @@
 package com.yapp.gallery.home.screen
 
+import android.content.SharedPreferences
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import com.google.accompanist.web.WebContent
@@ -11,10 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    val userName = auth.currentUser?.displayName
-
     // Web View State
     val webViewState = WebViewState(
         WebContent.Url(

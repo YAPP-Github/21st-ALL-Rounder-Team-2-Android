@@ -6,7 +6,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -22,14 +21,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -37,15 +33,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.flowlayout.FlowRow
-import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.theme.*
-import com.yapp.gallery.home.widget.CategoryDialog
+import com.yapp.gallery.common.widget.CategoryCreateDialog
+import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.home.R
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.RecordMenuDialog
@@ -54,34 +49,27 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ExhibitInfoScreen(
-    navController : NavHostController
-){
-    val viewModel = hiltViewModel<ExhibitInfoViewModel>()
-
+fun ExhibitRecordScreen(
+    navController: NavHostController,
+    navigateToCamera: () -> Unit,
+    viewModel: ExhibitRecordViewModel = hiltViewModel(),
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    var exhibitName = rememberSaveable{ mutableStateOf("") }
-    var exhibitDate = rememberSaveable { mutableStateOf("")}
+    val exhibitName = rememberSaveable { mutableStateOf("") }
+    val exhibitDate = rememberSaveable { mutableStateOf("") }
 
     val interactionSource = remember { MutableInteractionSource() }
 
     val categoryDialogShown = remember { mutableStateOf(false) }
     val recordMenuDialogShown = remember { mutableStateOf(false) }
-    val tempStorageDialogShown = remember { mutableStateOf(false)}
-
-    // rowSize 지정
-    var rowSize = remember { mutableStateOf(Size.Zero) }
-
-
-    val context = LocalContext.current
+    val tempStorageDialogShown = remember { mutableStateOf(false) }
 
     // 카테고리 리스트
-    val categoryList : List<String>? by viewModel.categoryList.collectAsState()
     val categorySelect = rememberSaveable {
-        mutableStateOf(-1)
+        mutableStateOf(-1L)
     }
 
     // Bottom Sheet State
@@ -110,11 +98,13 @@ fun ExhibitInfoScreen(
                     backgroundColor = Color.Transparent,
                     elevation = 0.dp,
                     title = {
-                        Text(text = stringResource(id = R.string.exhibit_title),
+                        Text(
+                            text = stringResource(id = R.string.exhibit_title),
                             style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
-                        ) },
+                        )
+                    },
                     navigationIcon = if (navController.previousBackStackEntry != null) {
                         {
                             IconButton(onClick = { navController.popBackStack() }) {
@@ -129,10 +119,12 @@ fun ExhibitInfoScreen(
                     },
                     actions = {
                         TextButton(onClick = { tempStorageDialogShown.value = true }) {
-                            Text(text = stringResource(id = R.string.exhibit_temp),
+                            Text(
+                                text = stringResource(id = R.string.exhibit_temp),
                                 style = MaterialTheme.typography.h3.copy(
-                                    fontWeight = FontWeight.Medium, color = color_gray400),
-                                )
+                                    fontWeight = FontWeight.Medium, color = color_gray400
+                                ),
+                            )
                         }
                         Spacer(modifier = Modifier.width(4.dp))
                     }
@@ -142,20 +134,21 @@ fun ExhibitInfoScreen(
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 20.dp)
                     .fillMaxSize()
             ) {
                 Spacer(modifier = Modifier.height(48.dp))
                 // 전시명 입력 부분
                 Column {
-                    Text(text = stringResource(id = R.string.exhibit_name),
+                    Text(
+                        text = stringResource(id = R.string.exhibit_name),
                         style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
                     )
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     BasicTextField(
                         maxLines = 1,
                         value = exhibitName.value,
-                        onValueChange = { exhibitName.value = it },
+                        onValueChange = { if (it.length <= 20) exhibitName.value = it },
                         textStyle = MaterialTheme.typography.h3,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
@@ -167,12 +160,16 @@ fun ExhibitInfoScreen(
                             }
                         ),
                         decorationBox = { innerTextField ->
-                            Row(modifier = Modifier
-                                .fillMaxWidth()
-                                .focusRequester(focusRequester)) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .focusRequester(focusRequester)
+                            ) {
                                 if (exhibitName.value.isEmpty()) {
-                                    Text(text = stringResource(id = R.string.exhibit_name_hint),
-                                       style = MaterialTheme.typography.h3.copy(color = color_gray700))
+                                    Text(
+                                        text = stringResource(id = R.string.exhibit_name_hint),
+                                        style = MaterialTheme.typography.h3.copy(color = color_gray700)
+                                    )
                                 }
                             }
                             innerTextField()
@@ -186,63 +183,102 @@ fun ExhibitInfoScreen(
                         cursorBrush = SolidColor(color_white)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Divider(color = color_gray900, modifier = Modifier.fillMaxWidth(), thickness = 0.8.dp)
+                    Divider(
+                        color = color_gray900,
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 0.8.dp
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(50.dp))
                 // 전시 카테고리 선택 부분
                 Column {
-                    Row(modifier = Modifier.fillMaxWidth(),
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = stringResource(id = R.string.exhibit_category), style =
+                        Text(
+                            text = stringResource(id = R.string.exhibit_category), style =
                             MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        if (categoryList?.size?.compareTo(5) == -1){
+                        if (viewModel.categoryList.size.compareTo(5) == -1) {
                             CompositionLocalProvider(
                                 LocalMinimumTouchTargetEnforcement provides false,
                             ) {
-                                TextButton(onClick = {
-                                    categoryDialogShown.value = !categoryDialogShown.value
-                                    focusManager.clearFocus() },
+                                TextButton(
+                                    onClick = {
+                                        categoryDialogShown.value = !categoryDialogShown.value
+                                        focusManager.clearFocus()
+                                    },
                                     contentPadding = PaddingValues()
                                 ) {
-                                    Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = color_mainGreen)
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = null,
+                                        tint = color_mainGreen
+                                    )
                                     Spacer(modifier = Modifier.width(2.dp))
-                                    Text(text = "카테고리 만들기", style = MaterialTheme.typography.h4.copy(
-                                        fontWeight = FontWeight.Medium, color = color_mainGreen
-                                    ))
+                                    Text(
+                                        text = "카테고리 만들기", style = MaterialTheme.typography.h4.copy(
+                                            fontWeight = FontWeight.Medium, color = color_mainGreen
+                                        )
+                                    )
                                 }
                             }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    FlowRow(modifier = Modifier.defaultMinSize(minHeight = 60.dp),
-                    ){
-                        categoryList?.forEachIndexed { index, item ->
-                            Surface(shape = RoundedCornerShape(71.dp),
-                                onClick = {
-                                    if (categorySelect.value == index) categorySelect.value = -1
-                                    else categorySelect.value = index
-                                },
-                                color = if (categorySelect.value == index) MaterialTheme.colors.secondary
-                                else MaterialTheme.colors.background,
-                                border = BorderStroke(1.dp, color = MaterialTheme.colors.secondary)
+                    if (viewModel.categoryList.isEmpty()) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = stringResource(id = R.string.category_empty_guide),
+                            style = MaterialTheme.typography.h4.copy(color = color_gray700, lineHeight = 21.sp),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                        )
+                    } else {
+                        FlowRow(
+                            modifier = Modifier.defaultMinSize(minHeight = 60.dp),
+                        ) {
+                            viewModel.categoryList.forEach { item ->
+                                Surface(
+                                    shape = RoundedCornerShape(71.dp),
+                                    onClick = {
+                                        if (categorySelect.value == item.id) categorySelect.value =
+                                            -1
+                                        else categorySelect.value = item.id
+                                    },
+                                    color = if (categorySelect.value == item.id) MaterialTheme.colors.secondary
+                                    else MaterialTheme.colors.background,
+                                    border = BorderStroke(
+                                        1.dp,
+                                        color = MaterialTheme.colors.secondary
+                                    )
 
-                            ) {
-                                Text(text = item, style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,
-                                    color = if (categorySelect.value == index) Color(0xFF282828)
-                                    else MaterialTheme.colors.secondary),
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                                )
+                                ) {
+                                    Text(
+                                        text = item.name, style = MaterialTheme.typography.h4.copy(
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (categorySelect.value == item.id) Color(
+                                                0xFF282828
+                                            )
+                                            else MaterialTheme.colors.secondary
+                                        ),
+                                        modifier = Modifier.padding(
+                                            horizontal = 16.dp,
+                                            vertical = 10.dp
+                                        )
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
                             }
-                            Spacer(modifier = Modifier.width(6.dp))
                         }
                     }
+
                 }
-                Spacer(modifier = Modifier.height(42.dp))
+                Spacer(modifier = Modifier.height(44.dp))
                 // 관람 날짜 고르기
                 Column {
                     Text(
@@ -281,53 +317,65 @@ fun ExhibitInfoScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Divider(color = color_gray900, modifier = Modifier.fillMaxWidth(), thickness = 0.8.dp)
+                    Divider(
+                        color = color_gray900,
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 0.8.dp
+                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
                 // 전시 기록장 생성하기 버튼
                 Button(
-                    onClick = {
-                        if (categorySelect.value == -1 || exhibitName.value.isEmpty() || exhibitDate.value.isEmpty()) {
-                            showToast(context, "모든 항목을 입력해주세요.")
-                        } else {
-                            recordMenuDialogShown.value = true
-                        }
-                    },
+                    colors = ButtonDefaults.buttonColors(
+                        disabledBackgroundColor = color_gray600,
+                        disabledContentColor = color_gray900,
+                        backgroundColor = color_mainGreen,
+                        contentColor = color_black
+                    ),
                     modifier = Modifier.fillMaxWidth(),
-//                enabled = exhibitName.value.isNotEmpty() && exhibitCategory.isNotEmpty() && exhibitDate.value.isNotEmpty()
+                    onClick = {recordMenuDialogShown.value = true},
+                    enabled = exhibitName.value.isNotEmpty() && categorySelect.value != -1L && exhibitDate.value.isNotEmpty()
                 ) {
-                    Text(text = stringResource(id = R.string.exhibit_create_btn), fontFamily = pretendard, fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold, color = color_black,
-                        modifier = Modifier.padding(vertical = 12.dp)
+                    Text(
+                        text = stringResource(id = R.string.exhibit_create_btn),
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        fontFamily = pretendard
                     )
                 }
-                Spacer(modifier = Modifier.height(63.dp))
+                Spacer(modifier = Modifier.height(53.dp))
             }
 
             // 임시 보관함 다이얼로그
-            if (tempStorageDialogShown.value){
+            if (tempStorageDialogShown.value) {
                 TempStorageDialog(
-                    onDismissRequest = {tempStorageDialogShown.value = false},
-                    viewModel = viewModel)
-            }
-
-            // 카테고리 다이얼로그
-            if (categoryDialogShown.value){
-                CategoryDialog(onCreateCategory = {
-                    viewModel.addCategory(it)
-                    categoryDialogShown.value = false },
-                    onDismissRequest = {categoryDialogShown.value = false},
+                    onDismissRequest = { tempStorageDialogShown.value = false },
                     viewModel = viewModel
                 )
             }
 
+            // 카테고리 다이얼로그
+            if (categoryDialogShown.value) {
+                CategoryCreateDialog(
+                    onCreateCategory = {
+                        viewModel.addCategory(it)
+                        categoryDialogShown.value = false
+                    },
+                    onDismissRequest = { categoryDialogShown.value = false },
+                    categoryState = viewModel.categoryState.collectAsState(),
+                    checkCategory = { viewModel.checkCategory(it) }
+                )
+            }
+
             // 전시 기록 시작 다이얼로그
-            if (recordMenuDialogShown.value){
+            if (recordMenuDialogShown.value) {
                 RecordMenuDialog(
-                    onCameraClick = {},
-                    onGalleryClick = {},
-                    onDismissRequest = {recordMenuDialogShown.value = false}
+                    onCameraClick = { navigateToCamera() },
+                    onGalleryClick = {
+                        recordMenuDialogShown.value = false },
+                    onDismissRequest = { recordMenuDialogShown.value = false }
                 )
             }
         }
@@ -335,64 +383,16 @@ fun ExhibitInfoScreen(
 
 }
 
-fun showToast(context : Context, msg: String){
-    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+fun changeDateFormat(postDate: String): String {
+    var dateList = postDate.split('/')
+    return String.format(
+        "%4d-%02d-%02d",
+        dateList[0].toInt(),
+        dateList[1].toInt(),
+        dateList[2].toInt()
+    )
 }
 
-val categoryList = listOf("카테고리 예시 01", "카테고리 예시 02", "카테고리 예시 03")
-
-@Composable
-fun ExhibitCategoryDropDownMenu(
-    isExpanded: MutableState<Boolean>,
-    onDropDownClick : (String) -> Unit,
-    rowSize: Float,
-    interactionSource : MutableInteractionSource,
-    onCreateCategoryClick : () -> Unit
-){
-    MaterialTheme(shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))) {
-        DropdownMenu(
-            offset = DpOffset(0.dp, 12.dp),
-            modifier = Modifier.width(with(LocalDensity.current) { rowSize.toDp() }),
-            expanded = isExpanded.value,
-            onDismissRequest = { isExpanded.value = false }
-        ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            categoryList.forEach {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    DropdownMenuItem(onClick = { onDropDownClick(it) },
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    ) {
-                        Text(text = it, fontFamily = pretendard, fontSize = 14.sp, modifier = Modifier.padding(start = 8.dp))
-                    }
-                    Divider(color = grey_bdbdbd, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp), thickness = 0.4.dp)
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 21.dp)
-                    .padding(top = 20.dp, bottom = 24.dp)
-                    .fillMaxWidth()
-                    .clickable(
-                        // ripple color 없애기
-                        indication = null,
-                        interactionSource = interactionSource,
-                        onClick = onCreateCategoryClick
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color.White,
-                    modifier = Modifier.size(32.dp),
-                    border = BorderStroke(0.8.dp, Color.Black)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(text = stringResource(id = R.string.exhibit_category_create_btn), fontSize = 16.sp, fontFamily = pretendard, fontWeight = FontWeight.SemiBold)
-            }
-        }
-    }
+fun showToast(context: Context, msg: String) {
+    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }

@@ -21,7 +21,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.home.R
-import com.yapp.gallery.home.screen.CategoryUiState
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

@@ -1,0 +1,21 @@
+package com.yapp.gallery.data.remote.record
+
+import com.yapp.gallery.data.api.ArtieSerivce
+import com.yapp.gallery.data.model.CategoryCreateBody
+import com.yapp.gallery.data.model.CreateRecordBody
+import com.yapp.gallery.domain.entity.home.CategoryItem
+import javax.inject.Inject
+
+class ExhibitRecordRemoteDataSourceImpl @Inject constructor(
+    private val artieSerivce: ArtieSerivce
+) : ExhibitRecordRemoteDataSource {
+    override suspend fun getCategoryList(): List<CategoryItem> = artieSerivce.getCategoryList()
+
+    override suspend fun createCategory(category: String): Long {
+        return artieSerivce.createCategory(CategoryCreateBody(category)).id
+    }
+
+    override suspend fun createRecord(name: String, categoryId: Long, postDate: String): Long {
+        return artieSerivce.createRecord(CreateRecordBody(name, categoryId, postDate)).id
+    }
+}
