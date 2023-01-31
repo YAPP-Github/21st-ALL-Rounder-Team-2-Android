@@ -1,5 +1,7 @@
 package com.yapp.gallery.profile.screen.category
 
+import android.view.Gravity
+import android.widget.FrameLayout
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
@@ -35,6 +38,7 @@ import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.profile.R
 import com.yapp.gallery.profile.utils.DraggableItem
 import com.yapp.gallery.profile.utils.rememberDragDropState
+import com.yapp.gallery.profile.widget.CustomSnackbarHost
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -51,168 +55,187 @@ fun CategoryManageScreen(
     var overscrollJob by remember { mutableStateOf<Job?>(null) }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+    val snackState = remember{ SnackbarHostState()}
 
     val dragDropState = rememberDragDropState(lazyListState = listState){ from, to ->
         viewModel.reorderItem(from, to)
     }
 
-    Scaffold(
-        topBar = {
-            CenterTopAppBar(
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = Color.Transparent,
-                elevation = 0.dp,
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.category_manage_btn),
-                        style = MaterialTheme.typography.h2.copy(
-                            fontWeight = FontWeight.SemiBold
-                        )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
+    ) {
+        CenterTopAppBar(
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = MaterialTheme.colors.background,
+            elevation = 0.dp,
+            title = {
+                Text(
+                    text = stringResource(id = R.string.category_manage_btn),
+                    style = MaterialTheme.typography.h2.copy(
+                        fontWeight = FontWeight.SemiBold
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = popBackStack) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                actions = {
-                    TextButton(
-                        onClick = { categoryCreateDialogShown.value = true },
-                        enabled = categoryScreenState != BaseState.Loading
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.category_add),
-                            style = MaterialTheme.typography.h3.copy(
-                                fontWeight = FontWeight.Medium
-                            ),
-                        )
-                    }
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = popBackStack) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
                 }
-            )
-        }
-    ) { paddingValues ->
-        if ((categoryScreenState as? BaseState.Success<Boolean>)?.value == true){
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-            ) {
-                Spacer(modifier = Modifier.height(36.dp))
-                // Todo : 임시 코드
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.pointerInput(dragDropState){
-                        detectDragGesturesAfterLongPress(
-                            onDrag = { change, offset ->
-                                change.consume()
-                                dragDropState.onDrag(offset = offset)
-
-                                if (overscrollJob?.isActive == true)
-                                    return@detectDragGesturesAfterLongPress
-
-                                dragDropState
-                                    .checkForOverScroll()
-                                    .takeIf { it != 0f }
-                                    ?.let {
-                                        overscrollJob =
-                                            scope.launch {
-                                                dragDropState.state.animateScrollBy(
-                                                    it*2f, tween(easing = FastOutLinearInEasing)
-                                                )
-                                            }
-                                    }
-                                    ?: run { overscrollJob?.cancel() }
-                            },
-                            onDragStart = { offset -> dragDropState.onDragStart(offset) },
-                            onDragEnd = {
-                                dragDropState.onDragInterrupted()
-                                overscrollJob?.cancel()
-                            },
-                            onDragCancel = {
-                                dragDropState.onDragInterrupted()
-                                overscrollJob?.cancel()
+            },
+            actions = {
+                TextButton(
+                    onClick = {
+                        if (viewModel.categoryList.size < 5)
+                            categoryCreateDialogShown.value = true
+                        else
+                            scope.launch {
+                                snackState.showSnackbar(
+                                    message = "최대 5개까지 생성 가능해요!",
+                                    duration = SnackbarDuration.Short
+                                )
                             }
-                        )
-                    }
+                    },
+                    enabled = categoryScreenState != BaseState.Loading
                 ) {
-                    itemsIndexed(viewModel.categoryList) { index, item ->
-                        DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
-                            val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
-                            CategoryListTile(
-                                category = item,
-                                isLast = index == viewModel.categoryList.size - 1,
-                                elevation = elevation,
-                                onDelete = { viewModel.deleteCategory(item) },
-                                data = listOf("전시 01", "전시 02a")
-                            )
-                        }
-                    }
+                    Text(
+                        text = stringResource(id = R.string.category_add),
+                        style = MaterialTheme.typography.h3.copy(
+                            fontWeight = FontWeight.Medium
+                        ),
+                    )
                 }
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (categoryScreenState is BaseState.Loading) {
-                    // 로딩 중
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(50.dp),
-                        color = color_mainBlue
-                    )
+        )
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ){
+            Column(modifier = Modifier.fillMaxSize()) {
+                if ((categoryScreenState as? BaseState.Success<Boolean>)?.value == true){
+                    Spacer(modifier = Modifier.height(36.dp))
+                    // Todo : 임시 코드
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.pointerInput(dragDropState){
+                            detectDragGesturesAfterLongPress(
+                                onDrag = { change, offset ->
+                                    change.consume()
+                                    dragDropState.onDrag(offset = offset)
+
+                                    if (overscrollJob?.isActive == true)
+                                        return@detectDragGesturesAfterLongPress
+
+                                    dragDropState
+                                        .checkForOverScroll()
+                                        .takeIf { it != 0f }
+                                        ?.let {
+                                            overscrollJob =
+                                                scope.launch {
+                                                    dragDropState.state.animateScrollBy(
+                                                        it*2f, tween(easing = FastOutLinearInEasing)
+                                                    )
+                                                }
+                                        }
+                                        ?: run { overscrollJob?.cancel() }
+                                },
+                                onDragStart = { offset -> dragDropState.onDragStart(offset) },
+                                onDragEnd = {
+                                    dragDropState.onDragInterrupted()
+                                    overscrollJob?.cancel()
+                                },
+                                onDragCancel = {
+                                    dragDropState.onDragInterrupted()
+                                    overscrollJob?.cancel()
+                                }
+                            )
+                        }
+                    ) {
+                        itemsIndexed(viewModel.categoryList) { index, item ->
+                            DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
+                                val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
+                                CategoryListTile(
+                                    category = item,
+                                    isLast = index == viewModel.categoryList.size - 1,
+                                    elevation = elevation,
+                                    onDelete = { viewModel.deleteCategory(item) },
+                                    data = listOf("전시 01", "전시 02")
+                                )
+                            }
+                        }
+                    }
                 } else {
-                    // 카테고리 리스트가 빈 리스트인 경우
                     Column(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues),
+                            .fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.category_manage_empty_guide),
-                            style = MaterialTheme.typography.h3.copy(color = color_gray600),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // 카테고리 만들기 버튼
-                        Surface(
-                            shape = RoundedCornerShape(71.dp),
-                            color = MaterialTheme.colors.background,
-                            border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
-                            onClick = { categoryCreateDialogShown.value = true }
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.category_manage_create),
-                                style = MaterialTheme.typography.h3.copy(
-                                    color = Color(0xFFA7C5F9),
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier.padding(
-                                    horizontal = 24.dp,
-                                    vertical = 12.dp
-                                )
+                        if (categoryScreenState is BaseState.Loading) {
+                            // 로딩 중
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(50.dp),
+                                color = color_mainBlue
                             )
+                        } else {
+                            // 카테고리 리스트가 빈 리스트인 경우
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.category_manage_empty_guide),
+                                    style = MaterialTheme.typography.h3.copy(color = color_gray600),
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(20.dp))
+
+                                // 카테고리 만들기 버튼
+                                Surface(
+                                    shape = RoundedCornerShape(71.dp),
+                                    color = MaterialTheme.colors.background,
+                                    border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
+                                    onClick = { categoryCreateDialogShown.value = true }
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.category_manage_create),
+                                        style = MaterialTheme.typography.h3.copy(
+                                            color = Color(0xFFA7C5F9),
+                                            fontWeight = FontWeight.Medium
+                                        ),
+                                        modifier = Modifier.padding(
+                                            horizontal = 24.dp,
+                                            vertical = 12.dp
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+
+                if (categoryCreateDialogShown.value) {
+                    CategoryCreateDialog(
+                        onCreateCategory = { viewModel.createCategory(it) },
+                        onDismissRequest = { categoryCreateDialogShown.value = false },
+                        checkCategory = { viewModel.checkCategory(it) },
+                        categoryState = viewModel.categoryState.collectAsState()
+                    )
+                }
             }
+            // 커스텀 Snackbar
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                CustomSnackbarHost(snackbarHostState = snackState)
+            }
+            
         }
 
-        if (categoryCreateDialogShown.value) {
-            CategoryCreateDialog(
-                onCreateCategory = { viewModel.createCategory(it) },
-                onDismissRequest = { categoryCreateDialogShown.value = false },
-                checkCategory = { viewModel.checkCategory(it) },
-                categoryState = viewModel.categoryState.collectAsState()
-            )
-        }
     }
 }
 
@@ -332,3 +355,4 @@ fun CategoryListTile(
     }
 
 }
+

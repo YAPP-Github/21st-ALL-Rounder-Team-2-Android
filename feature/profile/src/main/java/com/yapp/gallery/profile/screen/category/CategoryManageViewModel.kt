@@ -30,7 +30,7 @@ class CategoryManageViewModel @Inject constructor(
         // Todo : 임시 카테고리 리스트
         _categoryList.addAll(
             listOf(CategoryItem(1, "카테고리 1", 1), CategoryItem(2, "카테고리 2", 3),
-                CategoryItem(3, "카테고리 3", 2)
+                CategoryItem(3, "카테고리 3", 2), CategoryItem(4, "카테고리 4", 2)
             )
         )
         _categoryManageState.value = BaseState.Success(true)
