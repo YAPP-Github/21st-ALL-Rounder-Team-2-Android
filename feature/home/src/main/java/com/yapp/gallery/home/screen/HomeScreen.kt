@@ -1,5 +1,6 @@
 package com.yapp.gallery.home.screen
 
+import android.app.Activity
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -14,17 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.web.*
-import com.yapp.gallery.home.screen.jsInterface.EditJsObject
+import com.yapp.gallery.home.screen.jsInterface.NavigateJsObject
 
 @Composable
 fun HomeScreen(
     navigateToInfo: () -> Unit
 ){
-    // Web Client
-    val webViewClient = AccompanistWebViewClient()
-    val webChromeClient = AccompanistWebChromeClient()
-
     val viewModel = hiltViewModel<HomeViewModel>()
     Scaffold(
         floatingActionButtonPosition = FabPosition.End,
@@ -49,27 +45,15 @@ fun HomeScreen(
             AndroidView(factory = {
                 WebView(it).apply {
                     settings.javaScriptEnabled = true
-                    setWebViewClient(WebViewClient())
-                    setWebChromeClient(WebChromeClient())
+                    webViewClient = WebViewClient()
+                    webChromeClient = WebChromeClient()
+//                    loadUrl("file:///android_asset/example.html")
+//                    addJavascriptInterface(NavigateJsObject(it as Activity, navigateToInfo), "android")
                     loadUrl("https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home")
                     loadUrl("javascript: window.onload=function(){ window.android.postMessage('testing!'); }")
-                    addJavascriptInterface(EditJsObject(it), "android")
+                    addJavascriptInterface(NavigateJsObject(it as Activity, navigateToInfo), "android")
                 }
             })
-//            WebView(state = viewModel.webViewState,
-//                client = webViewClient,
-//                chromeClient = webChromeClient,
-//                onCreated = { webView ->
-//                    with(webView) {
-//                        settings.run {
-//                            javaScriptEnabled = true
-//                            domStorageEnabled = true
-//                            javaScriptCanOpenWindowsAutomatically = true
-//                        }
-//                        addJavascriptInterface(EditJsObject(navigateToInfo), "Android")
-//                    }
-//                }
-//            )
         }
     }
 

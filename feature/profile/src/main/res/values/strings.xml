@@ -17,6 +17,10 @@
     <string name="category_remove">삭제</string>
     <string name="category_exhibit_empty">전시기록이 없어요</string>
 
+    <string name="category_edit_title">카테고리 편집</string>
+    <string name="category_edit_hint">카테고리 이름을 입력하세요</string>
+    <string name="category_edit_btn">저장하기</string>
+
     <string name="category_delete_title">카테고리를 삭제하시겠습니까?</string>
     <string name="category_delete_guide">(해당되는 모든 사진이 삭제됩니다.)</string>
 

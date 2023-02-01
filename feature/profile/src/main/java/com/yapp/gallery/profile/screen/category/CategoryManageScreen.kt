@@ -1,7 +1,5 @@
 package com.yapp.gallery.profile.screen.category
 
-import android.view.Gravity
-import android.widget.FrameLayout
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -27,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
@@ -38,6 +35,7 @@ import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.profile.R
 import com.yapp.gallery.profile.utils.DraggableItem
 import com.yapp.gallery.profile.utils.rememberDragDropState
+import com.yapp.gallery.profile.widget.CategoryEditDialog
 import com.yapp.gallery.profile.widget.CustomSnackbarHost
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -161,7 +159,7 @@ fun CategoryManageScreen(
                                     category = item,
                                     isLast = index == viewModel.categoryList.size - 1,
                                     elevation = elevation,
-                                    onDelete = { viewModel.deleteCategory(item) },
+                                    viewModel = viewModel,
                                     data = listOf("전시 01", "전시 02")
                                 )
                             }
@@ -219,17 +217,19 @@ fun CategoryManageScreen(
                     }
                 }
 
+                // 카테고리 생성 다이얼로그
+
                 if (categoryCreateDialogShown.value) {
                     CategoryCreateDialog(
                         onCreateCategory = { viewModel.createCategory(it) },
                         onDismissRequest = { categoryCreateDialogShown.value = false },
                         checkCategory = { viewModel.checkCategory(it) },
-                        categoryState = viewModel.categoryState.collectAsState()
+                        categoryState = viewModel.categoryState.collectAsState().value
                     )
                 }
             }
             // 커스텀 Snackbar
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 CustomSnackbarHost(snackbarHostState = snackState)
             }
@@ -245,9 +245,10 @@ fun CategoryListTile(
     category: CategoryItem,
     isLast: Boolean,
     elevation: Dp,
-    onDelete: () -> Unit,
+    viewModel : CategoryManageViewModel,
     data: List<String>
 ) {
+    val categoryEditDialogShown = remember { mutableStateOf(false) }
     val categoryDeleteDialogShown = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier
@@ -281,7 +282,7 @@ fun CategoryListTile(
                 Text(text = stringResource(id = R.string.category_edit),
                     style = MaterialTheme.typography.h4.copy(color = color_gray500),
                     modifier = Modifier
-                        .clickable { }
+                        .clickable { categoryEditDialogShown.value = true }
                         .padding(8.dp)
                 )
 
@@ -348,8 +349,21 @@ fun CategoryListTile(
                 onDismissRequest = { categoryDeleteDialogShown.value = false },
                 onConfirm = {
                     categoryDeleteDialogShown.value = false
-                    onDelete()
+                    viewModel.deleteCategory(category)
                 }
+            )
+        }
+
+
+
+        // 카테고리 편집 다이얼로그
+        if (categoryEditDialogShown.value){
+            CategoryEditDialog(
+                category = category.name,
+                onEditCategory = {viewModel.editCategory(category, it)},
+                onDismissRequest = { categoryEditDialogShown.value = false },
+                checkEditable = { it1, it2 ->  viewModel.checkEditable(it1, it2)},
+                categoryState = viewModel.categoryState.collectAsState().value
             )
         }
     }

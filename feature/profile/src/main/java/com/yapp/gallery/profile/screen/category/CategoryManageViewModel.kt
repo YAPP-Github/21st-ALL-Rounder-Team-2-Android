@@ -42,7 +42,6 @@ class CategoryManageViewModel @Inject constructor(
             _categoryState.value = BaseState.Error("카테고리는 10자 이하이어야 합니다.")
         else
             _categoryState.value = BaseState.Success(category.isNotEmpty())
-
     }
 
     fun deleteCategory(category : CategoryItem){
@@ -54,6 +53,23 @@ class CategoryManageViewModel @Inject constructor(
     fun createCategory(categoryName: String){
         _categoryList.add(CategoryItem(5, categoryName, 1))
         _categoryManageState.value = BaseState.Success(true)
+    }
+
+    fun checkEditable(originCategory: String, category: String) {
+        if (category == originCategory)
+            _categoryState.value = BaseState.None
+        else if (_categoryList.find { it.name == category } != null)
+            _categoryState.value = BaseState.Error("이미 존재하는 카테고리입니다.")
+        else if (category.length > 10)
+            _categoryState.value = BaseState.Error("카테고리는 10자 이하이어야 합니다.")
+        else
+            _categoryState.value = BaseState.Success(category.isNotEmpty())
+    }
+
+    fun editCategory(category: CategoryItem, editedName: String){
+        // Todo : 카테고리 편집 연동
+        _categoryList[_categoryList.indexOf(category)] =
+            CategoryItem(category.id,editedName, category.sequence)
     }
 
     fun reorderItem(from: Int, to: Int){

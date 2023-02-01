@@ -364,7 +364,7 @@ fun ExhibitRecordScreen(
                         categoryDialogShown.value = false
                     },
                     onDismissRequest = { categoryDialogShown.value = false },
-                    categoryState = viewModel.categoryState.collectAsState(),
+                    categoryState = viewModel.categoryState.collectAsState().value,
                     checkCategory = { viewModel.checkCategory(it) }
                 )
             }
