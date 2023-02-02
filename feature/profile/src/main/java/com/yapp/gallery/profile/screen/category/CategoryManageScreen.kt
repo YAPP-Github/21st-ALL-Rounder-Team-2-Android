@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +60,16 @@ fun CategoryManageScreen(
 
     val dragDropState = rememberDragDropState(lazyListState = listState){ from, to ->
         viewModel.reorderItem(from, to)
+    }
+
+    val context = LocalContext.current
+    LaunchedEffect(Unit){
+        viewModel.errors.collect{error ->
+            snackState.showSnackbar(
+                message = error.asString(context),
+                duration = SnackbarDuration.Short
+            )
+        }
     }
 
     Column(
@@ -304,17 +315,22 @@ fun CategoryListTile(
 
             // 편집 및 삭제
             Row(
-                modifier = Modifier.padding(end = 8.dp).constrainAs(row2){
-                    start.linkTo(text2.end, margin = 12.dp)
-                    end.linkTo(parent.end)
-                    top.linkTo(button.top)
-                    bottom.linkTo(button.bottom)
-                }
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .constrainAs(row2) {
+                        start.linkTo(text2.end, margin = 12.dp)
+                        end.linkTo(parent.end)
+                        top.linkTo(button.top)
+                        bottom.linkTo(button.bottom)
+                    }
             ) {
                 Text(text = stringResource(id = R.string.category_edit),
                     style = MaterialTheme.typography.h4.copy(color = color_gray500),
                     modifier = Modifier
-                        .clickable { categoryEditDialogShown.value = true }
+                        .clickable {
+                            viewModel.checkEditable(category.name, category.name)
+                            categoryEditDialogShown.value = true
+                        }
                         .padding(8.dp)
                 )
 

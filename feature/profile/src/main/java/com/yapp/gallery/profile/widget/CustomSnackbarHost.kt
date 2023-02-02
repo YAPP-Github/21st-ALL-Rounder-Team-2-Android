@@ -31,7 +31,7 @@ fun CustomSnackbarHost(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 18.dp),
+                    .padding(18.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
