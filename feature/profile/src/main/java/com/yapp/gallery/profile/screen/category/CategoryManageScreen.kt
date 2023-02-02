@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
@@ -256,29 +258,59 @@ fun CategoryListTile(
         .shadow(elevation)
         .background(color = color_background)) {
         // 카테고리 브리프 정보 및 첫 행
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier.combinedClickable(
-                onLongClick = {},
-                onClick = {}
-            )) {
+        ConstraintLayout(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val (button, row2, text1, text2) = createRefs()
+            IconButton(onClick = { /*TODO*/ }, modifier = Modifier
+                .combinedClickable(
+                    onLongClick = {},
+                    onClick = {})
+                .constrainAs(button) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                }
+            ) {
                 Icon(
                     imageVector = Icons.Default.Menu, contentDescription = null,
                     tint = color_gray500, modifier = Modifier.size(16.dp)
                 )
             }
+
+            // 전시 브리프 정보
             Text(
                 text = category.name,
-                style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold),
+                modifier = Modifier.constrainAs(text1){
+                    start.linkTo(button.end)
+                    end.linkTo(text2.start)
+                    top.linkTo(button.top, margin = 11.dp)
+                    width = Dimension.fillToConstraints
+                }
             )
-            Spacer(modifier = Modifier.width(10.dp))
+
+
             Text(
                 text = "${category.id}${stringResource(id = R.string.category_exhibit_cnt)}",
-                style = MaterialTheme.typography.h4.copy(color = color_gray500)
+                style = MaterialTheme.typography.h4.copy(color = color_gray500),
+                modifier = Modifier.constrainAs(text2){
+                    start.linkTo(text1.end)
+                    end.linkTo(row2.start)
+                    top.linkTo(button.top)
+                    bottom.linkTo(button.bottom)
+                },
+                textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.weight(1f))
 
             // 편집 및 삭제
-            Row(modifier = Modifier.padding(end = 8.dp)) {
+            Row(
+                modifier = Modifier.padding(end = 8.dp).constrainAs(row2){
+                    start.linkTo(text2.end, margin = 12.dp)
+                    end.linkTo(parent.end)
+                    top.linkTo(button.top)
+                    bottom.linkTo(button.bottom)
+                }
+            ) {
                 Text(text = stringResource(id = R.string.category_edit),
                     style = MaterialTheme.typography.h4.copy(color = color_gray500),
                     modifier = Modifier

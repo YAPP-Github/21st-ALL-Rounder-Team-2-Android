@@ -87,7 +87,7 @@ fun CategoryCreateDialog(
                                         .h4.copy(color = color_mainGreen)
                                 )
                                 Text(
-                                    text = "/10",
+                                    text = "/20",
                                     modifier = Modifier.padding(end = 10.dp),
                                     style = MaterialTheme.typography
                                         .h4.copy(color = color_gray600)

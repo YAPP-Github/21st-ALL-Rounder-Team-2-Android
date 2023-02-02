@@ -1,6 +1,6 @@
 package com.yapp.gallery.data.api
 
-import com.yapp.gallery.data.model.CategoryCreateBody
+import com.yapp.gallery.data.model.CategoryBody
 import com.yapp.gallery.data.model.CreateRecordBody
 import com.yapp.gallery.data.model.UserResponse
 import com.yapp.gallery.domain.entity.home.CreatedId
@@ -19,7 +19,11 @@ interface ArtieSerivce {
 
     // 카테고리 생성
     @POST("/category")
-    suspend fun createCategory(@Body categoryCreateBody: CategoryCreateBody) : CreatedId
+    suspend fun createCategory(@Body categoryBody: CategoryBody) : CreatedId
+
+    // 카테고리 편집
+    @PUT("/category/{id}")
+    suspend fun editCategory(@Path("id") categoryId: Long, @Body categoryBody: CategoryBody) : String
 
     // 전시 생성
     @POST("/post")

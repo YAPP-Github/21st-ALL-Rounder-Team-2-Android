@@ -20,6 +20,7 @@ systemuicontroller = "0.23.1"
 webview = "0.25.1"
 flowLayout = "0.28.0"
 numberPicker = "1.0.3"
+constraintLayout = "1.0.1"
 
 # retrofit, okhttp
 retrofit = "2.9.0"
@@ -39,11 +40,13 @@ androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compos
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation"}
+androidx-compose-constraintLayout = { module ="androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintLayout"}
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-navigation-compose"}
 androidx-compose-icon = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 androidx-camera = { module = "androidx.camera:camera-camera2", version.ref = "camera" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camera" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera" }
+
 
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx"}
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
@@ -81,7 +84,7 @@ hilt-compilers = [ "hilt-compiler", "hilt-integrations-compiler" ]
 
 compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-compose-material",
     "androidx-compose-uiTooling", "androidx-hilt-navigation-compose", "androidx-compose-navigation",
-    "androidx-compose-icon"
+    "androidx-compose-icon", "androidx-compose-constraintLayout"
 ]
 androidx = [ "androidx-camera", "androidx-camera-view", "androidx-camera-lifecycle" ]
 coil = [ "coil-compose" ]

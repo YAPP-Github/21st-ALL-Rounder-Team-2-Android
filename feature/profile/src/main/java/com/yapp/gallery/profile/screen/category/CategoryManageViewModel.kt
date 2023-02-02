@@ -1,17 +1,22 @@
 package com.yapp.gallery.profile.screen.category
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.domain.entity.home.CategoryItem
+import com.yapp.gallery.domain.usecase.profile.EditCategoryUseCase
+import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CategoryManageViewModel @Inject constructor(
-
+    private val getCategoryListUseCase: GetCategoryListUseCase,
+    private val editCategoryUseCase: EditCategoryUseCase
 ) : ViewModel(){
 
     private var _categoryList = mutableStateListOf<CategoryItem>()
@@ -27,23 +32,40 @@ class CategoryManageViewModel @Inject constructor(
         get() = _categoryManageState
 
     init {
-        // Todo : 임시 카테고리 리스트
-        _categoryList.addAll(
-            listOf(CategoryItem(1, "카테고리 1", 1), CategoryItem(2, "카테고리 2", 3),
-                CategoryItem(3, "카테고리 3", 2), CategoryItem(4, "카테고리 4", 2)
-            )
-        )
-        _categoryManageState.value = BaseState.Success(true)
+        getCategoryList()
+    }
+
+    private fun getCategoryList(){
+        viewModelScope.launch {
+            getCategoryListUseCase()
+                .catch { _categoryManageState.value = BaseState.Error(it.message) }
+                .collect{
+                    _categoryList.addAll(it)
+                    _categoryManageState.value = BaseState.Success(it.isNotEmpty())
+                }
+        }
+
     }
     fun checkCategory(category: String){
         if (_categoryList.find { it.name == category } != null){
             _categoryState.value = BaseState.Error("이미 존재하는 카테고리입니다.")
-        } else if (category.length > 10)
-            _categoryState.value = BaseState.Error("카테고리는 10자 이하이어야 합니다.")
+        } else if (category.length > 20)
+            _categoryState.value = BaseState.Error("카테고리는 20자 이하이어야 합니다.")
         else
             _categoryState.value = BaseState.Success(category.isNotEmpty())
     }
 
+    fun editCategory(category: CategoryItem, editedName: String){
+        viewModelScope.launch {
+            editCategoryUseCase(category.id, editedName)
+                .catch {  }
+                .collectLatest {
+                    Log.e("카테고리 편집", it)
+                }
+        }
+        _categoryList[_categoryList.indexOf(category)] =
+            CategoryItem(category.id,editedName, category.sequence)
+    }
     fun deleteCategory(category : CategoryItem){
         _categoryList.remove(category)
         if (_categoryList.isEmpty())
@@ -60,16 +82,10 @@ class CategoryManageViewModel @Inject constructor(
             _categoryState.value = BaseState.None
         else if (_categoryList.find { it.name == category } != null)
             _categoryState.value = BaseState.Error("이미 존재하는 카테고리입니다.")
-        else if (category.length > 10)
-            _categoryState.value = BaseState.Error("카테고리는 10자 이하이어야 합니다.")
+        else if (category.length > 20)
+            _categoryState.value = BaseState.Error("카테고리는 20자 이하이어야 합니다.")
         else
             _categoryState.value = BaseState.Success(category.isNotEmpty())
-    }
-
-    fun editCategory(category: CategoryItem, editedName: String){
-        // Todo : 카테고리 편집 연동
-        _categoryList[_categoryList.indexOf(category)] =
-            CategoryItem(category.id,editedName, category.sequence)
     }
 
     fun reorderItem(from: Int, to: Int){

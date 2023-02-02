@@ -16,4 +16,10 @@ class ProfileRepositoryImpl @Inject constructor(
             User(it.id ,it.uid, it.name, it.profileImage)
         }
     }
+
+    override fun editCategory(
+        categoryId: Long, editedName: String
+    ): Flow<String> {
+        return profileRemoteDataSource.editCategory(categoryId, editedName)
+    }
 }
