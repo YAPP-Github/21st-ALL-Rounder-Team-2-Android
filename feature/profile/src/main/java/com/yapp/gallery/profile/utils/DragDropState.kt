@@ -60,9 +60,9 @@ class DragDropState internal constructor(
     fun onDragInterrupted() {
         if (currentIndexOfDraggedItem != null) {
             previousIndexOfDraggedItem = currentIndexOfDraggedItem
-            // val startOffset = draggingItemOffset
+             val startOffset = draggingItemOffset
             scope.launch {
-                //previousItemOffset.snapTo(startOffset)
+                previousItemOffset.snapTo(startOffset)
                 previousItemOffset.animateTo(
                     0f,
                     tween(easing = FastOutLinearInEasing)

@@ -7,6 +7,8 @@
     <string name="exhibit_category">전시 카테고리</string>
     <string name="exhibit_category_hint">전시 기록을 보관할 카테고리를 설정해주세요</string>
     <string name="exhibit_date">관람 날짜</string>
+    <string name="exhibit_link">온라인 전시</string>
+    <string name="exhibit_link_hint">온라인 전시 링크가 있다면 링크를 남겨주세요</string>
     <string name="exhibit_date_hint">전시를 관람한 날짜를 선택해주세요</string>
     <string name="exhibit_create_btn">전시기록 시작하기</string>
     <string name="exhibit_category_create_btn">카테고리 만들기</string>

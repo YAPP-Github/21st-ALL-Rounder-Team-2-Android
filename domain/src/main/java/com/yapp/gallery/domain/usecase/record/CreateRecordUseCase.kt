@@ -6,6 +6,6 @@ import javax.inject.Inject
 class CreateRecordUseCase @Inject constructor(
     private val repository: ExhibitRecordRepository
 ) {
-    suspend operator fun invoke(name: String, categoryId: Long, postDate: String)
+    operator fun invoke(name: String, categoryId: Long, postDate: String)
         = repository.createRecord(name, categoryId, postDate)
 }

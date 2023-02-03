@@ -4,12 +4,15 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -60,12 +63,13 @@ fun ExhibitRecordScreen(
 
     val exhibitName = rememberSaveable { mutableStateOf("") }
     val exhibitDate = rememberSaveable { mutableStateOf("") }
+    val exhibitLink = rememberSaveable { mutableStateOf("") }
 
     val interactionSource = remember { MutableInteractionSource() }
 
     val categoryDialogShown = remember { mutableStateOf(false) }
     val recordMenuDialogShown = remember { mutableStateOf(false) }
-    val tempStorageDialogShown = remember { mutableStateOf(false) }
+//    val tempStorageDialogShown = remember { mutableStateOf(false) }
 
     // 카테고리 리스트
     val categorySelect = rememberSaveable {
@@ -75,6 +79,9 @@ fun ExhibitRecordScreen(
     // Bottom Sheet State
     val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
+
+    // 스크롤 상태
+    val scrollState = rememberScrollState()
 
 
     ModalBottomSheetLayout(
@@ -117,18 +124,43 @@ fun ExhibitRecordScreen(
                     } else {
                         null
                     },
-                    actions = {
-                        TextButton(onClick = { tempStorageDialogShown.value = true }) {
-                            Text(
-                                text = stringResource(id = R.string.exhibit_temp),
-                                style = MaterialTheme.typography.h3.copy(
-                                    fontWeight = FontWeight.Medium, color = color_gray400
-                                ),
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(4.dp))
-                    }
+//                    actions = {
+//                        TextButton(onClick = { tempStorageDialogShown.value = true }) {
+//                            Text(
+//                                text = stringResource(id = R.string.exhibit_temp),
+//                                style = MaterialTheme.typography.h3.copy(
+//                                    fontWeight = FontWeight.Medium, color = color_gray400
+//                                ),
+//                            )
+//                        }
+//                        Spacer(modifier = Modifier.width(4.dp))
+//                    }
                 )
+            },
+            floatingActionButtonPosition = FabPosition.Center,
+            floatingActionButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        disabledBackgroundColor = color_gray600,
+                        disabledContentColor = color_gray900,
+                        backgroundColor = color_mainGreen,
+                        contentColor = color_black
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 53.dp),
+                    onClick = {recordMenuDialogShown.value = true},
+                    enabled = exhibitName.value.isNotEmpty() && categorySelect.value != -1L && exhibitDate.value.isNotEmpty()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.exhibit_create_btn),
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        fontFamily = pretendard
+                    )
+                }
             }
         ) { paddingValues ->
             Column(
@@ -136,6 +168,7 @@ fun ExhibitRecordScreen(
                     .padding(paddingValues)
                     .padding(horizontal = 20.dp)
                     .fillMaxSize()
+                    .verticalScroll(scrollState)
             ) {
                 Spacer(modifier = Modifier.height(48.dp))
                 // 전시명 입력 부분
@@ -184,7 +217,7 @@ fun ExhibitRecordScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Divider(
-                        color = color_gray900,
+                        color = color_gray600,
                         modifier = Modifier.fillMaxWidth(),
                         thickness = 0.8.dp
                     )
@@ -216,7 +249,8 @@ fun ExhibitRecordScreen(
                                     Icon(
                                         imageVector = Icons.Default.Add,
                                         contentDescription = null,
-                                        tint = color_mainGreen
+                                        tint = color_mainGreen,
+                                        modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(2.dp))
                                     Text(
@@ -231,17 +265,16 @@ fun ExhibitRecordScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
                     if (viewModel.categoryList.isEmpty()) {
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(22.dp))
                         Text(
                             text = stringResource(id = R.string.category_empty_guide),
                             style = MaterialTheme.typography.h4.copy(color = color_gray700, lineHeight = 21.sp),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                         )
+                        Spacer(modifier = Modifier.height(55.dp))
                     } else {
-                        FlowRow(
-                            modifier = Modifier.defaultMinSize(minHeight = 60.dp),
-                        ) {
+                        FlowRow{
                             viewModel.categoryList.forEach { item ->
                                 Surface(
                                     shape = RoundedCornerShape(71.dp),
@@ -275,17 +308,17 @@ fun ExhibitRecordScreen(
                                 Spacer(modifier = Modifier.width(6.dp))
                             }
                         }
+                        Spacer(modifier = Modifier.height(50.dp))
                     }
 
                 }
-                Spacer(modifier = Modifier.height(44.dp))
                 // 관람 날짜 고르기
                 Column {
                     Text(
                         text = stringResource(id = R.string.exhibit_date),
                         style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
                     )
-                    Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         modifier = Modifier
                             .clickable(
@@ -318,43 +351,74 @@ fun ExhibitRecordScreen(
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Divider(
-                        color = color_gray900,
+                        color = color_gray600,
                         modifier = Modifier.fillMaxWidth(),
                         thickness = 0.8.dp
                     )
                 }
-
-                Spacer(modifier = Modifier.weight(1f))
-                // 전시 기록장 생성하기 버튼
-                Button(
-                    colors = ButtonDefaults.buttonColors(
-                        disabledBackgroundColor = color_gray600,
-                        disabledContentColor = color_gray900,
-                        backgroundColor = color_mainGreen,
-                        contentColor = color_black
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {recordMenuDialogShown.value = true},
-                    enabled = exhibitName.value.isNotEmpty() && categorySelect.value != -1L && exhibitDate.value.isNotEmpty()
-                ) {
+                Spacer(modifier = Modifier.height(50.dp))
+                // 웹 링크
+                Column {
                     Text(
-                        text = stringResource(id = R.string.exhibit_create_btn),
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp,
-                        fontFamily = pretendard
+                        text = stringResource(id = R.string.exhibit_link),
+                        style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    BasicTextField(
+                        maxLines = 1,
+                        value = exhibitLink.value,
+                        onValueChange = { exhibitLink.value = it },
+                        textStyle = MaterialTheme.typography.h3,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                // Todo : 링크 임베드
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        decorationBox = { innerTextField ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .focusRequester(focusRequester)
+                            ) {
+                                if (exhibitLink.value.isEmpty()) {
+                                    Text(
+                                        text = stringResource(id = R.string.exhibit_link_hint),
+                                        style = MaterialTheme.typography.h3.copy(color = color_gray700)
+                                    )
+                                }
+                            }
+                            innerTextField()
+                        },
+                        modifier = Modifier.onKeyEvent { keyEvent ->
+                            if (keyEvent.key != Key.Enter || keyEvent.key != Key.SystemNavigationDown) return@onKeyEvent false
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                            // Todo : 링크 임베드
+                            true
+                        },
+                        cursorBrush = SolidColor(color_white)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Divider(
+                        color = color_gray600,
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 0.8.dp
                     )
                 }
-                Spacer(modifier = Modifier.height(53.dp))
             }
 
-            // 임시 보관함 다이얼로그
-            if (tempStorageDialogShown.value) {
-                TempStorageDialog(
-                    onDismissRequest = { tempStorageDialogShown.value = false },
-                    viewModel = viewModel
-                )
-            }
+//            // 임시 보관함 다이얼로그
+//            if (tempStorageDialogShown.value) {
+//                TempStorageDialog(
+//                    onDismissRequest = { tempStorageDialogShown.value = false },
+//                    viewModel = viewModel
+//                )
+//            }
 
             // 카테고리 다이얼로그
             if (categoryDialogShown.value) {
@@ -391,8 +455,4 @@ fun changeDateFormat(postDate: String): String {
         dateList[1].toInt(),
         dateList[2].toInt()
     )
-}
-
-fun showToast(context: Context, msg: String) {
-    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }

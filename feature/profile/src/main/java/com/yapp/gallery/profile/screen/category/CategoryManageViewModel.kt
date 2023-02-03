@@ -138,14 +138,14 @@ class CategoryManageViewModel @Inject constructor(
             _categoryList[from].sequence = _categoryList[to].sequence.also {
                 _categoryList[to].sequence = _categoryList[from].sequence
             }
+            _categoryList.add(to, _categoryList.removeAt(from))
             viewModelScope.launch {
                 changeSequenceUseCase(_categoryList)
                     .catch {
                         _errorChannel.send(UiText.DynamicString(it.message.toString()))
                     }
                     .collectLatest {
-                        if (it)
-                            _categoryList.add(to, _categoryList.removeAt(from))
+//                        if (it)
 //                        else
 //                            _errorChannel.send(UiText.DynamicString(it.message.toString()))
                     }

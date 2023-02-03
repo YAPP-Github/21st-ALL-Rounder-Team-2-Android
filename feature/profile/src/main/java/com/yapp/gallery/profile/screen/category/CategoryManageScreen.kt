@@ -278,7 +278,7 @@ fun CategoryListTile(
                     onLongClick = {},
                     onClick = {})
                 .constrainAs(button) {
-                    start.linkTo(parent.start)
+                    start.linkTo(parent.start, margin = 5.dp)
                     top.linkTo(parent.top)
                 }
             ) {
@@ -316,7 +316,7 @@ fun CategoryListTile(
             // 편집 및 삭제
             Row(
                 modifier = Modifier
-                    .padding(end = 8.dp)
+                    .padding(end = 15.dp)
                     .constrainAs(row2) {
                         start.linkTo(text2.end, margin = 12.dp)
                         end.linkTo(parent.end)
@@ -383,7 +383,7 @@ fun CategoryListTile(
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 20.dp),
                 color = color_gray700,
                 thickness = 0.4.dp
             )
