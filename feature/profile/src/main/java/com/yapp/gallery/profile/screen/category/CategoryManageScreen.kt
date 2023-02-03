@@ -396,8 +396,8 @@ fun CategoryListTile(
                 subTitle = stringResource(id = R.string.category_delete_guide),
                 onDismissRequest = { categoryDeleteDialogShown.value = false },
                 onConfirm = {
-                    categoryDeleteDialogShown.value = false
                     viewModel.deleteCategory(category)
+                    categoryDeleteDialogShown.value = false
                 }
             )
         }

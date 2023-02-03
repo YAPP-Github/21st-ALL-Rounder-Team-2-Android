@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.model.UiText
 import com.yapp.gallery.domain.entity.home.CategoryItem
+import com.yapp.gallery.domain.usecase.profile.DeleteCategoryUseCase
 import com.yapp.gallery.domain.usecase.profile.EditCategoryUseCase
+import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
 import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
 import com.yapp.gallery.profile.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +21,9 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryManageViewModel @Inject constructor(
     private val getCategoryListUseCase: GetCategoryListUseCase,
-    private val editCategoryUseCase: EditCategoryUseCase
+    private val editCategoryUseCase: EditCategoryUseCase,
+    private val deleteCategoryUseCase: DeleteCategoryUseCase,
+    private val createCategoryUseCase: CreateCategoryUseCase
 ) : ViewModel(){
 
     // 카테고리 리스트 상태
@@ -50,7 +54,7 @@ class CategoryManageViewModel @Inject constructor(
             getCategoryListUseCase()
                 .catch {
                     _categoryManageState.value = BaseState.Error(it.message)
-                    _errorChannel.send(UiText.StringResource(R.string.category_list_error))
+//                    _errorChannel.send(UiText.StringResource(R.string.category_list_error))
                 }
                 .collect{
                     _categoryList.addAll(it)
@@ -72,7 +76,6 @@ class CategoryManageViewModel @Inject constructor(
         viewModelScope.launch {
             editCategoryUseCase(category.id, editedName)
                 .catch {
-                    _categoryState.value = BaseState.None
                     _errorChannel.send(UiText.StringResource(R.string.category_edit_error))
                 }
                 .collectLatest {
@@ -83,14 +86,30 @@ class CategoryManageViewModel @Inject constructor(
         }
     }
     fun deleteCategory(category : CategoryItem){
-        _categoryList.remove(category)
-        if (_categoryList.isEmpty())
-            _categoryManageState.value = BaseState.Success(false)
+        viewModelScope.launch {
+            deleteCategoryUseCase(category.id)
+                .catch {
+                    _errorChannel.send(UiText.StringResource(R.string.category_delete_erorr))
+                }
+                .collectLatest {
+                    _categoryList.remove(category)
+                    if (_categoryList.isEmpty())
+                        _categoryManageState.value = BaseState.Success(false)
+                }
+        }
     }
 
     fun createCategory(categoryName: String){
-        _categoryList.add(CategoryItem(5, categoryName, 1))
-        _categoryManageState.value = BaseState.Success(true)
+        viewModelScope.launch {
+            createCategoryUseCase(categoryName)
+                .catch {
+                    _errorChannel.send(UiText.StringResource(R.string.category_add_error))
+                }
+                .collectLatest {
+                    _categoryList.add(CategoryItem(it, categoryName, categoryList.size))
+                    _categoryManageState.value = BaseState.Success(true)
+                }
+        }
     }
 
     fun checkEditable(originCategory: String, category: String) {

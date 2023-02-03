@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface ProfileRepository {
     fun loadUserData() : Flow<User>
     fun editCategory(categoryId: Long, editedName: String) : Flow<String>
+    fun deleteCategory(categoryId: Long) : Flow<String>
 }

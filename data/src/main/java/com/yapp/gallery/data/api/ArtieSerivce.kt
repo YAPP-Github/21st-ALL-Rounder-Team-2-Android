@@ -25,6 +25,10 @@ interface ArtieSerivce {
     @PUT("/category/{id}")
     suspend fun editCategory(@Path("id") categoryId: Long, @Body categoryBody: CategoryBody) : String
 
+    // 카테고리 삭제
+    @DELETE("/category/{id}")
+    suspend fun deleteCategory(@Path("id") categoryId: Long) : String
+
     // 전시 생성
     @POST("/post")
     suspend fun createRecord(@Body createRecordBody: CreateRecordBody) : CreatedId

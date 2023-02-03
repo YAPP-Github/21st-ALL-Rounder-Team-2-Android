@@ -22,4 +22,10 @@ class ProfileRepositoryImpl @Inject constructor(
     ): Flow<String> {
         return profileRemoteDataSource.editCategory(categoryId, editedName)
     }
+
+    override fun deleteCategory(
+        categoryId: Long
+    ): Flow<String> {
+        return profileRemoteDataSource.deleteCategory(categoryId)
+    }
 }

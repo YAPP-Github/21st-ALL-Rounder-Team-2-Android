@@ -23,4 +23,10 @@ class ProfileRemoteDataSourceImpl @Inject constructor(
     ): Flow<String> = flow {
         emit(artieSerivce.editCategory(categoryId, CategoryBody(editedName)))
     }.flowOn(dispatcher)
+
+    override fun deleteCategory(
+        categoryId: Long
+    ): Flow<String> = flow {
+        emit(artieSerivce.deleteCategory(categoryId))
+    }.flowOn(dispatcher)
 }
