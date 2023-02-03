@@ -4,6 +4,7 @@ import com.yapp.gallery.data.api.ArtieSerivce
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
 import com.yapp.gallery.data.model.CategoryBody
 import com.yapp.gallery.data.model.UserResponse
+import com.yapp.gallery.domain.entity.home.CategoryItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,13 +21,19 @@ class ProfileRemoteDataSourceImpl @Inject constructor(
 
     override fun editCategory(
         categoryId: Long, editedName: String
-    ): Flow<String> = flow {
-        emit(artieSerivce.editCategory(categoryId, CategoryBody(editedName)))
+    ): Flow<Boolean> = flow {
+        emit(artieSerivce.editCategory(categoryId, CategoryBody(editedName)).isSuccessful)
     }.flowOn(dispatcher)
 
     override fun deleteCategory(
         categoryId: Long
-    ): Flow<String> = flow {
-        emit(artieSerivce.deleteCategory(categoryId))
+    ): Flow<Boolean> = flow {
+        emit(artieSerivce.deleteCategory(categoryId).isSuccessful)
+    }.flowOn(dispatcher)
+
+    override fun editCategorySequence(
+        categoryList: List<CategoryItem>
+    ): Flow<Boolean> = flow {
+        emit(artieSerivce.changeCategorySequence(categoryList.sortedBy {c -> c.sequence}).isSuccessful)
     }.flowOn(dispatcher)
 }

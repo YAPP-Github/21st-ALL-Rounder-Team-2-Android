@@ -8,6 +8,7 @@ import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.model.UiText
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.usecase.profile.DeleteCategoryUseCase
+import com.yapp.gallery.domain.usecase.profile.EditCategorySequenceUseCase
 import com.yapp.gallery.domain.usecase.profile.EditCategoryUseCase
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
 import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
@@ -23,7 +24,8 @@ class CategoryManageViewModel @Inject constructor(
     private val getCategoryListUseCase: GetCategoryListUseCase,
     private val editCategoryUseCase: EditCategoryUseCase,
     private val deleteCategoryUseCase: DeleteCategoryUseCase,
-    private val createCategoryUseCase: CreateCategoryUseCase
+    private val createCategoryUseCase: CreateCategoryUseCase,
+    private val changeSequenceUseCase: EditCategorySequenceUseCase
 ) : ViewModel(){
 
     // 카테고리 리스트 상태
@@ -76,12 +78,16 @@ class CategoryManageViewModel @Inject constructor(
         viewModelScope.launch {
             editCategoryUseCase(category.id, editedName)
                 .catch {
+                    Log.e("category error", it.message.toString())
                     _errorChannel.send(UiText.StringResource(R.string.category_edit_error))
                 }
                 .collectLatest {
-                    Log.e("카테고리 편집", it)
-                    _categoryList[_categoryList.indexOf(category)] =
-                        CategoryItem(category.id,editedName, category.sequence)
+                    Log.e("카테고리 편집", it.toString())
+                    if (it)
+                        _categoryList[_categoryList.indexOf(category)] = CategoryItem(
+                            category.id,editedName, category.sequence)
+                    else
+                        _errorChannel.send(UiText.StringResource(R.string.category_edit_error))
                 }
         }
     }
@@ -92,9 +98,12 @@ class CategoryManageViewModel @Inject constructor(
                     _errorChannel.send(UiText.StringResource(R.string.category_delete_erorr))
                 }
                 .collectLatest {
-                    _categoryList.remove(category)
-                    if (_categoryList.isEmpty())
-                        _categoryManageState.value = BaseState.Success(false)
+                    if (it){
+                        _categoryList.remove(category)
+                        if (_categoryList.isEmpty())
+                            _categoryManageState.value = BaseState.Success(false)
+                    } else
+                        _errorChannel.send(UiText.StringResource(R.string.category_delete_erorr))
                 }
         }
     }
@@ -124,7 +133,23 @@ class CategoryManageViewModel @Inject constructor(
     }
 
     fun reorderItem(from: Int, to: Int){
-        _categoryList.add(to, _categoryList.removeAt(from))
+        // 달라진게 있으면 재정렬
+        if (from != to){
+            _categoryList[from].sequence = _categoryList[to].sequence.also {
+                _categoryList[to].sequence = _categoryList[from].sequence
+            }
+            viewModelScope.launch {
+                changeSequenceUseCase(_categoryList)
+                    .catch {
+                        _errorChannel.send(UiText.DynamicString(it.message.toString()))
+                    }
+                    .collectLatest {
+                        if (it)
+                            _categoryList.add(to, _categoryList.removeAt(from))
+//                        else
+//                            _errorChannel.send(UiText.DynamicString(it.message.toString()))
+                    }
+            }
+        }
     }
-
 }

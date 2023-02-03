@@ -6,6 +6,7 @@ import com.yapp.gallery.data.model.UserResponse
 import com.yapp.gallery.domain.entity.home.CreatedId
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.login.CreateUserResponse
+import retrofit2.Response
 import retrofit2.http.*
 
 interface ArtieSerivce {
@@ -23,11 +24,15 @@ interface ArtieSerivce {
 
     // 카테고리 편집
     @PUT("/category/{id}")
-    suspend fun editCategory(@Path("id") categoryId: Long, @Body categoryBody: CategoryBody) : String
+    suspend fun editCategory(@Path("id") categoryId: Long, @Body categoryBody: CategoryBody) : Response<Unit>
 
     // 카테고리 삭제
     @DELETE("/category/{id}")
-    suspend fun deleteCategory(@Path("id") categoryId: Long) : String
+    suspend fun deleteCategory(@Path("id") categoryId: Long) : Response<Unit>
+
+    // 카테고리 순서 변경
+    @PUT("/category/sequence")
+    suspend fun changeCategorySequence(@Body categoryList : List<CategoryItem>) : Response<Unit>
 
     // 전시 생성
     @POST("/post")

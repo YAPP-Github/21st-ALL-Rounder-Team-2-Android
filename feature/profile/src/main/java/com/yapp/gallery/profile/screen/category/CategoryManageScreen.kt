@@ -173,7 +173,7 @@ fun CategoryManageScreen(
                                     isLast = index == viewModel.categoryList.size - 1,
                                     elevation = elevation,
                                     viewModel = viewModel,
-                                    data = listOf("전시 01", "전시 02")
+                                    data = emptyList()
                                 )
                             }
                         }
@@ -302,7 +302,7 @@ fun CategoryListTile(
 
 
             Text(
-                text = "${category.id}${stringResource(id = R.string.category_exhibit_cnt)}",
+                text = "${data.size}${stringResource(id = R.string.category_exhibit_cnt)}",
                 style = MaterialTheme.typography.h4.copy(color = color_gray500),
                 modifier = Modifier.constrainAs(text2){
                     start.linkTo(text1.end)
