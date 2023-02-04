@@ -17,10 +17,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : ComponentActivity() {
-//    @Inject lateinit var cameraNavigator: CameraNavigator
-
+    @Inject lateinit var cameraNavigator: CameraNavigator
     @Inject lateinit var profileNavigator: ProfileNavigator
     private lateinit var navController : NavHostController
+
     private var backKeyPressedTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +28,9 @@ class HomeActivity : ComponentActivity() {
         setContent {
             navController = rememberNavController()
             GalleryTheme {
-                HomeNavHost(navHostController = navController, profileNavigator = profileNavigator)
+                HomeNavHost(navHostController = navController, profileNavigator = profileNavigator,
+                    cameraNavigator = cameraNavigator
+                )
             }
         }
     }

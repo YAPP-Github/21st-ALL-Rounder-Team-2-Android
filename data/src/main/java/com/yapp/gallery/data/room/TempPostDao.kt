@@ -12,7 +12,7 @@ interface TempPostDao {
     fun insertTempPost(post: TempPost)
 
     // 가장 최근 포스트 받기
-    @Query("SELECT TOP 1 * FROM TempPostTable ORDER BY postId DESC")
+    @Query("SELECT * FROM TempPostTable ORDER BY postId DESC LIMIT 1")
     fun getPost(): TempPost
 
     // 임시 포스트 전부 삭제

@@ -10,11 +10,13 @@ import androidx.navigation.compose.composable
 import com.yapp.gallery.home.screen.ExhibitRecordScreen
 import com.yapp.gallery.home.screen.HomeScreen
 import com.yapp.gallery.navigation.profile.ProfileNavigator
+import com.yapp.navigation.camera.CameraNavigator
 
 @Composable
 fun HomeNavHost(
     navHostController: NavHostController,
-    profileNavigator: ProfileNavigator
+    profileNavigator: ProfileNavigator,
+    cameraNavigator: CameraNavigator
 ){
     val context = LocalContext.current
     NavHost(navController = navHostController, startDestination = "home"){
@@ -24,7 +26,9 @@ fun HomeNavHost(
         ) }
         composable("record"){ ExhibitRecordScreen(
             navController = navHostController,
-            navigateToCamera = { },
+            navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
+            // Todo : 임시로 갤러리 대신 프로필로 가게 함
+            navigateToGallery = { navigateToScreen(context, profileNavigator.navigate(context)) }
         ) }
     }
 }

@@ -55,6 +55,7 @@ import kotlinx.coroutines.launch
 fun ExhibitRecordScreen(
     navController: NavHostController,
     navigateToCamera: () -> Unit,
+    navigateToGallery: () -> Unit,
     viewModel: ExhibitRecordViewModel = hiltViewModel(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -436,8 +437,13 @@ fun ExhibitRecordScreen(
             // 전시 기록 시작 다이얼로그
             if (recordMenuDialogShown.value) {
                 RecordMenuDialog(
-                    onCameraClick = { navigateToCamera() },
+                    onCameraClick = {
+                        navigateToCamera()
+                        recordMenuDialogShown.value = false },
                     onGalleryClick = {
+                        viewModel.createTempRecord(1, exhibitName.value, categorySelect.value,
+                            exhibitDate.value, exhibitLink.value.ifEmpty { null })
+                        navigateToGallery()
                         recordMenuDialogShown.value = false },
                     onDismissRequest = { recordMenuDialogShown.value = false }
                 )

@@ -1,5 +1,6 @@
 package com.yapp.gallery.data.repository
 
+import com.yapp.gallery.data.source.local.record.ExhibitRecordLocalDataSource
 import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSource
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.repository.ExhibitRecordRepository
@@ -7,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ExhibitRecordRepositoryImpl @Inject constructor(
+    private val localDataSource: ExhibitRecordLocalDataSource,
     private val remoteDataSource: ExhibitRecordRemoteDataSource
 ) : ExhibitRecordRepository{
     override fun getCategoryList(): Flow<List<CategoryItem>> {
@@ -19,5 +21,9 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
 
     override fun createRecord(name: String, categoryId: Long, postDate: String): Flow<Long> {
         return remoteDataSource.createRecord(name, categoryId, postDate)
+    }
+
+    override fun insertTempPost(postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?) : Flow<Unit> {
+        return localDataSource.insertTempPost(postId, name, categoryId, postDate, postLink)
     }
 }
