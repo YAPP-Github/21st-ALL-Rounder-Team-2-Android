@@ -6,4 +6,5 @@ import javax.inject.Inject
 class DeleteTempPostUseCase @Inject constructor(
     private val repository: ExhibitRecordRepository
 ) {
+    operator fun invoke() = repository.deleteTempPost()
 }

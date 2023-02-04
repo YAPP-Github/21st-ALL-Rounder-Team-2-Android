@@ -22,4 +22,8 @@ class ExhibitRecordLocalDataSourceImpl @Inject constructor(
     override fun getTempPost(): Flow<TempPost> = flow {
         emit(tempPostDao.getPost())
     }.flowOn(dispatcher)
+
+    override fun deleteTempPost(): Flow<Unit> = flow {
+        emit(tempPostDao.deletePost())
+    }.flowOn(dispatcher)
 }

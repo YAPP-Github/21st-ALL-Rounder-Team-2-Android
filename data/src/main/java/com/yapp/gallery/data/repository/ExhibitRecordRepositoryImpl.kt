@@ -33,4 +33,8 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
     override fun insertTempPost(postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?) : Flow<Unit> {
         return localDataSource.insertTempPost(postId, name, categoryId, postDate, postLink)
     }
+
+    override fun deleteTempPost(): Flow<Unit> {
+        return localDataSource.deleteTempPost()
+    }
 }

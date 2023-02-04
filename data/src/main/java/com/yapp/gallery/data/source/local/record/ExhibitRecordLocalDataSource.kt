@@ -9,4 +9,5 @@ interface ExhibitRecordLocalDataSource {
     ): Flow<Unit>
 
     fun getTempPost() : Flow<TempPost>
+    fun deleteTempPost() : Flow<Unit>
 }

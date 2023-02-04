@@ -10,4 +10,5 @@ interface ExhibitRecordRepository {
     fun createRecord(name: String, categoryId: Long, postDate: String) : Flow<Long>
     fun getTempPost() : Flow<TempPostInfo>
     fun insertTempPost(postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?) : Flow<Unit>
+    fun deleteTempPost() : Flow<Unit>
 }

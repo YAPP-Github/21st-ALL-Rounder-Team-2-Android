@@ -45,7 +45,7 @@ fun RecordMenuDialog(
                     .align(Alignment.End)
             ) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = null,
-                    modifier = Modifier.size(20.dp))
+                    modifier = Modifier.size(20.dp), tint = color_gray400)
             }
             Column(modifier = Modifier
                 .fillMaxWidth()

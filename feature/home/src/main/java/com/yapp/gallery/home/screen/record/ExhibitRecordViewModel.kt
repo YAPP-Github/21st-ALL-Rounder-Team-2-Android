@@ -19,7 +19,7 @@ class ExhibitRecordViewModel @Inject constructor(
     private val createRecordUseCase: CreateRecordUseCase,
     private val getTempPostUseCase: GetTempPostUseCase,
     private val createTempPostUseCase: CreateTempPostUseCase,
-//    private val deleteTempPostUseCase: DeleteTempPostUseCase
+    private val deleteTempPostUseCase: DeleteTempPostUseCase
 ) : ViewModel(){
     private var _categoryList = mutableStateListOf<CategoryItem>()
     val categoryList : List<CategoryItem>
@@ -65,13 +65,22 @@ class ExhibitRecordViewModel @Inject constructor(
 
     // 이어서 기록 or 삭제
     fun setContinuousDelete(continuous: Boolean){
-        if (continuous){
-            val postInfo = (_recordScreenState.value as ExhibitRecordState.Response).tempPostInfo
+        val postInfo = (_recordScreenState.value as ExhibitRecordState.Response).tempPostInfo
+        _recordScreenState.value = if (continuous) ExhibitRecordState.Continuous(postInfo)
+            else ExhibitRecordState.Delete(postInfo)
+    }
+
+    // 삭제 취소
+    fun undoDelete(undo: Boolean){
+        if (undo){
+            val postInfo = (_recordScreenState.value as ExhibitRecordState.Delete).tempPostInfo
             _recordScreenState.value = ExhibitRecordState.Continuous(postInfo)
-        } else{
-            _recordScreenState.value = ExhibitRecordState.Normal
-            // Todo : 삭제
         }
+        else {
+            _recordScreenState.value = ExhibitRecordState.Normal
+            deleteTempPost()
+        }
+
     }
 
     fun addCategory(category: String){
@@ -100,12 +109,12 @@ class ExhibitRecordViewModel @Inject constructor(
             createRecordUseCase(name, categoryId, postDate)
                 .collect{
                     // 화면은 넘기기?
-                    createTempRecord(it, name, categoryId, postDate, link)
+                    createTempPost(it, name, categoryId, postDate, link)
                 }
         }
     }
 
-    fun createTempRecord(postId: Long, name: String, categoryId: Long, postDate: String, link: String?){
+    fun createTempPost(postId: Long, name: String, categoryId: Long, postDate: String, link: String?){
         viewModelScope.launch {
             createTempPostUseCase(postId, name, categoryId, postDate, link)
                 .catch {
@@ -113,6 +122,18 @@ class ExhibitRecordViewModel @Inject constructor(
                 }
                 .collectLatest {
                     Log.e("room success", "id $postId insert 성공")
+                }
+        }
+    }
+
+    private fun deleteTempPost(){
+        viewModelScope.launch {
+            deleteTempPostUseCase()
+                .catch {
+                    Log.e("room failure", it.message.toString())
+                }
+                .collectLatest {
+                    Log.e("room success", "삭제 성공")
                 }
         }
     }
