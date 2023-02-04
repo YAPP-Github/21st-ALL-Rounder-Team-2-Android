@@ -18,4 +18,8 @@ class ExhibitRecordLocalDataSourceImpl @Inject constructor(
     ) : Flow<Unit> = flow {
         emit(tempPostDao.insertTempPost(TempPost(postId, name, categoryId, postDate, postLink)))
     }.flowOn(dispatcher)
+
+    override fun getTempPost(): Flow<TempPost> = flow {
+        emit(tempPostDao.getPost())
+    }.flowOn(dispatcher)
 }

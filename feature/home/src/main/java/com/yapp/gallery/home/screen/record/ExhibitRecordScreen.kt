@@ -1,10 +1,7 @@
-package com.yapp.gallery.home.screen
+package com.yapp.gallery.home.screen.record
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -44,10 +41,11 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
+import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.home.R
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.RecordMenuDialog
-import com.yapp.gallery.home.widget.TempStorageDialog
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
@@ -68,9 +66,12 @@ fun ExhibitRecordScreen(
 
     val interactionSource = remember { MutableInteractionSource() }
 
+    // 카테고리 생성 다이얼로그
     val categoryDialogShown = remember { mutableStateOf(false) }
+    // 기록 방법 다이얼로그
     val recordMenuDialogShown = remember { mutableStateOf(false) }
-//    val tempStorageDialogShown = remember { mutableStateOf(false) }
+    // 임시 저장 다이얼로그
+    val tempPostDialogShown = remember { mutableStateOf(false) }
 
     // 카테고리 리스트
     val categorySelect = rememberSaveable {
@@ -84,6 +85,44 @@ fun ExhibitRecordScreen(
     // 스크롤 상태
     val scrollState = rememberScrollState()
 
+    // 이어서 하기 여부
+    val isContinuous = rememberSaveable { mutableStateOf(false) }
+    // 스크린 상태
+    LaunchedEffect(viewModel.recordScreenState){
+        viewModel.recordScreenState.collectLatest {
+            when(it){
+                is ExhibitRecordState.Response -> {
+                    tempPostDialogShown.value = true
+                }
+                is ExhibitRecordState.Continuous -> {
+                    with(it.tempPostInfo){
+                        exhibitName.value = this.name
+                        exhibitDate.value = this.postDate
+                        exhibitLink.value = this.postLink ?: ""
+                        categorySelect.value = this.categoryId
+                        isContinuous.value = true
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+
+    // 임시 포스트 다이얼로그
+    if (tempPostDialogShown.value) {
+        ConfirmDialog(
+            title = stringResource(id = R.string.temp_post_title),
+            subTitle = stringResource(id = R.string.temp_post_guide),
+            onDismissRequest = {
+                viewModel.setContinuousDelete(false)
+                tempPostDialogShown.value = false
+            },
+            onConfirm = {
+                viewModel.setContinuousDelete(true)
+                tempPostDialogShown.value = false},
+            important = true
+        )
+    }
 
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
@@ -124,18 +163,7 @@ fun ExhibitRecordScreen(
                         }
                     } else {
                         null
-                    },
-//                    actions = {
-//                        TextButton(onClick = { tempStorageDialogShown.value = true }) {
-//                            Text(
-//                                text = stringResource(id = R.string.exhibit_temp),
-//                                style = MaterialTheme.typography.h3.copy(
-//                                    fontWeight = FontWeight.Medium, color = color_gray400
-//                                ),
-//                            )
-//                        }
-//                        Spacer(modifier = Modifier.width(4.dp))
-//                    }
+                    }
                 )
             },
             floatingActionButtonPosition = FabPosition.Center,
@@ -151,11 +179,13 @@ fun ExhibitRecordScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp)
                         .padding(bottom = 53.dp),
-                    onClick = {recordMenuDialogShown.value = true},
+                    onClick = {
+                        recordMenuDialogShown.value = true},
                     enabled = exhibitName.value.isNotEmpty() && categorySelect.value != -1L && exhibitDate.value.isNotEmpty()
                 ) {
                     Text(
-                        text = stringResource(id = R.string.exhibit_create_btn),
+                        text = if (isContinuous.value) stringResource(id = R.string.exhibit_crate_continuous_btn)
+                            else stringResource(id = R.string.exhibit_create_btn),
                         modifier = Modifier.padding(vertical = 12.dp),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,
@@ -412,14 +442,6 @@ fun ExhibitRecordScreen(
                     )
                 }
             }
-
-//            // 임시 보관함 다이얼로그
-//            if (tempStorageDialogShown.value) {
-//                TempStorageDialog(
-//                    onDismissRequest = { tempStorageDialogShown.value = false },
-//                    viewModel = viewModel
-//                )
-//            }
 
             // 카테고리 다이얼로그
             if (categoryDialogShown.value) {

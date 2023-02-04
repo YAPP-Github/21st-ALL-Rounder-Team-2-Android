@@ -1,4 +1,4 @@
-package com.yapp.gallery.home.screen
+package com.yapp.gallery.home.screen.record
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -6,16 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.domain.entity.home.CategoryItem
-import com.yapp.gallery.domain.entity.home.ExhibitInfo
-import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
-import com.yapp.gallery.domain.usecase.record.CreateRecordUseCase
-import com.yapp.gallery.domain.usecase.record.CreateTempPostUseCase
-import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
+import com.yapp.gallery.domain.usecase.record.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +17,9 @@ class ExhibitRecordViewModel @Inject constructor(
     private val getCategoryListUseCase: GetCategoryListUseCase,
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val createRecordUseCase: CreateRecordUseCase,
-    private val createTempPostUseCase: CreateTempPostUseCase
+    private val getTempPostUseCase: GetTempPostUseCase,
+    private val createTempPostUseCase: CreateTempPostUseCase,
+//    private val deleteTempPostUseCase: DeleteTempPostUseCase
 ) : ViewModel(){
     private var _categoryList = mutableStateListOf<CategoryItem>()
     val categoryList : List<CategoryItem>
@@ -34,20 +29,17 @@ class ExhibitRecordViewModel @Inject constructor(
     val categoryState : StateFlow<BaseState<Boolean>>
         get() = _categoryState
 
-    private var _tempStorageList = mutableStateListOf<ExhibitInfo>()
-    val tempStorageList : List<ExhibitInfo>
-        get() = _tempStorageList
+    // 전시 기록 화면 상태
+    private var _recordScreenState = MutableStateFlow<ExhibitRecordState>(ExhibitRecordState.Initial)
+    val recordScreenState : StateFlow<ExhibitRecordState>
+        get() = _recordScreenState
 
     init {
+        getTempPost()
         getCategoryList()
-
-        _tempStorageList = mutableStateListOf(
-            ExhibitInfo("전시명 1", "2023.01.06"),
-            ExhibitInfo("전시명 2", "2023.01.06"),
-            ExhibitInfo("전시명 3", "2023.01.06"),
-        )
     }
 
+    // 카테고리 리스트 받기
     private fun getCategoryList(){
         viewModelScope.launch {
             getCategoryListUseCase()
@@ -55,6 +47,30 @@ class ExhibitRecordViewModel @Inject constructor(
                 .collect{
                     _categoryList.addAll(it)
                 }
+        }
+    }
+
+    // 임시 저장 확인
+    private fun getTempPost(){
+        viewModelScope.launch {
+            getTempPostUseCase()
+                .catch {
+                    Log.e("room get", it.message.toString())
+                    _recordScreenState.value = ExhibitRecordState.Normal }
+                .collectLatest {
+                    _recordScreenState.value = ExhibitRecordState.Response(it)
+                }
+        }
+    }
+
+    // 이어서 기록 or 삭제
+    fun setContinuousDelete(continuous: Boolean){
+        if (continuous){
+            val postInfo = (_recordScreenState.value as ExhibitRecordState.Response).tempPostInfo
+            _recordScreenState.value = ExhibitRecordState.Continuous(postInfo)
+        } else{
+            _recordScreenState.value = ExhibitRecordState.Normal
+            // Todo : 삭제
         }
     }
 
@@ -78,10 +94,6 @@ class ExhibitRecordViewModel @Inject constructor(
             _categoryState.value = BaseState.Success(category.isNotEmpty())
     }
 
-    fun deleteTempStorageItem(index: Int){
-        _tempStorageList.removeAt(index)
-    }
-
     fun createRecord(name: String, categoryId: Long, postDate: String, link: String?) {
         viewModelScope.launch {
             // Todo : 추후 로직 구현
@@ -95,12 +107,12 @@ class ExhibitRecordViewModel @Inject constructor(
 
     fun createTempRecord(postId: Long, name: String, categoryId: Long, postDate: String, link: String?){
         viewModelScope.launch {
-            runCatching { createTempPostUseCase(postId, name, categoryId, postDate, link) }
-                .onSuccess {
-                    Log.e("room success", "id $postId insert 성공")
-                }
-                .onFailure {
+            createTempPostUseCase(postId, name, categoryId, postDate, link)
+                .catch {
                     Log.e("room failure", it.message.toString())
+                }
+                .collectLatest {
+                    Log.e("room success", "id $postId insert 성공")
                 }
         }
     }

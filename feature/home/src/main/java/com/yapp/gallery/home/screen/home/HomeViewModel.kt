@@ -1,4 +1,4 @@
-package com.yapp.gallery.home.screen
+package com.yapp.gallery.home.screen.home
 
 import android.content.SharedPreferences
 import androidx.compose.ui.res.stringResource
