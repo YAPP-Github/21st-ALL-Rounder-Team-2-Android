@@ -1,9 +1,9 @@
-package com.yapp.gallery.data.model
+package com.yapp.gallery.data.room
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "TempPostTable")
 data class TempPost(
     @PrimaryKey val postId: Long,
 )

@@ -50,6 +50,7 @@ dependencies {
     implementation libs.bundles.hilt.deps
     implementation libs.firebase.auth.ktx
     implementation libs.bundles.room
+    annotationProcessor libs.room.compiler
     kapt libs.room.compiler
     kapt libs.bundles.hilt.compilers
 }
