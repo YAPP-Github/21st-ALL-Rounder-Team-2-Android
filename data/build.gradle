@@ -49,5 +49,7 @@ dependencies {
     implementation libs.javax.inject
     implementation libs.bundles.hilt.deps
     implementation libs.firebase.auth.ktx
+    implementation libs.bundles.room
+    kapt libs.room.compiler
     kapt libs.bundles.hilt.compilers
 }

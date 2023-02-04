@@ -1,4 +1,4 @@
-package com.yapp.gallery.data.remote.profile
+package com.yapp.gallery.data.source.remote.profile
 
 import com.yapp.gallery.data.api.ArtieSerivce
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class ProfileRemoteDataSourceImpl @Inject constructor(
     private val artieSerivce: ArtieSerivce,
     @IoDispatcher private val dispatcher : CoroutineDispatcher
-) : ProfileRemoteDataSource{
+) : ProfileRemoteDataSource {
     override fun loadUserData(): Flow<UserResponse> = flow {
         emit(artieSerivce.getUserData())
     }.flowOn(dispatcher)

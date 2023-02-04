@@ -1,4 +1,4 @@
-package com.yapp.gallery.data.remote.record
+package com.yapp.gallery.data.source.remote.record
 
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import kotlinx.coroutines.flow.Flow

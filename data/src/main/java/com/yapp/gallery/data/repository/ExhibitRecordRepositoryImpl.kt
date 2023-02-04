@@ -1,6 +1,6 @@
 package com.yapp.gallery.data.repository
 
-import com.yapp.gallery.data.remote.record.ExhibitRecordRemoteDataSource
+import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSource
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.repository.ExhibitRecordRepository
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.yapp.gallery.data.remote.record
+package com.yapp.gallery.data.source.remote.record
 
 import com.yapp.gallery.data.api.ArtieSerivce
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
