@@ -1,5 +1,6 @@
 package com.yapp.gallery.home.screen
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -27,22 +28,19 @@ class HomeActivity : ComponentActivity() {
         setContent {
             navController = rememberNavController()
             GalleryTheme {
-                HomeNavHost(navHostController = navController)
+                HomeNavHost(navHostController = navController, profileNavigator = profileNavigator)
             }
-            //HomeScreen()
         }
-        // Todo : 나중에 버튼으로 이동 변경
-        startActivity(profileNavigator.navigate(this))
     }
 
     override fun onBackPressed() {
-        if (navController.previousBackStackEntry != null){
+        if (navController.previousBackStackEntry != null) {
             navController.popBackStack()
         } else {
             if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
                 // 뒤로가기 두 번 누르면 종료
                 finishAffinity()
-            } else{
+            } else {
                 backKeyPressedTime = System.currentTimeMillis()
                 Toast.makeText(this, "뒤로 가기 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
             }
