@@ -12,6 +12,8 @@ import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,17 +47,21 @@ class ExhibitRecordViewModel @Inject constructor(
 
     private fun getCategoryList(){
         viewModelScope.launch {
-            runCatching { getCategoryListUseCase() }
-                .onSuccess { _categoryList.addAll(it) }
-                .onFailure {  }
+            getCategoryListUseCase()
+                .catch {  }
+                .collect{
+                    _categoryList.addAll(it)
+                }
         }
     }
 
     fun addCategory(category: String){
         viewModelScope.launch {
-            runCatching { createCategoryUseCase(category) }
-                .onSuccess { _categoryList.add(CategoryItem(it, category, _categoryList.size)) }
-                .onFailure {  }
+            createCategoryUseCase(category)
+                .catch {}
+                .collect{
+                    _categoryList.add(CategoryItem(it, category, _categoryList.size))
+                }
         }
     }
 
@@ -75,9 +81,9 @@ class ExhibitRecordViewModel @Inject constructor(
 
     fun createRecord(name: String, categoryId: Long, postDate: String) {
         viewModelScope.launch {
-            runCatching { createRecordUseCase(name, categoryId, postDate) }
-                .onSuccess {  }
-                .onFailure {  }
+            // Todo : 추후 로직 구현
+            createRecordUseCase(name, categoryId, postDate)
+                .collect()
         }
     }
 }

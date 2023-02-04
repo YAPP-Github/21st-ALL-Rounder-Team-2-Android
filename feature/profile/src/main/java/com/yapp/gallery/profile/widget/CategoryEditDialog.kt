@@ -1,4 +1,4 @@
-package com.yapp.gallery.common.widget
+package com.yapp.gallery.profile.widget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -18,20 +19,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.yapp.gallery.common.R
-import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.model.BaseState
+import com.yapp.gallery.common.theme.*
+import com.yapp.gallery.profile.R
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun CategoryCreateDialog(
-    onCreateCategory: (String) -> Unit,
+fun CategoryEditDialog(
+    category: String,
+    onEditCategory: (String) -> Unit,
     onDismissRequest: () -> Unit,
-    checkCategory: (String) -> Unit,
+    checkEditable: (String, String) -> Unit,
     categoryState: BaseState<Boolean>
-){
-    val categoryName = rememberSaveable {
-        mutableStateOf("")
+) {
+    val categoryEdit = rememberSaveable{
+        mutableStateOf(category)
     }
 
     Dialog(onDismissRequest = onDismissRequest, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -50,27 +52,28 @@ fun CategoryCreateDialog(
                     .align(Alignment.End)
             ) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = null,
-                    modifier = Modifier.size(20.dp), tint = color_gray400)
+                    modifier = Modifier.size(20.dp), tint = color_gray400
+                )
             }
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = stringResource(id = R.string.category_title), style = MaterialTheme.typography.h2
+                Text(text = stringResource(id = R.string.category_edit_title), style = MaterialTheme.typography.h2
                     .copy(fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Column {
                     OutlinedTextField(
-                        value = categoryName.value,
+                        value = categoryEdit.value,
                         onValueChange = {
-                            categoryName.value = it
-                            checkCategory(it)
+                            categoryEdit.value = it
+                            checkEditable(category, categoryEdit.value)
                         },
                         placeholder = {
                             Text(
-                                text = stringResource(id = R.string.category_hint), style =
+                                text = stringResource(id = R.string.category_edit_hint), style =
                                 MaterialTheme.typography.h3.copy(color = color_gray700)
                             )
                         },
@@ -82,7 +85,7 @@ fun CategoryCreateDialog(
                         trailingIcon = {
                             Row {
                                 Text(
-                                    text = "${categoryName.value.length}",
+                                    text = "${categoryEdit.value.length}",
                                     style = MaterialTheme.typography
                                         .h4.copy(color = color_mainGreen)
                                 )
@@ -104,20 +107,17 @@ fun CategoryCreateDialog(
                                 style = MaterialTheme.typography.h4.copy(color = Color.Red),
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
-                        else -> Text(text = stringResource(id = R.string.category_create_guide),
-                                style = MaterialTheme.typography.h4.copy(color = color_mainGreen),
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            )
+                        else -> Spacer(modifier = Modifier.height(18.dp))
                     }
                 }
                 Spacer(modifier = Modifier.height(22.dp))
                 Button(onClick = {
-                        onCreateCategory(categoryName.value)
-                        onDismissRequest() },
+                    onEditCategory(categoryEdit.value)
+                    onDismissRequest() },
                     shape = RoundedCornerShape(size = 50.dp),
                     enabled = (categoryState as? BaseState.Success<Boolean>)?.value ?: false
                 ) {
-                    Text(text = stringResource(id = R.string.category_create_btn), style = MaterialTheme.typography.h2.copy(
+                    Text(text = stringResource(id = R.string.category_edit_btn), style = MaterialTheme.typography.h2.copy(
                         color = color_black, fontWeight = FontWeight.SemiBold),
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
                     )

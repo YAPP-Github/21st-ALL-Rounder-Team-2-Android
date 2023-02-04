@@ -1,7 +1,5 @@
 package com.yapp.gallery.profile.screen.profile
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,7 +9,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +20,7 @@ import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.profile.R
+import com.yapp.gallery.profile.widget.CustomSnackbarHost
 
 @Composable
 fun ProfileScreen(
@@ -139,8 +137,4 @@ fun ProfileFeature(
         if (!isLast)
             Divider(color = color_gray600, thickness = 0.4.dp, modifier = Modifier.fillMaxWidth())
     }
-}
-
-fun showToast(context: Context, msg: String){
-    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }
