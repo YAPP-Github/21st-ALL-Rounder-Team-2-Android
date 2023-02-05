@@ -46,7 +46,7 @@ class ProfileActivity : ComponentActivity() {
     }
 
     private fun logout(){
-        viewModel.removeSpf()
+        viewModel.removeInfo()
         when(viewModel.loginType){
             "kakao" -> {
                 kakaoClient.logout {
@@ -78,7 +78,7 @@ class ProfileActivity : ComponentActivity() {
         when(viewModel.loginType){
             "kakao" -> {
                 kakaoClient.unlink {
-                    viewModel.removeSpf()
+                    viewModel.removeInfo()
                     auth.currentUser?.delete()?.addOnCompleteListener {
                         finishAffinity()
                         startActivity(loginNavigator.navigate(this))
@@ -97,7 +97,7 @@ class ProfileActivity : ComponentActivity() {
                     }
 
                     override fun onSuccess() {
-                        viewModel.removeSpf()
+                        viewModel.removeInfo()
                         auth.currentUser?.delete()?.addOnCompleteListener {
                             Log.e("firebase 삭제", it.isSuccessful.toString())
                             finishAffinity()
@@ -109,7 +109,7 @@ class ProfileActivity : ComponentActivity() {
             }
             else -> {
                 googleSignInClient.revokeAccess().addOnCompleteListener {
-                    viewModel.removeSpf()
+                    viewModel.removeInfo()
                     auth.currentUser?.delete()?.addOnCompleteListener {
                         finishAffinity()
                         startActivity(loginNavigator.navigate(this))
