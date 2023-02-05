@@ -21,7 +21,6 @@ class ExhibitRecordViewModel @Inject constructor(
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val createRecordUseCase: CreateRecordUseCase,
     private val getTempPostUseCase: GetTempPostUseCase,
-    private val createTempPostUseCase: CreateTempPostUseCase,
     private val deleteTempPostUseCase: DeleteTempPostUseCase
 ) : ViewModel(){
     private var _categoryList = mutableStateListOf<CategoryItem>()
@@ -107,25 +106,18 @@ class ExhibitRecordViewModel @Inject constructor(
     }
 
     fun createRecord(name: String, categoryId: Long, postDate: String, link: String?) {
-        viewModelScope.launch {
-            // Todo : 추후 로직 구현
-            createRecordUseCase(name, categoryId, postDate)
-                .collect{
-                    // 화면은 넘기기?
-                    createTempPost(it, name, categoryId, postDate, link)
-                }
-        }
-    }
+        if (_recordScreenState.value is ExhibitRecordState.Normal){
+            _recordScreenState.value = ExhibitRecordState.Crated
+            viewModelScope.launch {
+                createRecordUseCase(name, categoryId, changeDateFormat(postDate))
+                    .catch {
+                        Log.e("create error", it.message.toString())
+                        _recordScreenState.value = ExhibitRecordState.Normal
+                    }
+                    .collect{
 
-    fun createTempPost(postId: Long, name: String, categoryId: Long, postDate: String, link: String?){
-        viewModelScope.launch {
-            createTempPostUseCase(postId, name, categoryId, postDate, link)
-                .catch {
-                    Log.e("room failure", it.message.toString())
-                }
-                .collectLatest {
-                    Log.e("room success", "id $postId insert 성공")
-                }
+                    }
+            }
         }
     }
 
@@ -139,6 +131,16 @@ class ExhibitRecordViewModel @Inject constructor(
                     Log.e("room success", "삭제 성공")
                 }
         }
+    }
+
+    private fun changeDateFormat(postDate: String): String {
+        var dateList = postDate.split('/')
+        return String.format(
+            "%4d-%02d-%02d",
+            dateList[0].toInt(),
+            dateList[1].toInt(),
+            dateList[2].toInt()
+        )
     }
 }
 

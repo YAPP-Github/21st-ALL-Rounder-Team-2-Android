@@ -7,8 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExhibitRecordRepository {
     fun getCategoryList() : Flow<List<CategoryItem>>
     fun createCategory(category: String) : Flow<Long>
-    fun createRecord(name: String, categoryId: Long, postDate: String) : Flow<Long>
+    fun createRecord(name: String, categoryId: Long, postDate: String) : Flow<Unit>
     fun getTempPost() : Flow<TempPostInfo>
-    fun insertTempPost(postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?) : Flow<Unit>
     fun deleteTempPost() : Flow<Unit>
 }
