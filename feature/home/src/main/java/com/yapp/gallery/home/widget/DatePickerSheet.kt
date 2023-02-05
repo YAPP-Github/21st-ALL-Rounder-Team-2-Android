@@ -1,23 +1,24 @@
 package com.yapp.gallery.home.widget
 
-import android.app.DatePickerDialog.OnDateSetListener
-import android.util.AttributeSet
-import android.util.Log
-import android.widget.NumberPicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.chargemap.compose.numberpicker.ListItemPicker
-import com.yapp.gallery.common.theme.*
+import com.yapp.gallery.common.theme.color_gray900
+import com.yapp.gallery.common.theme.color_mainGreen
+import com.yapp.gallery.common.theme.color_popUpBottom
 import java.time.LocalDateTime
 
 @Composable

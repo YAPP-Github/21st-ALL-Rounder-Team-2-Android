@@ -7,8 +7,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.yapp.gallery.home.screen.record.ExhibitRecordScreen
 import com.yapp.gallery.home.screen.home.HomeScreen
+import com.yapp.gallery.home.screen.record.ExhibitRecordScreen
 import com.yapp.gallery.navigation.profile.ProfileNavigator
 import com.yapp.navigation.camera.CameraNavigator
 
@@ -21,7 +21,7 @@ fun HomeNavHost(
     val context = LocalContext.current
     NavHost(navController = navHostController, startDestination = "home"){
         composable("home"){ HomeScreen(
-            navigateToInfo = { navHostController.navigate("record")},
+            navigateToRecord = { navHostController.navigate("record")},
             navigateToProfile = { navigateToScreen(context, profileNavigator.navigate(context))}
         ) }
         composable("record"){ ExhibitRecordScreen(

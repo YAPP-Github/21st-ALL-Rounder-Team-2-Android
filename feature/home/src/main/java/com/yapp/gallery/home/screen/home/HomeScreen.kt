@@ -1,57 +1,68 @@
 package com.yapp.gallery.home.screen.home
 
-import android.app.Activity
-import android.os.Build
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebView.setWebContentsDebuggingEnabled
-import android.webkit.WebViewClient
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import android.util.Log
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.web.AccompanistWebChromeClient
+import com.google.accompanist.web.AccompanistWebViewClient
+import com.google.accompanist.web.WebView
 import com.yapp.gallery.home.utils.NavigateJsObject
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(
-    navigateToInfo: () -> Unit,
-    navigateToProfile: () -> Unit
+    navigateToRecord: () -> Unit,
+    navigateToProfile: () -> Unit,
 ){
     val viewModel = hiltViewModel<HomeViewModel>()
+
+    val webViewClient = AccompanistWebViewClient()
+    val webChromeClient = AccompanistWebChromeClient()
+
+    LaunchedEffect(viewModel.homeSideEffect){
+        viewModel.homeSideEffect.collectLatest {
+            when(it){
+                "NAVIGATE_TO_EDIT" -> navigateToRecord()
+                "NAVIGATE_TO_MY" -> navigateToProfile()
+                else -> {}
+            }
+        }
+    }
+
+    DisposableEffect(viewModel.homeSideEffect){
+        onDispose {
+            Log.e("sideEffect", "sideEffectClear")
+            viewModel.clearSideEffect()
+        }
+    }
+
     Scaffold(
-//        floatingActionButtonPosition = FabPosition.End,
-//        floatingActionButton = {
-//            FloatingActionButton(onClick = navigateToInfo,
-//                backgroundColor = Color.White,
-//                contentColor = Color.Black,
-//                shape = CircleShape,
-//                // 기본 마진 16dp 인듯
-//                modifier = Modifier
-//                    .padding(end = 8.dp, bottom = 48.dp)
-//                    .size(72.dp)
-//            ) {
-//                Icon(imageVector = Icons.Default.Add, contentDescription = null, modifier = Modifier.size(24.dp))
-//            }
-//        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
         ) {
-            AndroidView(factory = {
-                WebView(it).apply {
-                    settings.javaScriptEnabled = true
-                    webViewClient = WebViewClient()
-                    webChromeClient = WebChromeClient()
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                        setWebContentsDebuggingEnabled(true);
+            WebView(
+                state = viewModel.webViewState,
+                client = webViewClient,
+                chromeClient = webChromeClient,
+                navigator = viewModel.webViewNavigator,
+                onCreated = {
+                    with(it){
+                        addJavascriptInterface(
+                            NavigateJsObject { e -> viewModel.setSideEffect(e) }, "android")
+                        settings.run {
+                            javaScriptEnabled = true
+                        }
                     }
-                    addJavascriptInterface(NavigateJsObject(it as Activity, navigateToInfo, navigateToProfile), "android")
-                    loadUrl("https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home")
-                }
-            })
+                },
+            )
         }
     }
 
