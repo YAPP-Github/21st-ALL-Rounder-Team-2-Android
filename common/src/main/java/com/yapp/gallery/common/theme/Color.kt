@@ -29,6 +29,8 @@ val color_gray500 = Color(0xFFB4B4B4)
 val color_gray400 = Color(0xFFD9D9D9)
 val color_gray300 = Color(0xFFEAEAEA)
 
+val color_purple500 = Color(0xFF6200EE)
+
 // Color Scheme 지정
 // Todo : 임시 값들 존재
 val colorScheme = Colors(

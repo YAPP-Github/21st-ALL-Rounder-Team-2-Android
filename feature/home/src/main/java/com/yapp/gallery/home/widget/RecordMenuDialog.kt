@@ -1,6 +1,5 @@
 package com.yapp.gallery.home.widget
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +43,7 @@ fun RecordMenuDialog(
                     .align(Alignment.End)
             ) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = null,
-                    modifier = Modifier.size(20.dp))
+                    modifier = Modifier.size(20.dp), tint = color_gray400)
             }
             Column(modifier = Modifier
                 .fillMaxWidth()

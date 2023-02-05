@@ -1,11 +1,13 @@
 package com.yapp.gallery.data.di
 
-import com.yapp.gallery.data.remote.login.LoginRemoteDataSource
-import com.yapp.gallery.data.remote.login.LoginRemoteDataSourceImpl
-import com.yapp.gallery.data.remote.profile.ProfileRemoteDataSource
-import com.yapp.gallery.data.remote.profile.ProfileRemoteDataSourceImpl
-import com.yapp.gallery.data.remote.record.ExhibitRecordRemoteDataSource
-import com.yapp.gallery.data.remote.record.ExhibitRecordRemoteDataSourceImpl
+import com.yapp.gallery.data.source.local.record.ExhibitRecordLocalDataSource
+import com.yapp.gallery.data.source.local.record.ExhibitRecordLocalDataSourceImpl
+import com.yapp.gallery.data.source.remote.login.LoginRemoteDataSource
+import com.yapp.gallery.data.source.remote.login.LoginRemoteDataSourceImpl
+import com.yapp.gallery.data.source.remote.profile.ProfileRemoteDataSource
+import com.yapp.gallery.data.source.remote.profile.ProfileRemoteDataSourceImpl
+import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSource
+import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -27,6 +29,12 @@ internal abstract class DataSourceModule {
     abstract fun bindExhibitRecordRemoteDataSource(
         dataSource: ExhibitRecordRemoteDataSourceImpl
     ) : ExhibitRecordRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindExhibitRecordLocalDataSource(
+        dataSource: ExhibitRecordLocalDataSourceImpl
+    ) : ExhibitRecordLocalDataSource
 
     @Binds
     @Singleton

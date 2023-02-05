@@ -1,4 +1,4 @@
-package com.yapp.gallery.data.remote.profile
+package com.yapp.gallery.data.source.remote.profile
 
 import com.yapp.gallery.data.model.UserResponse
 import com.yapp.gallery.domain.entity.home.CategoryItem

@@ -11,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.yapp.gallery.common.theme.color_black
+import com.yapp.gallery.common.theme.color_gray400
 import com.yapp.gallery.common.theme.color_gray600
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -24,10 +26,12 @@ fun ConfirmDialog(
     subTitle: String,
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
+    important: Boolean = false
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = if(important) DialogProperties(usePlatformDefaultWidth = false, dismissOnBackPress = false, dismissOnClickOutside = false)
+            else DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Column(
             modifier = Modifier
@@ -46,14 +50,13 @@ fun ConfirmDialog(
             ) {
                 Icon(
                     imageVector = Icons.Default.Close, contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp), tint = color_gray400
                 )
             }
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
                 // 카테고리 타이틀
                 Text(
                     text = title, style = MaterialTheme.typography.h2
@@ -62,7 +65,7 @@ fun ConfirmDialog(
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = subTitle, style = MaterialTheme.typography.h4
-                        .copy(color = color_gray600)
+                        .copy(color = color_gray600), textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(30.dp))
 
@@ -70,7 +73,7 @@ fun ConfirmDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 45.dp)
+                        .padding(horizontal = 29.dp)
                 ) {
                     Button(
                         onClick = onDismissRequest,

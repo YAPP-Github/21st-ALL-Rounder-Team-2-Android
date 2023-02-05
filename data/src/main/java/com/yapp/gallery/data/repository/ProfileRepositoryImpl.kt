@@ -1,7 +1,6 @@
 package com.yapp.gallery.data.repository
 
-import android.provider.ContactsContract.Profile
-import com.yapp.gallery.data.remote.profile.ProfileRemoteDataSource
+import com.yapp.gallery.data.source.remote.profile.ProfileRemoteDataSource
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.domain.repository.ProfileRepository

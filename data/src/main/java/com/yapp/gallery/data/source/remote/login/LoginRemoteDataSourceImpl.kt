@@ -1,4 +1,4 @@
-package com.yapp.gallery.data.remote.login
+package com.yapp.gallery.data.source.remote.login
 
 import com.yapp.gallery.data.api.ArtieSerivce
 import com.yapp.gallery.data.api.login.ArtieKakaoService
@@ -12,7 +12,7 @@ class LoginRemoteDataSourceImpl @Inject constructor(
     private val artieKakaoService: ArtieKakaoService,
     private val artieNaverService: ArtieNaverService,
     private val artieService: ArtieSerivce
-) : LoginRemoteDataSource{
+) : LoginRemoteDataSource {
     override suspend fun kakaoLogin(accessToken: String): FirebaseToken {
         return artieKakaoService.tokenLogin(TokenLoginBody(accessToken))
     }

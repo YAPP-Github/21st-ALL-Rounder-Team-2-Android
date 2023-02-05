@@ -1,4 +1,4 @@
-package com.yapp.gallery.data.remote.login
+package com.yapp.gallery.data.source.remote.login
 
 import com.yapp.gallery.domain.entity.login.CreateUserResponse
 import com.yapp.gallery.domain.entity.login.FirebaseToken

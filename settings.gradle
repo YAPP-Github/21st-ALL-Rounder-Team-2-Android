@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         google()
+        jcenter()
         mavenCentral()
     }
 }
@@ -13,9 +14,14 @@ dependencyResolutionManagement {
     }
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
         mavenCentral()
-        maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
+        google()
+        maven {
+            url 'https://jitpack.io'
+        }
+        maven {
+            url 'https://devrepo.kakao.com/nexus/content/groups/public/'
+        }
     }
 }
 rootProject.name = "YAPP-ALL-Rounder-Team-2"

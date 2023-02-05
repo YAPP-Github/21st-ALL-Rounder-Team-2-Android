@@ -1,6 +1,6 @@
 package com.yapp.gallery.data.repository
 
-import com.yapp.gallery.data.remote.login.LoginRemoteDataSource
+import com.yapp.gallery.data.source.remote.login.LoginRemoteDataSource
 import com.yapp.gallery.domain.repository.LoginRepository
 import javax.inject.Inject
 
