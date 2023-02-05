@@ -15,5 +15,5 @@ sealed class ExhibitRecordState{
     // 해당 상태에서 전시 기록할 시 서버로 요청 보내야 함
     object Normal : ExhibitRecordState()
     // 이미 생성된 적 있는 상태
-    object Crated : ExhibitRecordState()
+    data class Created(val postId: Long) : ExhibitRecordState()
 }

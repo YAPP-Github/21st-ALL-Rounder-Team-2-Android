@@ -495,7 +495,7 @@ fun ExhibitRecordScreen(
                     navigateToCamera()
                     recordMenuDialogShown.value = false },
                 onGalleryClick = {
-                    viewModel.createRecord(
+                    viewModel.createOrUpdateRecord(
                         exhibitName.value, categorySelect.value,
                         exhibitDate.value, exhibitLink.value.ifEmpty { null })
                     navigateToGallery()

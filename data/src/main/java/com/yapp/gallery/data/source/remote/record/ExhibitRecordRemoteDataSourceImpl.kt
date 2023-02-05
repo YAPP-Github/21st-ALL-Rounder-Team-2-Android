@@ -4,6 +4,7 @@ import com.yapp.gallery.data.api.ArtieSerivce
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
 import com.yapp.gallery.data.model.CategoryBody
 import com.yapp.gallery.data.model.CreateRecordBody
+import com.yapp.gallery.data.utils.changeDateFormat
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +31,6 @@ class ExhibitRecordRemoteDataSourceImpl @Inject constructor(
         categoryId: Long,
         postDate: String,
     ): Flow<Long> = flow {
-        emit(artieSerivce.createRecord(CreateRecordBody(name, categoryId, postDate)).id)
+        emit(artieSerivce.createRecord(CreateRecordBody(name, categoryId, changeDateFormat(postDate))).id)
     }.flowOn(dispatcher)
 }

@@ -6,7 +6,10 @@ import kotlinx.coroutines.flow.Flow
 interface ExhibitRecordLocalDataSource {
     fun insertTempPost(
         postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?,
-    ): Flow<Unit>
+    ): Flow<Long>
+    fun updateTempPost(
+        postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?,
+    ): Flow<Long>
 
     fun getTempPost() : Flow<TempPost>
     fun deleteTempPost() : Flow<Unit>

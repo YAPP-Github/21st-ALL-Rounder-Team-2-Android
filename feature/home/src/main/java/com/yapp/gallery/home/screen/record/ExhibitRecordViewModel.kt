@@ -8,10 +8,7 @@ import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.usecase.record.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,7 +18,8 @@ class ExhibitRecordViewModel @Inject constructor(
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val createRecordUseCase: CreateRecordUseCase,
     private val getTempPostUseCase: GetTempPostUseCase,
-    private val deleteTempPostUseCase: DeleteTempPostUseCase
+    private val deleteTempPostUseCase: DeleteTempPostUseCase,
+    private val updateRecordUseCase: UpdateRecordUseCase
 ) : ViewModel(){
     private var _categoryList = mutableStateListOf<CategoryItem>()
     val categoryList : List<CategoryItem>
@@ -105,19 +103,47 @@ class ExhibitRecordViewModel @Inject constructor(
             _categoryState.value = BaseState.Success(category.isNotEmpty())
     }
 
-    fun createRecord(name: String, categoryId: Long, postDate: String, link: String?) {
-        if (_recordScreenState.value is ExhibitRecordState.Normal){
-            _recordScreenState.value = ExhibitRecordState.Crated
-            viewModelScope.launch {
-                createRecordUseCase(name, categoryId, changeDateFormat(postDate))
-                    .catch {
-                        Log.e("create error", it.message.toString())
-                        _recordScreenState.value = ExhibitRecordState.Normal
-                    }
-                    .collect{
-
-                    }
+    fun createOrUpdateRecord(name: String, categoryId: Long, postDate: String, link: String?) {
+        when (_recordScreenState.value){
+            // 일반적 생성 상태
+            is ExhibitRecordState.Normal -> {
+                viewModelScope.launch {
+                    createRecordUseCase(name, categoryId, postDate)
+                        .catch {
+                            Log.e("create error", it.message.toString())
+                            _recordScreenState.value = ExhibitRecordState.Normal
+                        }
+                        .collect{
+                            _recordScreenState.value = ExhibitRecordState.Created(it)
+                        }
+                }
             }
+            // 이어서 생성중
+            is ExhibitRecordState.Continuous -> {
+                val id = (_recordScreenState.value as ExhibitRecordState.Continuous).tempPostInfo.postId
+                _recordScreenState.value = ExhibitRecordState.Created(id)
+                viewModelScope.launch {
+                    updateRecordUseCase(id, name, categoryId, postDate, link)
+                        .catch {
+
+                        }
+                        .collect{
+                            _recordScreenState.value = ExhibitRecordState.Created(it)
+                        }
+                }
+            }
+            // 만들어 진적 있음
+            is ExhibitRecordState.Created -> {
+                val id = (_recordScreenState.value as ExhibitRecordState.Created).postId
+                viewModelScope.launch {
+                    updateRecordUseCase(id, name, categoryId, postDate, link)
+                        .catch {
+
+                        }
+                        .collect()
+                }
+            }
+            else -> {}
         }
     }
 
@@ -131,16 +157,6 @@ class ExhibitRecordViewModel @Inject constructor(
                     Log.e("room success", "삭제 성공")
                 }
         }
-    }
-
-    private fun changeDateFormat(postDate: String): String {
-        var dateList = postDate.split('/')
-        return String.format(
-            "%4d-%02d-%02d",
-            dateList[0].toInt(),
-            dateList[1].toInt(),
-            dateList[2].toInt()
-        )
     }
 }
 
