@@ -135,19 +135,25 @@ class CategoryManageViewModel @Inject constructor(
     fun reorderItem(from: Int, to: Int){
         // 달라진게 있으면 재정렬
         if (from != to){
-            _categoryList[from].sequence = _categoryList[to].sequence.also {
-                _categoryList[to].sequence = _categoryList[from].sequence
-            }
             _categoryList.add(to, _categoryList.removeAt(from))
             viewModelScope.launch {
                 changeSequenceUseCase(_categoryList)
                     .catch {
                         _errorChannel.send(UiText.DynamicString(it.message.toString()))
+                        _categoryList.add(from, _categoryList.removeAt(to))
                     }
-                    .collectLatest {
-//                        if (it)
-//                        else
-//                            _errorChannel.send(UiText.DynamicString(it.message.toString()))
+                    .collectLatest { isSuccessful ->
+                        if (isSuccessful){
+                            _categoryList[from].sequence = _categoryList[to].sequence.also {
+                                _categoryList[to].sequence = _categoryList[from].sequence
+                            }
+                        }
+                        else{
+                            _categoryList.add(from, _categoryList.removeAt(to))
+                            _errorChannel.send(UiText.StringResource(R.string.category_swap_error))
+
+                        }
+
                     }
             }
         }

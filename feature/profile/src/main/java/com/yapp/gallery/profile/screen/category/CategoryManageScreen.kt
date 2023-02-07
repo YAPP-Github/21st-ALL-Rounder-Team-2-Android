@@ -1,5 +1,6 @@
 package com.yapp.gallery.profile.screen.category
 
+import android.util.Log
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -69,6 +70,12 @@ fun CategoryManageScreen(
                 message = error.asString(context),
                 duration = SnackbarDuration.Short
             )
+        }
+    }
+
+    DisposableEffect(Unit){
+        onDispose {
+            Log.e("display out", "display closed")
         }
     }
 

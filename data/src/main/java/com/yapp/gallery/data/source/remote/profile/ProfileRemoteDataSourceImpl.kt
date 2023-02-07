@@ -34,6 +34,6 @@ class ProfileRemoteDataSourceImpl @Inject constructor(
     override fun editCategorySequence(
         categoryList: List<CategoryItem>
     ): Flow<Boolean> = flow {
-        emit(artieSerivce.changeCategorySequence(categoryList.sortedBy {c -> c.sequence}).isSuccessful)
+        emit(artieSerivce.changeCategorySequence(categoryList).isSuccessful)
     }.flowOn(dispatcher)
 }
