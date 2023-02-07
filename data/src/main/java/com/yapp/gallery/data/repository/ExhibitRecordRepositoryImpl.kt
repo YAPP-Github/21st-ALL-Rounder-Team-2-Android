@@ -5,8 +5,7 @@ import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSource
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.home.TempPostInfo
 import com.yapp.gallery.domain.repository.ExhibitRecordRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class ExhibitRecordRepositoryImpl @Inject constructor(
@@ -21,20 +20,40 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
         return remoteDataSource.createCategory(category)
     }
 
-    override fun createRecord(name: String, categoryId: Long, postDate: String): Flow<Long> {
-        return remoteDataSource.createRecord(name, categoryId, postDate)
+    override fun createRecord(
+        name: String, categoryId: Long, postDate: String
+    ): Flow<Long> {
+        return remoteDataSource.createRecord(name, categoryId, postDate).flatMapMerge {
+            // Todo : 링크 현재 null로 넣어놨음
+            localDataSource.insertTempPost(it, name, categoryId, postDate, null)
+        }
     }
+
+    override fun updateRecord(
+        postId: Long,
+        name: String,
+        categoryId: Long,
+        postDate: String,
+        postLink: String?,
+    ): Flow<Long> {
+        return remoteDataSource.updateRecord(postId, name, categoryId, postDate).flatMapMerge {
+            localDataSource.updateTempPost(postId, name, categoryId, postDate, postLink)
+        }
+    }
+
 
     override fun getTempPost(): Flow<TempPostInfo> {
         return localDataSource.getTempPost().map {
                 p -> TempPostInfo(p.postId, p.name, p.categoryId, p.postDate, p.postLink) }
     }
 
-    override fun insertTempPost(postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?) : Flow<Unit> {
-        return localDataSource.insertTempPost(postId, name, categoryId, postDate, postLink)
-    }
-
     override fun deleteTempPost(): Flow<Unit> {
         return localDataSource.deleteTempPost()
+    }
+
+    override fun deleteRecord(postId: Long): Flow<Unit> {
+        return remoteDataSource.deleteRecord(postId).flatMapMerge {
+            localDataSource.deleteTempPost()
+        }
     }
 }

@@ -489,10 +489,14 @@ fun ExhibitRecordScreen(
         if (recordMenuDialogShown.value) {
             RecordMenuDialog(
                 onCameraClick = {
+//                    viewModel.createRecord(
+//                        exhibitName.value, categorySelect.value,
+//                        exhibitDate.value, exhibitLink.value.ifEmpty { null })
                     navigateToCamera()
                     recordMenuDialogShown.value = false },
                 onGalleryClick = {
-                    viewModel.createTempPost(1, exhibitName.value, categorySelect.value,
+                    viewModel.createOrUpdateRecord(
+                        exhibitName.value, categorySelect.value,
                         exhibitDate.value, exhibitLink.value.ifEmpty { null })
                     navigateToGallery()
                     recordMenuDialogShown.value = false },
@@ -501,14 +505,4 @@ fun ExhibitRecordScreen(
         }
     }
 
-}
-
-fun changeDateFormat(postDate: String): String {
-    var dateList = postDate.split('/')
-    return String.format(
-        "%4d-%02d-%02d",
-        dateList[0].toInt(),
-        dateList[1].toInt(),
-        dateList[2].toInt()
-    )
 }

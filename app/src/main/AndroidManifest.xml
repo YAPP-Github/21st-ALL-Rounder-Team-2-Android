@@ -36,6 +36,7 @@
         <activity android:name=".login.screen.LoginActivity"
             android:exported="true"></activity>
         <activity android:name=".home.screen.home.HomeActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true"></activity>
         <activity android:name=".camera.CameraActivity"
             android:exported="true"></activity>
