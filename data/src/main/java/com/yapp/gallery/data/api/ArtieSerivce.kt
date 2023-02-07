@@ -38,6 +38,10 @@ interface ArtieSerivce {
     @POST("/post")
     suspend fun createRecord(@Body createRecordBody: CreateRecordBody) : CreatedId
 
+    // 전시 업데이트
+    @PUT("/post/{id}")
+    suspend fun updateRecord(@Path("id") postId: Long, @Body createRecordBody: CreateRecordBody) : Response<Unit>
+
     // 전시 삭제
     @DELETE("/post/{id}")
     suspend fun deleteRecord(@Path("id") postId: Long) : Response<Unit>

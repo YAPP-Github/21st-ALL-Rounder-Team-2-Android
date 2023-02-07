@@ -36,8 +36,9 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
         postDate: String,
         postLink: String?,
     ): Flow<Long> {
-        // Todo : remote에서 update하는 것도 추후 구현
-        return localDataSource.updateTempPost(postId, name, categoryId, postDate, postLink)
+        return remoteDataSource.updateRecord(postId, name, categoryId, postDate).flatMapMerge {
+            localDataSource.updateTempPost(postId, name, categoryId, postDate, postLink)
+        }
     }
 
 

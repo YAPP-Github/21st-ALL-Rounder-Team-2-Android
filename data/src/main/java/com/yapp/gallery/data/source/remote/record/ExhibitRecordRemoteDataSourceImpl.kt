@@ -34,6 +34,15 @@ class ExhibitRecordRemoteDataSourceImpl @Inject constructor(
         emit(artieSerivce.createRecord(CreateRecordBody(name, categoryId, changeDateFormat(postDate))).id)
     }.flowOn(dispatcher)
 
+    override fun updateRecord(
+        postId: Long,
+        name: String,
+        categoryId: Long,
+        postDate: String,
+    ): Flow<Boolean> = flow{
+        emit(artieSerivce.updateRecord(postId, CreateRecordBody(name, categoryId, changeDateFormat(postDate))).isSuccessful)
+    }
+
     override fun deleteRecord(
         postId: Long
     ): Flow<Boolean> = flow {
