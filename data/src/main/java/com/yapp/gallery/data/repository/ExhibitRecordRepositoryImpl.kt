@@ -49,4 +49,10 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
     override fun deleteTempPost(): Flow<Unit> {
         return localDataSource.deleteTempPost()
     }
+
+    override fun deleteRecord(postId: Long): Flow<Unit> {
+        return remoteDataSource.deleteRecord(postId).flatMapMerge {
+            localDataSource.deleteTempPost()
+        }
+    }
 }

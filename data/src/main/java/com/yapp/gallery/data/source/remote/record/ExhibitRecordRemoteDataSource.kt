@@ -7,4 +7,6 @@ interface ExhibitRecordRemoteDataSource {
     fun getCategoryList() : Flow<List<CategoryItem>>
     fun createCategory(category: String) : Flow<Long>
     fun createRecord(name: String, categoryId: Long, postDate: String) : Flow<Long>
+
+    fun deleteRecord(postId: Long) : Flow<Boolean>
 }

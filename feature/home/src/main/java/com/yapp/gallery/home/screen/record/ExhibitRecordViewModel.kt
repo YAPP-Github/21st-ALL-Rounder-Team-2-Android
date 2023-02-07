@@ -18,8 +18,8 @@ class ExhibitRecordViewModel @Inject constructor(
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val createRecordUseCase: CreateRecordUseCase,
     private val getTempPostUseCase: GetTempPostUseCase,
-    private val deleteTempPostUseCase: DeleteTempPostUseCase,
-    private val updateRecordUseCase: UpdateRecordUseCase
+    private val updateRecordUseCase: UpdateRecordUseCase,
+    private val deleteRecordUseCase: DeleteRecordUseCase,
 ) : ViewModel(){
     private var _categoryList = mutableStateListOf<CategoryItem>()
     val categoryList : List<CategoryItem>
@@ -72,13 +72,13 @@ class ExhibitRecordViewModel @Inject constructor(
 
     // 삭제 취소
     fun undoDelete(undo: Boolean){
+        val postInfo = (_recordScreenState.value as ExhibitRecordState.Delete).tempPostInfo
         if (undo){
-            val postInfo = (_recordScreenState.value as ExhibitRecordState.Delete).tempPostInfo
             _recordScreenState.value = ExhibitRecordState.Continuous(postInfo)
         }
         else {
+            deleteRecord(postInfo.postId)
             _recordScreenState.value = ExhibitRecordState.Normal
-            deleteTempPost()
         }
 
     }
@@ -147,9 +147,9 @@ class ExhibitRecordViewModel @Inject constructor(
         }
     }
 
-    private fun deleteTempPost(){
+    private fun deleteRecord(postId: Long){
         viewModelScope.launch {
-            deleteTempPostUseCase()
+            deleteRecordUseCase(postId)
                 .catch {
                     Log.e("room failure", it.message.toString())
                 }
