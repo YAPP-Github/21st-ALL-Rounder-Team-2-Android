@@ -57,10 +57,10 @@ fun ConfirmDialog(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 카테고리 타이틀
                 Text(
                     text = title, style = MaterialTheme.typography.h2
-                        .copy(fontWeight = FontWeight.SemiBold)
+                        .copy(fontWeight = FontWeight.SemiBold),
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
