@@ -1,9 +1,13 @@
 package com.yapp.gallery.profile.screen.category
 
+import android.transition.Fade
 import android.util.Log
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -13,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -173,14 +179,24 @@ fun CategoryManageScreen(
                         }
                     ) {
                         itemsIndexed(viewModel.categoryList) { index, item ->
+                            // Draggable Item
                             DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
-                                val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
+                                val elevation by animateDpAsState(if (isDragging) 10.dp else 0.dp)
                                 CategoryListTile(
                                     category = item,
-                                    isLast = index == viewModel.categoryList.size - 1,
                                     elevation = elevation,
                                     viewModel = viewModel,
                                     data = emptyList()
+                                )
+                            }
+                            // Divider
+                            if (index != viewModel.categoryList.size - 1) {
+                                Divider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp),
+                                    color = color_gray700,
+                                    thickness = 0.4.dp
                                 )
                             }
                         }
@@ -259,76 +275,67 @@ fun CategoryManageScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryListTile(
     category: CategoryItem,
-    isLast: Boolean,
     elevation: Dp,
     viewModel : CategoryManageViewModel,
     data: List<String>
 ) {
+    val expanded = remember { mutableStateOf(false) }
     val categoryEditDialogShown = remember { mutableStateOf(false) }
     val categoryDeleteDialogShown = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier
         .fillMaxWidth()
-        .shadow(elevation)
-        .background(color = color_background)) {
+        .shadow(ambientColor = color_popUpBottom, elevation = elevation)
+        .animateContentSize(animationSpec = tween())
+        .background(color = color_background)
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
         // 카테고리 브리프 정보 및 첫 행
         ConstraintLayout(
             modifier = Modifier.fillMaxWidth()
         ) {
-            val (button, row2, text1, text2) = createRefs()
-            IconButton(onClick = { /*TODO*/ }, modifier = Modifier
-                .combinedClickable(
-                    onLongClick = {},
-                    onClick = {})
-                .constrainAs(button) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    top.linkTo(parent.top)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu, contentDescription = null,
-                    tint = color_gray500, modifier = Modifier.size(16.dp)
-                )
-            }
+            val (button, row, text1, text2) = createRefs()
+            Icon(
+                imageVector = if (expanded.value) Icons.Default.ArrowDropUp
+                    else Icons.Default.ArrowDropDown,
+                contentDescription = "categoryExpand",
+                tint = color_gray500,
+                modifier = Modifier
+                    .padding(12.dp)
+                    .size(32.dp)
+                    .clickable(onClick = { expanded.value = !expanded.value })
+                    .constrainAs(button) {
+                        start.linkTo(parent.start)
+                        top.linkTo(text1.top)
+                        bottom.linkTo(text1.bottom)
+                    }
+            )
 
-            // 전시 브리프 정보
+            // 카테고리 이름
             Text(
                 text = category.name,
                 style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.constrainAs(text1){
+                    top.linkTo(parent.top)
                     start.linkTo(button.end)
-                    end.linkTo(text2.start)
-                    top.linkTo(button.top, margin = 11.dp)
+                    end.linkTo(row.start)
                     width = Dimension.fillToConstraints
                 }
             )
 
 
-            Text(
-                text = "${data.size}${stringResource(id = R.string.category_exhibit_cnt)}",
-                style = MaterialTheme.typography.h4.copy(color = color_gray500),
-                modifier = Modifier.constrainAs(text2){
-                    start.linkTo(text1.end)
-                    end.linkTo(row2.start)
-                    top.linkTo(button.top)
-                    bottom.linkTo(button.bottom)
-                },
-                textAlign = TextAlign.Start
-            )
-
             // 편집 및 삭제
             Row(
                 modifier = Modifier
                     .padding(end = 15.dp)
-                    .constrainAs(row2) {
-                        start.linkTo(text2.end, margin = 12.dp)
+                    .constrainAs(row) {
+                        start.linkTo(text1.end, margin = 12.dp)
                         end.linkTo(parent.end)
-                        top.linkTo(button.top)
-                        bottom.linkTo(button.bottom)
+                        top.linkTo(text1.top)
+                        bottom.linkTo(text1.bottom)
                     }
             ) {
                 Text(text = stringResource(id = R.string.category_edit),
@@ -348,53 +355,57 @@ fun CategoryListTile(
                         .padding(8.dp)
                 )
             }
+
+
+            // 전시 기록 개수
+            Text(
+                text = "${data.size}${stringResource(id = R.string.category_exhibit_cnt)}",
+                style = MaterialTheme.typography.h4.copy(color = color_gray500),
+                modifier = Modifier.constrainAs(text2){
+                    start.linkTo(text1.start)
+                    top.linkTo(text1.bottom, margin = 4.dp)
+                },
+                textAlign = TextAlign.Start
+            )
+
         }
-        // 카테고리에 담긴 전시 정보
-        if (data.isNotEmpty()){
-            // 전시 정보가 존재 하는 경우
-            Spacer(modifier = Modifier.height(22.dp))
-            LazyRow(modifier = Modifier.padding(start = 48.dp, end = 16.dp)) {
-                items(data) { item ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(end = 6.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.exhibit_test),
-                            contentDescription = null,
-                            modifier = Modifier.size(80.dp)
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = item, style = MaterialTheme.typography.h4.copy(
-                                fontWeight = FontWeight.Medium,
-                                color = color_gray300
+        if (expanded.value){
+            // 카테고리에 담긴 전시 정보
+            if (data.isNotEmpty()){
+                // 전시 정보가 존재 하는 경우
+                Spacer(modifier = Modifier.height(24.dp))
+                LazyRow(modifier = Modifier.padding(start = 48.dp, end = 16.dp)) {
+                    items(data) { item ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(end = 6.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.exhibit_test),
+                                contentDescription = null,
+                                modifier = Modifier.size(80.dp)
                             )
-                        )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = item, style = MaterialTheme.typography.h4.copy(
+                                    fontWeight = FontWeight.Medium,
+                                    color = color_gray300
+                                )
+                            )
+                        }
                     }
-
                 }
+            } else {
+                Spacer(modifier = Modifier.height(40.dp))
+                Text(text = stringResource(id = R.string.category_exhibit_empty),
+                    style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Medium),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
             }
-        } else {
-            Text(text = stringResource(id = R.string.category_exhibit_empty),
-                style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Medium),
-                modifier = Modifier
-                    .padding(vertical = 40.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-
         }
-
         Spacer(modifier = Modifier.height(24.dp))
-        if (!isLast) {
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                color = color_gray700,
-                thickness = 0.4.dp
-            )
-        }
 
         // 카테고리 삭제 다이얼로그
         if (categoryDeleteDialogShown.value) {
