@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.YAPPALLRounderTeam2" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.YAPPALLRounderTeam2" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:navigationBarColor">@color/black_1f1f1f</item>
     </style>
 </resources>

@@ -70,7 +70,7 @@ fun ExhibitRecordScreen(
     val exhibitRecordState : ExhibitRecordState? by viewModel.recordScreenState.collectAsState()
 
     // Bottom Sheet State
-    val modalBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
 
     // 스크롤 상태
@@ -126,6 +126,7 @@ fun ExhibitRecordScreen(
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
+            Spacer(modifier = Modifier.height(1.dp))
             DatePickerSheet(onDateSet = {
                 viewModel.exhibitDate.value = it
                 scope.launch {

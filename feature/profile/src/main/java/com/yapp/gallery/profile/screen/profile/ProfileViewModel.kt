@@ -8,7 +8,10 @@ import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.domain.usecase.profile.GetUserUseCase
 import com.yapp.gallery.domain.usecase.record.DeleteTempPostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,8 +23,6 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
     private var _userData = MutableStateFlow<BaseState<User>>(BaseState.Loading)
     val userData : StateFlow<BaseState<User>> get() = _userData
-
-    val loginType = sharedPreferences.getString("loginType", "").toString()
 
     init {
         getUser()

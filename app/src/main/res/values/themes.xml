@@ -3,6 +3,7 @@
     <style name="Theme.YAPPALLRounderTeam2" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/background</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:navigationBarColor">@color/black_1f1f1f</item>
     </style>
     <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
         <item name="android:statusBarColor">@color/background</item>

@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.color_background
 import com.yapp.gallery.common.theme.color_gray600
@@ -20,15 +21,14 @@ import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.profile.R
-import com.yapp.gallery.profile.widget.CustomSnackbarHost
 
 @Composable
 fun ProfileScreen(
-    popBackStack : () -> Unit,
     navigateToManage: () -> Unit,
-    logout : () -> Unit,
-    withdrawal : () -> Unit,
-    viewModel : ProfileViewModel
+    logout: () -> Unit,
+    withdrawal: () -> Unit,
+    popBackStack: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel()
 ){
     val user : BaseState<User> by viewModel.userData.collectAsState()
 
@@ -92,8 +92,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(32.dp))
             ProfileFeature(featureName = stringResource(id = R.string.feature_profile_edit), onFeatureClick = { /*TODO*/ }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_announce), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_service_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_private_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
+            ProfileFeature(featureName = stringResource(id = R.string.feature_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_logout), onFeatureClick = { logoutDialogShown.value = true }, isLast = false)
             ProfileFeature(featureName = stringResource(id = R.string.feature_withdraw), onFeatureClick = { withdrawalDialogShown.value = true }, isLast = true)
 
@@ -104,7 +103,10 @@ fun ProfileScreen(
                     title = stringResource(id = R.string.logout_dialog_title),
                     subTitle = stringResource(id = R.string.logout_dialog_guide),
                     onDismissRequest = { logoutDialogShown.value = false },
-                    onConfirm = logout
+                    onConfirm = {
+                        viewModel.removeInfo()
+                        logout()
+                    }
                 )
             }
 
@@ -115,7 +117,10 @@ fun ProfileScreen(
                     title = stringResource(id = R.string.withdrawal_dialog_title),
                     subTitle = stringResource(id = R.string.withdrawal_dialog_guide),
                     onDismissRequest = { withdrawalDialogShown.value = false },
-                    onConfirm = withdrawal
+                    onConfirm = {
+                        viewModel.removeInfo()
+                        withdrawal()
+                    }
                 )
             }
         }
