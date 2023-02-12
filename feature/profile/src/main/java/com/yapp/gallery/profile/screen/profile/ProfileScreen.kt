@@ -25,6 +25,7 @@ import com.yapp.gallery.profile.R
 @Composable
 fun ProfileScreen(
     navigateToManage: () -> Unit,
+    navigateToLegacy: () -> Unit,
     logout: () -> Unit,
     withdrawal: () -> Unit,
     popBackStack: () -> Unit,
@@ -90,11 +91,31 @@ fun ProfileScreen(
 
             // 각 기능 버튼
             Spacer(modifier = Modifier.height(32.dp))
-            ProfileFeature(featureName = stringResource(id = R.string.feature_profile_edit), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_announce), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_logout), onFeatureClick = { logoutDialogShown.value = true }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_withdraw), onFeatureClick = { withdrawalDialogShown.value = true }, isLast = true)
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_profile_edit),
+                onFeatureClick = { /*TODO*/ },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_announce),
+                onFeatureClick = { /*TODO*/ },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_legacy),
+                onFeatureClick = { navigateToLegacy() },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_logout),
+                onFeatureClick = { logoutDialogShown.value = true },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_withdraw),
+                onFeatureClick = { withdrawalDialogShown.value = true },
+                isLast = true
+            )
 
 
             // 로그아웃 다이얼로그

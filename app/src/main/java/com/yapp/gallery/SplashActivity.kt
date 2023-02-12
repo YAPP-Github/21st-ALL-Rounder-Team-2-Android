@@ -19,8 +19,8 @@ class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen().setKeepOnScreenCondition{ false }
         navigate()
+        installSplashScreen().setKeepOnScreenCondition{ false }
     }
 
     private fun navigate(){
