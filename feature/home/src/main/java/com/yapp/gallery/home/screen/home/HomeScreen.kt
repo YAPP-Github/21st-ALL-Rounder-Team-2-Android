@@ -26,19 +26,12 @@ fun HomeScreen(
     val webChromeClient = AccompanistWebChromeClient()
 
     LaunchedEffect(viewModel.homeSideEffect){
-        viewModel.homeSideEffect.collectLatest {
+        viewModel.homeSideEffect.collect {
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
                 else -> {}
             }
-        }
-    }
-
-    DisposableEffect(viewModel.homeSideEffect){
-        onDispose {
-            Log.e("sideEffect", "sideEffectClear")
-            viewModel.clearSideEffect()
         }
     }
 

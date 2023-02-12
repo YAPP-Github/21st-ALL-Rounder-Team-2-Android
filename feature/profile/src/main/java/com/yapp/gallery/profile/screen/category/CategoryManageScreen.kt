@@ -165,7 +165,7 @@ private fun CategoryListView(
     Column(modifier = Modifier.fillMaxSize()) {
         if ((categoryScreenState as? BaseState.Success<Boolean>)?.value == true) {
             Spacer(modifier = Modifier.height(36.dp))
-            
+
             LazyColumn(state = listState, modifier = Modifier.pointerInput(dragDropState) {
                 detectDragGesturesAfterLongPress(onDrag = { change, offset ->
                     change.consume()

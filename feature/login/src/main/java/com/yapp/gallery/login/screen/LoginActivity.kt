@@ -4,7 +4,9 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.transition.Transition
 import android.util.Log
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,9 +15,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.transition.Explode
+import androidx.transition.Fade
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_OUT
+import com.google.android.material.transition.MaterialContainerTransform.FadeMode
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.kakao.sdk.auth.model.OAuthToken
@@ -26,6 +32,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.login.BuildConfig
+import com.yapp.gallery.login.R
 import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -46,6 +53,8 @@ class LoginActivity : ComponentActivity(){
 
     private var isLoading = mutableStateOf(false)
     private var loginType : String? = null
+
+    private var backKeyPressedTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +115,7 @@ class LoginActivity : ComponentActivity(){
                     // 실패 or 에러
                     val errorCode = NaverIdLoginSDK.getLastErrorCode().code
                     val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-                    Toast.makeText(this, "errorCode:$errorCode, errorDesc:$errorDescription", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(this, "errorCode:$errorCode, errorDesc:$errorDescription", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -202,5 +211,16 @@ class LoginActivity : ComponentActivity(){
     private fun navigateToHome(){
         finishAffinity()
         startActivity(homeNavigator.navigate(this))
+    }
+
+
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
+            // 뒤로가기 두 번 누르면 종료
+            finishAffinity()
+        } else {
+            backKeyPressedTime = System.currentTimeMillis()
+            Toast.makeText(this, "뒤로 가기 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 }
