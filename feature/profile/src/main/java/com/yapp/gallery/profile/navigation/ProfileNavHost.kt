@@ -13,11 +13,14 @@ import androidx.navigation.compose.rememberNavController
 import com.yapp.gallery.profile.screen.category.CategoryManageScreen
 import com.yapp.gallery.profile.screen.legacy.LegacyScreen
 import com.yapp.gallery.profile.screen.profile.ProfileScreen
+import com.yapp.gallery.profile.screen.signout.SignOutCompleteScreen
+import com.yapp.gallery.profile.screen.signout.SignOutScreen
 
 @Composable
 fun ProfileNavHost(
     logout : () -> Unit,
-    withdrawal : () -> Unit,
+    signOut : () -> Unit,
+    navigateToLogin : () -> Unit,
     context: Activity
 ){
     val navHostController = rememberNavController()
@@ -26,8 +29,8 @@ fun ProfileNavHost(
             ProfileScreen(
                 navigateToManage = { navHostController.navigate("manage") },
                 navigateToLegacy = { navHostController.navigate("legacy") },
+                navigateToSignOut = { navHostController.navigate("signOut")},
                 logout = { logout() },
-                withdrawal = { withdrawal() },
                 popBackStack = { popBackStack(context, navHostController) },
             )
         }
@@ -38,6 +41,20 @@ fun ProfileNavHost(
             LegacyScreen(
                 popBackStack = { popBackStack(context, navHostController) },
                 navigateToWebPage = { navigateToWebPage(context, it) }
+            )
+        }
+        composable("signOut"){
+            SignOutScreen(
+                popBackStack = { popBackStack(context, navHostController) },
+                signOut = {
+                    signOut()
+                    navHostController.navigate("signOutComplete")
+                }
+            )
+        }
+        composable("signOutComplete"){
+            SignOutCompleteScreen(
+                navigateToLogin = { navigateToLogin() }
             )
         }
     }

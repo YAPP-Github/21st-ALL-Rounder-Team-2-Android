@@ -36,7 +36,9 @@ class ProfileActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             GalleryTheme {
-                ProfileNavHost(logout = { logout() }, withdrawal = { withdrawal() }, context = this)
+                ProfileNavHost(logout = { logout() }, signOut = { signOut() }, context = this,
+                    navigateToLogin = { navigateToLogin() }
+                )
             }
         }
     }
@@ -67,16 +69,13 @@ class ProfileActivity : ComponentActivity() {
         }
     }
 
-    private fun withdrawal(){
+    private fun signOut(){
         Log.e("loginType", loginType)
         // Todo : 서버에서 회원 탈퇴하는것도 만들어야함
         when(loginType){
             "kakao" -> {
                 kakaoClient.unlink {
-                    auth.currentUser?.delete()?.addOnCompleteListener {
-                        finishAffinity()
-                        startActivity(loginNavigator.navigate(this))
-                    }
+                    auth.currentUser?.delete()
                 }
             }
             "naver" -> {
@@ -93,8 +92,6 @@ class ProfileActivity : ComponentActivity() {
                     override fun onSuccess() {
                         auth.currentUser?.delete()?.addOnCompleteListener {
                             Log.e("firebase 삭제", it.isSuccessful.toString())
-                            finishAffinity()
-                            startActivity(loginNavigator.navigate(this@ProfileActivity))
                         }
                     }
 
@@ -102,12 +99,14 @@ class ProfileActivity : ComponentActivity() {
             }
             else -> {
                 googleSignInClient.revokeAccess().addOnCompleteListener {
-                    auth.currentUser?.delete()?.addOnCompleteListener {
-                        finishAffinity()
-                        startActivity(loginNavigator.navigate(this))
-                    }
+                    auth.currentUser?.delete()
                 }
             }
         }
+    }
+
+    private fun navigateToLogin(){
+        finishAffinity()
+        startActivity(loginNavigator.navigate(this))
     }
 }

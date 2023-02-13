@@ -26,15 +26,14 @@ import com.yapp.gallery.profile.R
 fun ProfileScreen(
     navigateToManage: () -> Unit,
     navigateToLegacy: () -> Unit,
+    navigateToSignOut: () -> Unit,
     logout: () -> Unit,
-    withdrawal: () -> Unit,
     popBackStack: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
 ){
     val user : BaseState<User> by viewModel.userData.collectAsState()
 
     val logoutDialogShown = remember { mutableStateOf(false) }
-    val withdrawalDialogShown = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             CenterTopAppBar(
@@ -113,8 +112,8 @@ fun ProfileScreen(
                 isLast = false
             )
             ProfileFeature(
-                featureName = stringResource(id = R.string.feature_withdraw),
-                onFeatureClick = { withdrawalDialogShown.value = true },
+                featureName = stringResource(id = R.string.feature_sign_out),
+                onFeatureClick = { navigateToSignOut() },
                 isLast = true
             )
 
@@ -128,20 +127,6 @@ fun ProfileScreen(
                     onConfirm = {
                         viewModel.removeInfo()
                         logout()
-                    }
-                )
-            }
-
-            // 회원탈퇴 다이얼로그
-            if (withdrawalDialogShown.value){
-                // Todo : 서버에서 탈퇴까지 구현해야함
-                ConfirmDialog(
-                    title = stringResource(id = R.string.withdrawal_dialog_title),
-                    subTitle = stringResource(id = R.string.withdrawal_dialog_guide),
-                    onDismissRequest = { withdrawalDialogShown.value = false },
-                    onConfirm = {
-                        viewModel.removeInfo()
-                        withdrawal()
                     }
                 )
             }
