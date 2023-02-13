@@ -1,5 +1,6 @@
 package com.yapp.gallery.data.repository
 
+import android.util.Log
 import com.yapp.gallery.data.source.local.record.ExhibitRecordLocalDataSource
 import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSource
 import com.yapp.gallery.domain.entity.home.CategoryItem
@@ -47,13 +48,14 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
                 p -> TempPostInfo(p.postId, p.name, p.categoryId, p.postDate, p.postLink) }
     }
 
-    override fun deleteTempPost(): Flow<Unit> {
+    override fun deleteTempPost(): Flow<Long> {
         return localDataSource.deleteTempPost()
     }
 
-    override fun deleteRecord(postId: Long): Flow<Unit> {
-        return remoteDataSource.deleteRecord(postId).flatMapMerge {
-            localDataSource.deleteTempPost()
+    override fun deleteRecord(): Flow<Boolean> {
+        // 로컬에 있는지 먼저 판단하고 지우기
+        return localDataSource.deleteTempPost().flatMapConcat {
+            remoteDataSource.deleteRecord(it)
         }
     }
 }

@@ -6,5 +6,5 @@ import javax.inject.Inject
 class DeleteRecordUseCase @Inject constructor(
     private val repository: ExhibitRecordRepository
 ) {
-    operator fun invoke(postId: Long) = repository.deleteRecord(postId)
+    operator fun invoke() = repository.deleteRecord()
 }

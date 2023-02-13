@@ -96,4 +96,3 @@ room = ["room-ktx", "room-paging", "room-runtime"]
 
 retrofit = [ "retrofit", "retrofit-convertor-gson"]
 okhttp3 = ["okhttp3", "okhttp3-logging"]
-

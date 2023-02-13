@@ -99,7 +99,7 @@ class ExhibitRecordViewModel @Inject constructor(
             }
         }
         else {
-            deleteRecord(postInfo.postId)
+            deleteRecord()
             _recordScreenState.value = ExhibitRecordState.Normal
         }
 
@@ -169,9 +169,9 @@ class ExhibitRecordViewModel @Inject constructor(
         }
     }
 
-    private fun deleteRecord(postId: Long){
+    private fun deleteRecord(){
         viewModelScope.launch {
-            deleteRecordUseCase(postId)
+            deleteRecordUseCase()
                 .catch {
                     Log.e("room failure", it.message.toString())
                 }

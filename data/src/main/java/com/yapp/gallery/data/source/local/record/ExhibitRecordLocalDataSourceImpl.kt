@@ -1,5 +1,6 @@
 package com.yapp.gallery.data.source.local.record
 
+import android.util.Log
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
 import com.yapp.gallery.data.room.TempPost
 import com.yapp.gallery.data.room.TempPostDao
@@ -31,7 +32,10 @@ class ExhibitRecordLocalDataSourceImpl @Inject constructor(
         emit(tempPostDao.getPost())
     }.flowOn(dispatcher)
 
-    override fun deleteTempPost(): Flow<Unit> = flow {
-        emit(tempPostDao.deletePost())
+    override fun deleteTempPost(): Flow<Long> = flow {
+        val postId = tempPostDao.getPost().postId
+        // postId 찾을 수 없으면 catch문으로 빠짐
+        tempPostDao.deletePost()
+        emit(postId)
     }.flowOn(dispatcher)
 }
