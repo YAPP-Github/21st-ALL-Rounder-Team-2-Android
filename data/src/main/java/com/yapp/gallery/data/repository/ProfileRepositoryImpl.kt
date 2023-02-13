@@ -12,9 +12,7 @@ class ProfileRepositoryImpl @Inject constructor(
     private val profileRemoteDataSource: ProfileRemoteDataSource
 ) : ProfileRepository {
     override fun loadUserData(): Flow<User> {
-        return profileRemoteDataSource.loadUserData().map {
-            User(it.id ,it.uid, it.name, it.profileImage)
-        }
+        return profileRemoteDataSource.loadUserData()
     }
 
     override fun editCategory(

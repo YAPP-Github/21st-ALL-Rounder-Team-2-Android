@@ -76,7 +76,8 @@ fun ProfileScreen(
                     Text(text = "기록한 전시", style = MaterialTheme.typography.h1)
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "00개의 전시 기록", style = MaterialTheme.typography.h3)
+                Text(text = "${(user as? BaseState.Success<User>)?.value?.exhibitCount ?: ""}개의 전시 기록",
+                    style = MaterialTheme.typography.h3)
             }
             Spacer(modifier = Modifier.height(32.dp))
 
