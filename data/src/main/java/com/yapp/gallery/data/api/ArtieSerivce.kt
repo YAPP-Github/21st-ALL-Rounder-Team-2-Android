@@ -2,6 +2,7 @@ package com.yapp.gallery.data.api
 
 import com.yapp.gallery.data.model.CategoryBody
 import com.yapp.gallery.data.model.CreateRecordBody
+import com.yapp.gallery.domain.entity.category.CategoryPost
 import com.yapp.gallery.domain.entity.home.CreatedId
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.login.CreateUserResponse
@@ -49,4 +50,8 @@ interface ArtieSerivce {
     // 유저 조회
     @GET("/user/my-page")
     suspend fun getUserData() : User
+
+    // 카테고리 별 전시 목록 조회
+    @GET("/post/category/{id}")
+    suspend fun getCategoryPost(@Path("id") id: Long, @Query("page") page: Int, @Query("size") size: Int) : CategoryPost
 }

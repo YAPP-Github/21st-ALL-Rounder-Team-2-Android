@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -65,12 +66,6 @@ fun CategoryManageScreen(
             snackState.showSnackbar(
                 message = error.asString(context), duration = SnackbarDuration.Short
             )
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            Log.e("display out", "display closed")
         }
     }
 
@@ -128,6 +123,14 @@ fun CategoryManageScreen(
                 scope = scope
             )
 
+            // 커스텀 Snackbar
+            Column(modifier = Modifier.fillMaxWidth()
+                .align(Alignment.TopCenter)
+            ) {
+                Spacer(modifier = Modifier.height(12.dp))
+                CustomSnackbarHost(snackbarHostState = snackState)
+            }
+
             // 카테고리 생성 다이얼로그
 
             if (categoryCreateDialogShown.value) {
@@ -137,11 +140,6 @@ fun CategoryManageScreen(
                     categoryState = viewModel.categoryState.collectAsState().value
                 )
             }
-        }
-        // 커스텀 Snackbar
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.height(12.dp))
-            CustomSnackbarHost(snackbarHostState = snackState)
         }
 
     }
@@ -197,9 +195,10 @@ private fun CategoryListView(
                         val elevation by animateDpAsState(if (isDragging) 10.dp else 0.dp)
                         CategoryListTile(
                             category = item,
+                            categoryPostState = viewModel.categoryPostState[index],
                             elevation = elevation,
                             viewModel = viewModel,
-                            data = emptyList()
+                            index = index
                         )
                     }
                     // Divider
@@ -264,11 +263,11 @@ private fun CategoryListView(
 @Composable
 fun CategoryListTile(
     category: CategoryItem,
+    categoryPostState : CategoryPostState,
     elevation: Dp,
     viewModel: CategoryManageViewModel,
-    data: List<String>,
+    index: Int
 ) {
-    val expanded = remember { mutableStateOf(false) }
     val categoryEditDialogShown = remember { mutableStateOf(false) }
     val categoryDeleteDialogShown = remember { mutableStateOf(false) }
 
@@ -285,14 +284,17 @@ fun CategoryListTile(
             modifier = Modifier.fillMaxWidth()
         ) {
             val (button, row, text1, text2) = createRefs()
-            Icon(imageVector = if (expanded.value) Icons.Default.ArrowDropUp
+            Icon(imageVector = if (categoryPostState is CategoryPostState.Expanded) Icons.Default.ArrowDropUp
             else Icons.Default.ArrowDropDown,
                 contentDescription = "categoryExpand",
                 tint = color_gray500,
                 modifier = Modifier
                     .padding(12.dp)
                     .size(32.dp)
-                    .clickable(onClick = { expanded.value = !expanded.value })
+                    .clickable(onClick = {
+                        // 확장 상태 인 경우 단순 접기 아닌 경우 데이터 받아오기
+                        viewModel.expandCategory(index)
+                    })
                     .constrainAs(button) {
                         start.linkTo(parent.start)
                         top.linkTo(text1.top)
@@ -338,7 +340,8 @@ fun CategoryListTile(
 
             // 전시 기록 개수
             Text(
-                text = "${data.size}${stringResource(id = R.string.category_exhibit_cnt)}",
+                // Todo : 임시로 0개로 넣어놈
+                text = "${0}${stringResource(id = R.string.category_exhibit_cnt)}",
                 style = MaterialTheme.typography.h4.copy(color = color_gray500),
                 modifier = Modifier.constrainAs(text2) {
                     start.linkTo(text1.start)
@@ -348,7 +351,8 @@ fun CategoryListTile(
             )
 
         }
-        if (expanded.value) {
+        if (categoryPostState is CategoryPostState.Expanded) {
+            val data = categoryPostState.categoryPost.content
             // 카테고리에 담긴 전시 정보
             if (data.isNotEmpty()) {
                 // 전시 정보가 존재 하는 경우
@@ -366,7 +370,7 @@ fun CategoryListTile(
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = item, style = MaterialTheme.typography.h4.copy(
+                                text = item.name, style = MaterialTheme.typography.h4.copy(
                                     fontWeight = FontWeight.Medium, color = color_gray300
                                 )
                             )

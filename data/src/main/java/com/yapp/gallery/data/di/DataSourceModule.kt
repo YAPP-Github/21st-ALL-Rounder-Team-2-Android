@@ -2,6 +2,8 @@ package com.yapp.gallery.data.di
 
 import com.yapp.gallery.data.source.local.record.ExhibitRecordLocalDataSource
 import com.yapp.gallery.data.source.local.record.ExhibitRecordLocalDataSourceImpl
+import com.yapp.gallery.data.source.remote.category.CategoryManageRemoteDataSource
+import com.yapp.gallery.data.source.remote.category.CategoryManageRemoteDataSourceImpl
 import com.yapp.gallery.data.source.remote.login.LoginRemoteDataSource
 import com.yapp.gallery.data.source.remote.login.LoginRemoteDataSourceImpl
 import com.yapp.gallery.data.source.remote.profile.ProfileRemoteDataSource
@@ -41,4 +43,10 @@ internal abstract class DataSourceModule {
     abstract fun bindProfileRemoteDataSource(
         dataSource: ProfileRemoteDataSourceImpl
     ) : ProfileRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoryManageRemoteDataSource(
+        dataSource: CategoryManageRemoteDataSourceImpl
+    ) : CategoryManageRemoteDataSource
 }
