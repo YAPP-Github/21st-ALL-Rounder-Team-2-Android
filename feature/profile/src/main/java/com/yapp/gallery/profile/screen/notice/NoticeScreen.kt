@@ -29,6 +29,7 @@ import com.yapp.gallery.profile.R
 
 @Composable
 fun NoticeScreen(
+    navigateToDetail : (NoticeItem) -> Unit,
     popBackStack : () -> Unit,
     viewModel: NoticeViewModel = hiltViewModel()
 ){
@@ -63,7 +64,7 @@ fun NoticeScreen(
         {
             LazyColumn {
                 items(viewModel.noticeList){notice ->
-                    NoticeTile(notice = notice, onClick = { /* Todo */} )
+                    NoticeTile(notice = notice, onClick = { navigateToDetail(notice) } )
                     Divider(modifier = Modifier.fillMaxWidth(), color = color_gray900, thickness = 0.4.dp)
                 }
             }
@@ -75,12 +76,12 @@ fun NoticeScreen(
 @Composable
 private fun NoticeTile(
     notice : NoticeItem,
-    onClick : (Long) -> Unit
+    onClick : (NoticeItem) -> Unit
 ){
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = { onClick(notice.id) })
+            .clickable(onClick = { onClick(notice) })
             .padding(vertical = 16.dp)
     ) {
         val (text1, text2, text3) = createRefs()

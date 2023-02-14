@@ -54,7 +54,7 @@ fun LegacyScreen(
     ) {paddingValues ->
         Column(modifier = Modifier
             .padding(paddingValues)
-            .padding(horizontal = 20.dp)
+            .padding(20.dp)
             .fillMaxSize()
         ) {
             LegacyTile(

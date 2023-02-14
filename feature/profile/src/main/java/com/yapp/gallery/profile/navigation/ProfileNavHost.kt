@@ -7,11 +7,14 @@ import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.yapp.gallery.profile.screen.category.CategoryManageScreen
 import com.yapp.gallery.profile.screen.legacy.LegacyScreen
+import com.yapp.gallery.profile.screen.notice.NoticeDetailScreen
 import com.yapp.gallery.profile.screen.notice.NoticeScreen
 import com.yapp.gallery.profile.screen.profile.ProfileScreen
 import com.yapp.gallery.profile.screen.signout.SignOutCompleteScreen
@@ -40,7 +43,40 @@ fun ProfileNavHost(
             CategoryManageScreen(popBackStack = { popBackStack(context, navHostController) })
         }
         composable("notice"){
-            NoticeScreen(popBackStack = { popBackStack(context, navHostController) })
+            NoticeScreen(
+                navigateToDetail = { noticeItem ->
+                    navHostController.navigate("noticeDetail?" +
+                            "title=${noticeItem.title},"+
+                            "content=내용내용내용,"+
+                            "date=${noticeItem.date}"
+                    )
+                },
+                popBackStack = { popBackStack(context, navHostController) })
+        }
+        composable(
+            route = "noticeDetail?title={title},content={content},date={date}",
+            arguments = listOf(
+                navArgument("title"){
+                    type = NavType.StringType
+                },
+                navArgument("content"){
+                    type = NavType.StringType
+                },
+                navArgument("date"){
+                    type = NavType.StringType
+                }
+            )
+        ){ entry ->
+            val noticeTitle = entry.arguments?.getString("title") ?: ""
+            val content = entry.arguments?.getString("content") ?: ""
+            val date = entry.arguments?.getString("date") ?: ""
+
+            NoticeDetailScreen(
+                noticeTitle = noticeTitle,
+                noticeContent = content,
+                noticeDate = date,
+                popBackStack = { popBackStack(context, navHostController) }
+            )
         }
         composable("legacy"){
             LegacyScreen(
@@ -53,7 +89,9 @@ fun ProfileNavHost(
                 popBackStack = { popBackStack(context, navHostController) },
                 signOut = {
                     signOut()
-                    navHostController.navigate("signOutComplete")
+                    navHostController.navigate("signOutComplete"){
+                        launchSingleTop = true
+                    }
                 }
             )
         }
