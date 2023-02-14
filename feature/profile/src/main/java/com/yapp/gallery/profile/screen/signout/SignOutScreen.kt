@@ -78,14 +78,25 @@ fun SignOutScreen(
         Column(modifier = Modifier
             .padding(paddingValues)
             .fillMaxSize()
+            .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(36.dp))
             Text(
-                text = stringResource(id = R.string.sign_out_guide),
-                style = MaterialTheme.typography.h1,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                text = stringResource(id = R.string.sign_out_title),
+                style = MaterialTheme.typography.h1.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 22.sp,
+                ),
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(id = R.string.sign_out_guide),
+                style = MaterialTheme.typography.h3.copy(
+                    color = grey_bdbdbd,
+                    lineHeight = 25.6.sp
+                ),
+            )
             // 회원탈퇴 다이얼로그
             if (signOutDialogShown.value){
                 // Todo : 서버에서 탈퇴까지 구현해야함

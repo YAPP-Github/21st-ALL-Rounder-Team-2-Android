@@ -122,7 +122,7 @@ fun ProfileScreen(
             if (logoutDialogShown.value){
                 ConfirmDialog(
                     title = stringResource(id = R.string.logout_dialog_title),
-                    subTitle = stringResource(id = R.string.logout_dialog_guide),
+                    subTitle = null,
                     onDismissRequest = { logoutDialogShown.value = false },
                     onConfirm = {
                         viewModel.removeInfo()

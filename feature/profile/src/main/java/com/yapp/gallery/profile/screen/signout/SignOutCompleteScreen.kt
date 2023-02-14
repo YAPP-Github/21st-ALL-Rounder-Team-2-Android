@@ -67,14 +67,15 @@ fun SignOutCompleteScreen(
         Column(modifier = Modifier
             .padding(paddingValues)
             .fillMaxSize()
+            .padding(horizontal = 20.dp)
         ) {
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(36.dp))
             Text(
                 text = stringResource(id = R.string.sign_out_complete),
-                style = MaterialTheme.typography.h1,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
+                style = MaterialTheme.typography.h1.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 22.sp
+                ),
             )
         }
     }
