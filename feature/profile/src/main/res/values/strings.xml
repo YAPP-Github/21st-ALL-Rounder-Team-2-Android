@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_appbar_title">마이페이지</string>
+    <string name="notice_appbar_title">공지사항</string>
     <string name="legacy_appbar_title">서비스 약관</string>
     <string name="sign_out_appbar_title">회원 탈퇴</string>
     <string name="sign_out_complete_appbar_title">회원 탈퇴 완료</string>

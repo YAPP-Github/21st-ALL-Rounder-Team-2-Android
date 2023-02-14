@@ -25,6 +25,7 @@ import com.yapp.gallery.profile.R
 @Composable
 fun ProfileScreen(
     navigateToManage: () -> Unit,
+    navigateToNotice: () -> Unit,
     navigateToLegacy: () -> Unit,
     navigateToSignOut: () -> Unit,
     logout: () -> Unit,
@@ -98,7 +99,7 @@ fun ProfileScreen(
             )
             ProfileFeature(
                 featureName = stringResource(id = R.string.feature_announce),
-                onFeatureClick = { /*TODO*/ },
+                onFeatureClick = { navigateToNotice() },
                 isLast = false
             )
             ProfileFeature(
