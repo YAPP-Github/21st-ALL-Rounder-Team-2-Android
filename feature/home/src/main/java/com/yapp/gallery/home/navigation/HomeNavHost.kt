@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.yapp.gallery.home.screen.calendar.CalendarScreen
 import com.yapp.gallery.home.screen.home.HomeScreen
 import com.yapp.gallery.home.screen.record.ExhibitRecordScreen
 import com.yapp.gallery.navigation.profile.ProfileNavigator
@@ -22,13 +23,17 @@ fun HomeNavHost(
     NavHost(navController = navHostController, startDestination = "home"){
         composable("home"){ HomeScreen(
             navigateToRecord = { navHostController.navigate("record")},
-            navigateToProfile = { navigateToScreen(context, profileNavigator.navigate(context))}
+            navigateToProfile = { navigateToScreen(context, profileNavigator.navigate(context))},
+            navigateToCalendar = { navHostController.navigate("calendar")}
         ) }
         composable("record"){ ExhibitRecordScreen(
             navController = navHostController,
             navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
             // Todo : 임시로 갤러리 대신 프로필로 가게 함
             navigateToGallery = { navigateToScreen(context, profileNavigator.navigate(context)) }
+        ) }
+        composable("calendar") { CalendarScreen(
+
         ) }
     }
 }
