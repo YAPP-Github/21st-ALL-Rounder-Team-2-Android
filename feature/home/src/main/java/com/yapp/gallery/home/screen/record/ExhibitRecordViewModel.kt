@@ -130,7 +130,7 @@ class ExhibitRecordViewModel @Inject constructor(
             // 일반적 생성 상태
             is ExhibitRecordState.Normal -> {
                 viewModelScope.launch {
-                    createRecordUseCase(exhibitName.value, categorySelect.value, exhibitDate.value)
+                    createRecordUseCase(exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value.ifEmpty { null })
                         .catch {
                             Log.e("create error", it.message.toString())
                             _recordScreenState.value = ExhibitRecordState.Normal
@@ -145,7 +145,7 @@ class ExhibitRecordViewModel @Inject constructor(
                 val id = (_recordScreenState.value as ExhibitRecordState.Continuous).tempPostInfo.postId
                 _recordScreenState.value = ExhibitRecordState.Created(id)
                 viewModelScope.launch {
-                    updateRecordUseCase(id, exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value)
+                    updateRecordUseCase(id, exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value.ifEmpty { null })
                         .catch {
 
                         }

@@ -22,11 +22,10 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
     }
 
     override fun createRecord(
-        name: String, categoryId: Long, postDate: String
+        name: String, categoryId: Long, postDate: String, attachedLink: String?
     ): Flow<Long> {
-        return remoteDataSource.createRecord(name, categoryId, postDate).flatMapMerge {
-            // Todo : 링크 현재 null로 넣어놨음
-            localDataSource.insertTempPost(it, name, categoryId, postDate, null)
+        return remoteDataSource.createRecord(name, categoryId, postDate, attachedLink).flatMapMerge {
+            localDataSource.insertTempPost(it, name, categoryId, postDate, attachedLink)
         }
     }
 
@@ -37,7 +36,7 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
         postDate: String,
         postLink: String?,
     ): Flow<Long> {
-        return remoteDataSource.updateRecord(postId, name, categoryId, postDate).flatMapMerge {
+        return remoteDataSource.updateRecord(postId, name, categoryId, postDate, postLink).flatMapMerge {
             localDataSource.updateTempPost(postId, name, categoryId, postDate, postLink)
         }
     }

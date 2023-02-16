@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExhibitRecordRemoteDataSource {
     fun getCategoryList() : Flow<List<CategoryItem>>
     fun createCategory(category: String) : Flow<Long>
-    fun createRecord(name: String, categoryId: Long, postDate: String) : Flow<Long>
-    fun updateRecord(postId: Long, name: String, categoryId: Long, postDate: String) : Flow<Boolean>
+    fun createRecord(name: String, categoryId: Long, postDate: String, attachedLink: String?) : Flow<Long>
+    fun updateRecord(postId: Long, name: String, categoryId: Long, postDate: String, attachedLink: String?) : Flow<Boolean>
     fun deleteRecord(postId: Long) : Flow<Boolean>
 }
