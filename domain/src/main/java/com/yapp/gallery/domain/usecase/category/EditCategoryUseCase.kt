@@ -1,10 +1,10 @@
-package com.yapp.gallery.domain.usecase.profile
+package com.yapp.gallery.domain.usecase.category
 
-import com.yapp.gallery.domain.repository.ProfileRepository
+import com.yapp.gallery.domain.repository.CategoryManageRepository
 import javax.inject.Inject
 
 class EditCategoryUseCase @Inject constructor(
-    private val repository: ProfileRepository
+    private val repository: CategoryManageRepository
 ) {
     operator fun invoke(categoryId: Long, editedName: String) = repository.editCategory(categoryId, editedName)
 }

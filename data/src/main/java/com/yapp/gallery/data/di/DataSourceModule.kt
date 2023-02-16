@@ -6,6 +6,8 @@ import com.yapp.gallery.data.source.remote.category.CategoryManageRemoteDataSour
 import com.yapp.gallery.data.source.remote.category.CategoryManageRemoteDataSourceImpl
 import com.yapp.gallery.data.source.remote.login.LoginRemoteDataSource
 import com.yapp.gallery.data.source.remote.login.LoginRemoteDataSourceImpl
+import com.yapp.gallery.data.source.remote.notice.NoticeRemoteDataSource
+import com.yapp.gallery.data.source.remote.notice.NoticeRemoteDataSourceImpl
 import com.yapp.gallery.data.source.remote.profile.ProfileRemoteDataSource
 import com.yapp.gallery.data.source.remote.profile.ProfileRemoteDataSourceImpl
 import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSource
@@ -49,4 +51,10 @@ internal abstract class DataSourceModule {
     abstract fun bindCategoryManageRemoteDataSource(
         dataSource: CategoryManageRemoteDataSourceImpl
     ) : CategoryManageRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindNoticeRemoteDataSource(
+        dataSource: NoticeRemoteDataSourceImpl
+    ) : NoticeRemoteDataSource
 }

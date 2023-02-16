@@ -1,12 +1,14 @@
 package com.yapp.gallery.data.repository
 
-import android.util.Log
 import com.yapp.gallery.data.source.local.record.ExhibitRecordLocalDataSource
 import com.yapp.gallery.data.source.remote.record.ExhibitRecordRemoteDataSource
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.home.TempPostInfo
 import com.yapp.gallery.domain.repository.ExhibitRecordRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ExhibitRecordRepositoryImpl @Inject constructor(

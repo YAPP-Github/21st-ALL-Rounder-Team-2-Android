@@ -1,5 +1,6 @@
 package com.yapp.gallery.profile.screen.notice
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,8 +9,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,10 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.yapp.gallery.common.theme.GalleryTheme
-import com.yapp.gallery.common.theme.color_gray500
-import com.yapp.gallery.common.theme.color_gray700
-import com.yapp.gallery.common.theme.color_gray900
+import com.yapp.gallery.common.model.BaseState
+import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.domain.entity.notice.NoticeItem
 import com.yapp.gallery.profile.R
@@ -31,8 +35,19 @@ import com.yapp.gallery.profile.R
 fun NoticeScreen(
     navigateToDetail : (NoticeItem) -> Unit,
     popBackStack : () -> Unit,
-    viewModel: NoticeViewModel = hiltViewModel()
+    viewModel: NoticeViewModel = hiltViewModel(),
+    context : Context = LocalContext.current
 ){
+    val noticeListState : BaseState<List<NoticeItem>> by viewModel.noticeListState.collectAsState()
+
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(viewModel.errors){
+        viewModel.errors.collect{
+            scaffoldState.snackbarHostState.showSnackbar(it.asString(context))
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterTopAppBar(
@@ -56,20 +71,55 @@ fun NoticeScreen(
                     }
                 }
             )
-        }
+        },
+        scaffoldState = scaffoldState
     ) {paddingValues ->
-        Column(modifier = Modifier
-            .padding(paddingValues)
-            .padding(20.dp))
-        {
-            LazyColumn {
-                items(viewModel.noticeList){notice ->
-                    NoticeTile(notice = notice, onClick = { navigateToDetail(notice) } )
-                    Divider(modifier = Modifier.fillMaxWidth(), color = color_gray900, thickness = 0.4.dp)
+        when (noticeListState) {
+            is BaseState.Success -> {
+                Column(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .padding(20.dp)
+                ) {
+                    LazyColumn {
+                        items((noticeListState as BaseState.Success<List<NoticeItem>>).value) { notice ->
+                            NoticeTile(notice = notice, onClick = { navigateToDetail(notice) })
+                            Divider(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = color_gray900,
+                                thickness = 0.4.dp
+                            )
+                        }
+                    }
+                }
+            }
+            else -> {
+                Column(modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (noticeListState is BaseState.Loading){
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .align(CenterHorizontally),
+                            color = color_mainBlue
+                        )
+                    }
+                    else {
+                        Text(
+                            text = stringResource(id = R.string.notice_empty_guide),
+                            style = MaterialTheme.typography.h3.copy(color = color_gray600),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
-        
+
+
     }
 }
 
@@ -95,7 +145,7 @@ private fun NoticeTile(
         )
 
         Text(
-            text = "공지사항에 대한 세부 내용 공지사항에 대한 세부 내용 공지사항에 대한 세부 내용···",
+            text = notice.contents,
             style = MaterialTheme.typography.h4.copy(
                 color = color_gray500, lineHeight = 19.sp
             ),
@@ -124,6 +174,8 @@ private fun NoticeTile(
 @Composable
 private fun NoticeTilePreview(){
     GalleryTheme {
-        NoticeTile(notice = NoticeItem(date = "2023-02-22", id = 1, title = "공지사항"), onClick = {})
+        NoticeTile(notice = NoticeItem(date = "2023-02-22", id = 1, title = "공지사항", contents = "내용"),
+            onClick = {}
+        )
     }
 }

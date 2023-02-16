@@ -1,6 +1,5 @@
 package com.yapp.gallery.data.source.local.record
 
-import android.util.Log
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
 import com.yapp.gallery.data.room.TempPost
 import com.yapp.gallery.data.room.TempPostDao

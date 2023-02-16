@@ -47,7 +47,7 @@ fun ProfileNavHost(
                 navigateToDetail = { noticeItem ->
                     navHostController.navigate("noticeDetail?" +
                             "title=${noticeItem.title},"+
-                            "content=내용내용내용,"+
+                            "content=${noticeItem.contents},"+
                             "date=${noticeItem.date}"
                     )
                 },

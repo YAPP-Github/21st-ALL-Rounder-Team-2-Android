@@ -2,8 +2,6 @@ package com.yapp.gallery.data.source.remote.profile
 
 import com.yapp.gallery.data.api.ArtieSerivce
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
-import com.yapp.gallery.data.model.CategoryBody
-import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.domain.entity.profile.User
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -17,23 +15,5 @@ class ProfileRemoteDataSourceImpl @Inject constructor(
 ) : ProfileRemoteDataSource {
     override fun loadUserData(): Flow<User> = flow {
         emit(artieSerivce.getUserData())
-    }.flowOn(dispatcher)
-
-    override fun editCategory(
-        categoryId: Long, editedName: String
-    ): Flow<Boolean> = flow {
-        emit(artieSerivce.editCategory(categoryId, CategoryBody(editedName)).isSuccessful)
-    }.flowOn(dispatcher)
-
-    override fun deleteCategory(
-        categoryId: Long
-    ): Flow<Boolean> = flow {
-        emit(artieSerivce.deleteCategory(categoryId).isSuccessful)
-    }.flowOn(dispatcher)
-
-    override fun editCategorySequence(
-        categoryList: List<CategoryItem>
-    ): Flow<Boolean> = flow {
-        emit(artieSerivce.changeCategorySequence(categoryList).isSuccessful)
     }.flowOn(dispatcher)
 }

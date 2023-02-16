@@ -1,5 +1,6 @@
 package com.yapp.gallery.profile.screen.profile
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,6 +23,7 @@ import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.profile.R
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun ProfileScreen(
@@ -30,11 +33,20 @@ fun ProfileScreen(
     navigateToSignOut: () -> Unit,
     logout: () -> Unit,
     popBackStack: () -> Unit,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
+    context : Context = LocalContext.current
 ){
     val user : BaseState<User> by viewModel.userData.collectAsState()
 
     val logoutDialogShown = remember { mutableStateOf(false) }
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(viewModel.errors){
+        viewModel.errors.collect{
+            scaffoldState.snackbarHostState.showSnackbar(it.asString(context))
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterTopAppBar(
@@ -58,7 +70,8 @@ fun ProfileScreen(
                     }
                 }
             )
-        }
+        },
+        scaffoldState = scaffoldState
     ) { paddingValues ->  
         Column(modifier = Modifier
             .padding(paddingValues)
