@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_appbar_title">마이페이지</string>
+    <string name="notice_appbar_title">공지사항</string>
+    <string name="legacy_appbar_title">서비스 약관</string>
+    <string name="sign_out_appbar_title">회원 탈퇴</string>
+    <string name="sign_out_complete_appbar_title">회원 탈퇴 완료</string>
 
     <string name="category_manage_btn">카테고리 관리</string>
 
-    <string name="feature_profile_edit">개인정보 수정</string>
+    <string name="feature_profile_edit">닉네임 수정</string>
     <string name="feature_announce">공지사항</string>
-    <string name="feature_service_legacy">서비스 이용 약관</string>
-    <string name="feature_private_legacy">개인정보 이용 약관</string>
+    <string name="feature_legacy">서비스 이용 약관 및 개인정보 이용 약관</string>
     <string name="feature_logout">로그아웃</string>
-    <string name="feature_withdraw">탈퇴하기</string>
+    <string name="feature_sign_out">탈퇴하기</string>
+
+    <string name="profile_load_error">유저 정보를 불러오지 못했습니다.</string>
 
     <string name="category_add">추가</string>
     <string name="category_exhibit_cnt">개의 전시기록</string>
@@ -27,13 +32,29 @@
     <string name="category_manage_empty_guide">아직 카테고리가 없어요!\n하단 버튼을 통해 카테고리를 만들어 보아요.</string>
     <string name="category_manage_create">카테고리 만들기</string>
 
-    <string name="logout_dialog_title">로그아웃</string>
-    <string name="logout_dialog_guide">정말로 로그아웃 하시겠습니까?</string>
+    <string name="logout_dialog_title">로그아웃을\n정말 하시겠어요?</string>
 
-    <string name="withdrawal_dialog_title">회원탈퇴</string>
-    <string name="withdrawal_dialog_guide">회원탈퇴시 회원 정보가 삭제됩니다.</string>
+    <string name="sign_out_dialog_title">회원탈퇴</string>
+    <string name="sign_out_dialog_guide">탈퇴하면 그동안의 저장한 기록들이 사라져요 그래도 탈퇴를 진행할까요?</string>
 
-    <string name="category_add_error">카테고리 생성이 정상적으로 이루어지지 않았습니다. 잠시 후 다시 시도해주세요.</string>
-    <string name="category_edit_error">카테고리 편집이 정상적으로 이루어지지 않았습니다. 잠시 후 다시 시도해주세요.</string>
-    <string name="category_delete_erorr">카테고리 삭제가 정상적으로 이루어지지 않았습니다. 잠시 후 다시 시도해주세요.</string>
+    <string name="category_add_error">카테고리 생성이 정상적으로 이루어지지 않았습니다.</string>
+    <string name="category_edit_error">카테고리 편집이 정상적으로 이루어지지 않았습니다.</string>
+    <string name="category_delete_erorr">카테고리 삭제가 정상적으로 이루어지지 않았습니다.</string>
+    <string name="category_swap_error">카테고리 순서 변경이 정상적으로 이루어지지 않았습니다.</string>
+
+    <string name="network_error">네트워크에 연결할 수 없습니다.</string>
+
+    <string name="legacy_service">서비스 이용 약관</string>
+    <string name="legacy_service_link">https://typhoon-supply-41c.notion.site/ddb332028d8b4a5caf9979f2006172ca</string>
+    <string name="legacy_privacy">개인정보 처리 방침</string>
+    <string name="legacy_privacy_link">https://typhoon-supply-41c.notion.site/90163b69855e4d438691c10bccbe8ebe</string>
+
+    <string name="sign_out_title">정말 탈퇴하시겠어요?</string>
+    <string name="sign_out_guide">탈퇴하시는 경우,\n저장된 전시 관람 기록들이 모두 삭제됩니다.\n그래도 탈퇴를 진행할까요?</string>
+    <string name="sign_out_btn">회원 탈퇴</string>
+
+    <string name="sign_out_complete">탈퇴가 완료되었습니다.\n그동안 이용해주셔서 감사합니다.</string>
+
+    <string name="notice_empty_guide">아직 공지사항이 없어요!</string>
+    <string name="notice_get_error">공지사항을 불러오지 못했습니다.</string>
 </resources>

@@ -1,12 +1,10 @@
 package com.yapp.gallery.profile.screen.profile
 
-import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.runtime.LaunchedEffect
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.kakao.sdk.user.UserApiClient
@@ -15,39 +13,38 @@ import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.navigation.login.LoginNavigator
-import com.yapp.gallery.profile.screen.category.CategoryManageActivity
+import com.yapp.gallery.profile.navigation.ProfileNavHost
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProfileActivity : ComponentActivity() {
-    private val viewModel by viewModels<ProfileViewModel>()
-
     @Inject lateinit var loginNavigator: LoginNavigator
 
     @Inject lateinit var auth: FirebaseAuth
 
     @Inject lateinit var googleSignInClient: GoogleSignInClient
     @Inject lateinit var kakaoClient: UserApiClient
+
+    @Inject lateinit var sharedPreferences : SharedPreferences
+
+    private val loginType by lazy {
+        sharedPreferences.getString("loginType", "").toString()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GalleryTheme {
-                ProfileScreen(popBackStack = { finish() }, navigateToManage = { navigateToManage() },
-                    logout = { logout() }, withdrawal = { withdrawal() }, viewModel = viewModel
+                ProfileNavHost(logout = { logout() }, signOut = { signOut() }, context = this,
+                    navigateToLogin = { navigateToLogin() }
                 )
             }
         }
     }
 
-    private fun navigateToManage(){
-        startActivity(Intent(this, CategoryManageActivity::class.java))
-    }
-
     private fun logout(){
-        viewModel.removeInfo()
-        when(viewModel.loginType){
+        when(loginType){
             "kakao" -> {
                 kakaoClient.logout {
                     auth.signOut()
@@ -72,17 +69,13 @@ class ProfileActivity : ComponentActivity() {
         }
     }
 
-    private fun withdrawal(){
-        Log.e("loginType", viewModel.loginType)
+    private fun signOut(){
+        Log.e("loginType", loginType)
         // Todo : 서버에서 회원 탈퇴하는것도 만들어야함
-        when(viewModel.loginType){
+        when(loginType){
             "kakao" -> {
                 kakaoClient.unlink {
-                    viewModel.removeInfo()
-                    auth.currentUser?.delete()?.addOnCompleteListener {
-                        finishAffinity()
-                        startActivity(loginNavigator.navigate(this))
-                    }
+                    auth.currentUser?.delete()
                 }
             }
             "naver" -> {
@@ -97,11 +90,8 @@ class ProfileActivity : ComponentActivity() {
                     }
 
                     override fun onSuccess() {
-                        viewModel.removeInfo()
                         auth.currentUser?.delete()?.addOnCompleteListener {
                             Log.e("firebase 삭제", it.isSuccessful.toString())
-                            finishAffinity()
-                            startActivity(loginNavigator.navigate(this@ProfileActivity))
                         }
                     }
 
@@ -109,13 +99,14 @@ class ProfileActivity : ComponentActivity() {
             }
             else -> {
                 googleSignInClient.revokeAccess().addOnCompleteListener {
-                    viewModel.removeInfo()
-                    auth.currentUser?.delete()?.addOnCompleteListener {
-                        finishAffinity()
-                        startActivity(loginNavigator.navigate(this))
-                    }
+                    auth.currentUser?.delete()
                 }
             }
         }
+    }
+
+    private fun navigateToLogin(){
+        finishAffinity()
+        startActivity(loginNavigator.navigate(this))
     }
 }

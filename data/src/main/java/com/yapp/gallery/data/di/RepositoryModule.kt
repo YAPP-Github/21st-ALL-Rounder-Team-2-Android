@@ -1,11 +1,7 @@
 package com.yapp.gallery.data.di
 
-import com.yapp.gallery.data.repository.ExhibitRecordRepositoryImpl
-import com.yapp.gallery.data.repository.LoginRepositoryImpl
-import com.yapp.gallery.data.repository.ProfileRepositoryImpl
-import com.yapp.gallery.domain.repository.ExhibitRecordRepository
-import com.yapp.gallery.domain.repository.LoginRepository
-import com.yapp.gallery.domain.repository.ProfileRepository
+import com.yapp.gallery.data.repository.*
+import com.yapp.gallery.domain.repository.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,4 +22,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindProfileRepository(profileRepositoryImpl: ProfileRepositoryImpl) : ProfileRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCategoryManageRepository(repositoryImpl: CategoryManageRepositoryImpl) : CategoryManageRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNoticeRepository(repositoryImpl: NoticeRepositoryImpl) : NoticeRepository
 }

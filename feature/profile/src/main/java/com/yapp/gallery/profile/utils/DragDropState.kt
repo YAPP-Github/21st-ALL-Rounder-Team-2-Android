@@ -1,6 +1,5 @@
 package com.yapp.gallery.profile.utils
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween

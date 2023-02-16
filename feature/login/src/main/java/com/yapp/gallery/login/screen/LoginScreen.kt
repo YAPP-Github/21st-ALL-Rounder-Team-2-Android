@@ -46,7 +46,7 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Image(painter = painterResource(id = R.drawable.ic_logo), contentDescription = "logo",
+                Image(painter = painterResource(id = R.drawable.ic_typo), contentDescription = "logo",
                     alignment = Alignment.Center)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = stringResource(id = R.string.service_name), fontSize = 18.sp)

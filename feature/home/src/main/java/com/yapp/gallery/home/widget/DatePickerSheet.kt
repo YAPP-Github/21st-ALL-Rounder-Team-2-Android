@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 
 @Composable
 fun DatePickerSheet(
-    onDateSet : (String) -> Unit
+    onDateSet : (String) -> Unit,
 ){
     // 오늘 날짜
     val dateTime = LocalDateTime.now()

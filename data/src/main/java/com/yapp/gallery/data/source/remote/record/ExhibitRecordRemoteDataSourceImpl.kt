@@ -30,8 +30,9 @@ class ExhibitRecordRemoteDataSourceImpl @Inject constructor(
         name: String,
         categoryId: Long,
         postDate: String,
+        attachedLink: String?
     ): Flow<Long> = flow {
-        emit(artieSerivce.createRecord(CreateRecordBody(name, categoryId, changeDateFormat(postDate))).id)
+        emit(artieSerivce.createRecord(CreateRecordBody(name, categoryId, changeDateFormat(postDate), attachedLink)).id)
     }.flowOn(dispatcher)
 
     override fun updateRecord(
@@ -39,8 +40,9 @@ class ExhibitRecordRemoteDataSourceImpl @Inject constructor(
         name: String,
         categoryId: Long,
         postDate: String,
+        attachedLink: String?
     ): Flow<Boolean> = flow{
-        emit(artieSerivce.updateRecord(postId, CreateRecordBody(name, categoryId, changeDateFormat(postDate))).isSuccessful)
+        emit(artieSerivce.updateRecord(postId, CreateRecordBody(name, categoryId, changeDateFormat(postDate), attachedLink)).isSuccessful)
     }
 
     override fun deleteRecord(

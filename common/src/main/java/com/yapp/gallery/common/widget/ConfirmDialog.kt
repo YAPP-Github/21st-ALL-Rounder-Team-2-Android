@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.yapp.gallery.common.theme.color_black
@@ -23,7 +24,7 @@ import com.yapp.gallery.common.theme.color_gray600
 @Composable
 fun ConfirmDialog(
     title: String,
-    subTitle: String,
+    subTitle: String?,
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
     important: Boolean = false
@@ -57,16 +58,20 @@ fun ConfirmDialog(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 카테고리 타이틀
                 Text(
-                    text = title, style = MaterialTheme.typography.h2
-                        .copy(fontWeight = FontWeight.SemiBold)
+                    text = title, style = MaterialTheme.typography.h2.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            lineHeight = 25.2.sp
+                        ),
+                    textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = subTitle, style = MaterialTheme.typography.h4
-                        .copy(color = color_gray600), textAlign = TextAlign.Center
-                )
+                subTitle?.let {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = subTitle, style = MaterialTheme.typography.h4
+                            .copy(color = color_gray600), textAlign = TextAlign.Center
+                    )
+                }
                 Spacer(modifier = Modifier.height(30.dp))
 
                 // 예, 아니오 버튼

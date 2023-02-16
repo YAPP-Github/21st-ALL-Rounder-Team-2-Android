@@ -1,5 +1,6 @@
 package com.yapp.gallery.profile.screen.profile
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -9,10 +10,12 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.color_background
 import com.yapp.gallery.common.theme.color_gray600
@@ -20,20 +23,30 @@ import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.profile.R
-import com.yapp.gallery.profile.widget.CustomSnackbarHost
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun ProfileScreen(
-    popBackStack : () -> Unit,
     navigateToManage: () -> Unit,
-    logout : () -> Unit,
-    withdrawal : () -> Unit,
-    viewModel : ProfileViewModel
+    navigateToNotice: () -> Unit,
+    navigateToLegacy: () -> Unit,
+    navigateToSignOut: () -> Unit,
+    logout: () -> Unit,
+    popBackStack: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel(),
+    context : Context = LocalContext.current
 ){
     val user : BaseState<User> by viewModel.userData.collectAsState()
 
     val logoutDialogShown = remember { mutableStateOf(false) }
-    val withdrawalDialogShown = remember { mutableStateOf(false) }
+    val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(viewModel.errors){
+        viewModel.errors.collect{
+            scaffoldState.snackbarHostState.showSnackbar(it.asString(context))
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterTopAppBar(
@@ -57,7 +70,8 @@ fun ProfileScreen(
                     }
                 }
             )
-        }
+        },
+        scaffoldState = scaffoldState
     ) { paddingValues ->  
         Column(modifier = Modifier
             .padding(paddingValues)
@@ -75,7 +89,8 @@ fun ProfileScreen(
                     Text(text = "기록한 전시", style = MaterialTheme.typography.h1)
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = "00개의 전시 기록", style = MaterialTheme.typography.h3)
+                Text(text = "${(user as? BaseState.Success<User>)?.value?.exhibitCount ?: ""}개의 전시 기록",
+                    style = MaterialTheme.typography.h3)
             }
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -90,32 +105,43 @@ fun ProfileScreen(
 
             // 각 기능 버튼
             Spacer(modifier = Modifier.height(32.dp))
-            ProfileFeature(featureName = stringResource(id = R.string.feature_profile_edit), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_announce), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_service_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_private_legacy), onFeatureClick = { /*TODO*/ }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_logout), onFeatureClick = { logoutDialogShown.value = true }, isLast = false)
-            ProfileFeature(featureName = stringResource(id = R.string.feature_withdraw), onFeatureClick = { withdrawalDialogShown.value = true }, isLast = true)
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_profile_edit),
+                onFeatureClick = { /*TODO*/ },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_announce),
+                onFeatureClick = { navigateToNotice() },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_legacy),
+                onFeatureClick = { navigateToLegacy() },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_logout),
+                onFeatureClick = { logoutDialogShown.value = true },
+                isLast = false
+            )
+            ProfileFeature(
+                featureName = stringResource(id = R.string.feature_sign_out),
+                onFeatureClick = { navigateToSignOut() },
+                isLast = true
+            )
 
 
             // 로그아웃 다이얼로그
             if (logoutDialogShown.value){
                 ConfirmDialog(
                     title = stringResource(id = R.string.logout_dialog_title),
-                    subTitle = stringResource(id = R.string.logout_dialog_guide),
+                    subTitle = null,
                     onDismissRequest = { logoutDialogShown.value = false },
-                    onConfirm = logout
-                )
-            }
-
-            // 회원탈퇴 다이얼로그
-            if (withdrawalDialogShown.value){
-                // Todo : 서버에서 탈퇴까지 구현해야함
-                ConfirmDialog(
-                    title = stringResource(id = R.string.withdrawal_dialog_title),
-                    subTitle = stringResource(id = R.string.withdrawal_dialog_guide),
-                    onDismissRequest = { withdrawalDialogShown.value = false },
-                    onConfirm = withdrawal
+                    onConfirm = {
+                        viewModel.removeInfo()
+                        logout()
+                    }
                 )
             }
         }

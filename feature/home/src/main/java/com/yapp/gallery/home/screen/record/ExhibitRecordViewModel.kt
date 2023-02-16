@@ -1,7 +1,10 @@
 package com.yapp.gallery.home.screen.record
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState
@@ -33,6 +36,12 @@ class ExhibitRecordViewModel @Inject constructor(
     private var _recordScreenState = MutableStateFlow<ExhibitRecordState>(ExhibitRecordState.Initial)
     val recordScreenState : StateFlow<ExhibitRecordState>
         get() = _recordScreenState
+
+
+    val exhibitName = mutableStateOf("")
+    val exhibitDate = mutableStateOf("")
+    val exhibitLink = mutableStateOf("")
+    val categorySelect = mutableStateOf(-1L)
 
     init {
         getTempPost()
@@ -66,18 +75,31 @@ class ExhibitRecordViewModel @Inject constructor(
     // 이어서 기록 or 삭제
     fun setContinuousDelete(continuous: Boolean){
         val postInfo = (_recordScreenState.value as ExhibitRecordState.Response).tempPostInfo
-        _recordScreenState.value = if (continuous) ExhibitRecordState.Continuous(postInfo)
-            else ExhibitRecordState.Delete(postInfo)
+        _recordScreenState.value = if (continuous) ExhibitRecordState.Continuous(postInfo).also {
+            with(it.tempPostInfo){
+                exhibitName.value = name
+                exhibitLink.value = postLink ?: ""
+                exhibitDate.value = postDate
+                categorySelect.value = categoryId
+            }
+        }else ExhibitRecordState.Delete(postInfo)
     }
 
     // 삭제 취소
     fun undoDelete(undo: Boolean){
         val postInfo = (_recordScreenState.value as ExhibitRecordState.Delete).tempPostInfo
         if (undo){
-            _recordScreenState.value = ExhibitRecordState.Continuous(postInfo)
+            _recordScreenState.value = ExhibitRecordState.Continuous(postInfo).also {
+                with(it.tempPostInfo){
+                    exhibitName.value = name
+                    exhibitLink.value = postLink ?: ""
+                    exhibitDate.value = postDate
+                    categorySelect.value = categoryId
+                }
+            }
         }
         else {
-            deleteRecord(postInfo.postId)
+            deleteRecord()
             _recordScreenState.value = ExhibitRecordState.Normal
         }
 
@@ -103,12 +125,12 @@ class ExhibitRecordViewModel @Inject constructor(
             _categoryState.value = BaseState.Success(category.isNotEmpty())
     }
 
-    fun createOrUpdateRecord(name: String, categoryId: Long, postDate: String, link: String?) {
+    fun createOrUpdateRecord() {
         when (_recordScreenState.value){
             // 일반적 생성 상태
             is ExhibitRecordState.Normal -> {
                 viewModelScope.launch {
-                    createRecordUseCase(name, categoryId, postDate)
+                    createRecordUseCase(exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value.ifEmpty { null })
                         .catch {
                             Log.e("create error", it.message.toString())
                             _recordScreenState.value = ExhibitRecordState.Normal
@@ -123,7 +145,7 @@ class ExhibitRecordViewModel @Inject constructor(
                 val id = (_recordScreenState.value as ExhibitRecordState.Continuous).tempPostInfo.postId
                 _recordScreenState.value = ExhibitRecordState.Created(id)
                 viewModelScope.launch {
-                    updateRecordUseCase(id, name, categoryId, postDate, link)
+                    updateRecordUseCase(id, exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value.ifEmpty { null })
                         .catch {
 
                         }
@@ -136,7 +158,7 @@ class ExhibitRecordViewModel @Inject constructor(
             is ExhibitRecordState.Created -> {
                 val id = (_recordScreenState.value as ExhibitRecordState.Created).postId
                 viewModelScope.launch {
-                    updateRecordUseCase(id, name, categoryId, postDate, link)
+                    updateRecordUseCase(id, exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value)
                         .catch {
 
                         }
@@ -147,9 +169,9 @@ class ExhibitRecordViewModel @Inject constructor(
         }
     }
 
-    private fun deleteRecord(postId: Long){
+    private fun deleteRecord(){
         viewModelScope.launch {
-            deleteRecordUseCase(postId)
+            deleteRecordUseCase()
                 .catch {
                     Log.e("room failure", it.message.toString())
                 }

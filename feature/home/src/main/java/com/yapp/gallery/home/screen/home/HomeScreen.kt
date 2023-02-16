@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun HomeScreen(
     navigateToRecord: () -> Unit,
     navigateToProfile: () -> Unit,
+    navigateToCalendar: () -> Unit,
 ){
     val viewModel = hiltViewModel<HomeViewModel>()
 
@@ -26,19 +27,13 @@ fun HomeScreen(
     val webChromeClient = AccompanistWebChromeClient()
 
     LaunchedEffect(viewModel.homeSideEffect){
-        viewModel.homeSideEffect.collectLatest {
+        viewModel.homeSideEffect.collect {
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
+                "NAVIGATE_TO_CALENDAR" -> navigateToCalendar()
                 else -> {}
             }
-        }
-    }
-
-    DisposableEffect(viewModel.homeSideEffect){
-        onDispose {
-            Log.e("sideEffect", "sideEffectClear")
-            viewModel.clearSideEffect()
         }
     }
 

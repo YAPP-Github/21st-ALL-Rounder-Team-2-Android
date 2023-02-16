@@ -31,7 +31,10 @@ class ExhibitRecordLocalDataSourceImpl @Inject constructor(
         emit(tempPostDao.getPost())
     }.flowOn(dispatcher)
 
-    override fun deleteTempPost(): Flow<Unit> = flow {
-        emit(tempPostDao.deletePost())
+    override fun deleteTempPost(): Flow<Long> = flow {
+        val postId = tempPostDao.getPost().postId
+        // postId 찾을 수 없으면 catch문으로 빠짐
+        tempPostDao.deletePost()
+        emit(postId)
     }.flowOn(dispatcher)
 }
