@@ -10,7 +10,7 @@ hilt-core = "2.44"
 hilt-integrations = "1.0.0"
 javax-inject = "1"
 camera = "1.1.0-beta01"
-coil = "1.4.0"
+coil = "2.2.2"
 room = "2.5.0"
 splash = "1.0.0"
 # social login
@@ -80,6 +80,7 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 [bundles]
+auth = [ "firebase-auth-ktx", "gms-auth", "kakao", "naver"]
 
 hilt-deps = [ "hilt-core", "hilt-integrations-work"]
 hilt-compilers = [ "hilt-compiler", "hilt-integrations-compiler" ]

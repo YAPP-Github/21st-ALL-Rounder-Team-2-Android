@@ -1,6 +1,5 @@
 package com.yapp.gallery.profile.screen.category
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -14,10 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -33,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CategoryCreateDialog
@@ -124,7 +121,8 @@ fun CategoryManageScreen(
             )
 
             // 커스텀 Snackbar
-            Column(modifier = Modifier.fillMaxWidth()
+            Column(modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.TopCenter)
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
@@ -281,32 +279,30 @@ fun CategoryListTile(
         Spacer(modifier = Modifier.height(24.dp))
         // 카테고리 브리프 정보 및 첫 행
         ConstraintLayout(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.padding(start = 20.dp).fillMaxWidth()
         ) {
             val (button, row, text1, text2) = createRefs()
-            Icon(imageVector = if (categoryPostState is CategoryPostState.Expanded) Icons.Default.ArrowDropUp
-            else Icons.Default.ArrowDropDown,
-                contentDescription = "categoryExpand",
-                tint = color_gray500,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .size(32.dp)
-                    .clickable(onClick = {
-                        // 확장 상태 인 경우 단순 접기 아닌 경우 데이터 받아오기
-                        viewModel.expandCategory(index)
-                    })
-                    .constrainAs(button) {
-                        start.linkTo(parent.start)
-                        top.linkTo(text1.top)
-                        bottom.linkTo(text1.bottom)
-                    })
+            IconButton(onClick = { viewModel.expandCategory(index) },
+                modifier = Modifier.size(18.dp).constrainAs(button) {
+                    start.linkTo(parent.start)
+                    top.linkTo(text1.top)
+                    bottom.linkTo(text1.bottom)
+                }
+            ) {
+                Icon(painter = if (categoryPostState is CategoryPostState.Expanded) painterResource(id = R.drawable.arrow_up)
+                        else painterResource(id = R.drawable.arrow_down),
+                    contentDescription = "categoryExpand",
+                    tint = color_gray500,
+                )
+            }
+
 
             // 카테고리 이름
             Text(text = category.name,
                 style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold),
                 modifier = Modifier.constrainAs(text1) {
                     top.linkTo(parent.top)
-                    start.linkTo(button.end)
+                    start.linkTo(button.end, margin = 8.dp)
                     end.linkTo(row.start)
                     width = Dimension.fillToConstraints
                 })
@@ -314,10 +310,9 @@ fun CategoryListTile(
 
             // 편집 및 삭제
             Row(modifier = Modifier
-                .padding(end = 15.dp)
                 .constrainAs(row) {
                     start.linkTo(text1.end, margin = 12.dp)
-                    end.linkTo(parent.end)
+                    end.linkTo(parent.end, margin = 12.dp)
                     top.linkTo(text1.top)
                     bottom.linkTo(text1.bottom)
                 }) {
@@ -363,8 +358,8 @@ fun CategoryListTile(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.padding(end = 6.dp)
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.exhibit_test),
+                            AsyncImage(
+                                model = item.mainImage,
                                 contentDescription = null,
                                 modifier = Modifier.size(80.dp)
                             )

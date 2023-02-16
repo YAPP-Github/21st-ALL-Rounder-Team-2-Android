@@ -57,10 +57,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
     implementation libs.bundles.compose
-    implementation libs.firebase.auth.ktx
-    implementation libs.gms.auth
+    implementation libs.bundles.auth
     implementation libs.bundles.hilt.deps
-    implementation libs.kakao
-    implementation libs.naver
     kapt libs.bundles.hilt.compilers
 }
