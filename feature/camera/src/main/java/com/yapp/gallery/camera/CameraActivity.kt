@@ -32,6 +32,8 @@ class CameraActivity : AppCompatActivity() {
                         executor = cameraExecutor
                     )
                 }
+            } else {
+                // todo 퍼미션 거절 되었을 시 dialog 노출 후 화면 이탈 필요
             }
         }
 
@@ -45,9 +47,13 @@ class CameraActivity : AppCompatActivity() {
                     it.executePendingBindings()
                 }
 
-        onCheckPermissions(activity = this, permission = Manifest.permission.CAMERA, onGrant = {
-            permissionLaunch.launch(Manifest.permission.CAMERA)
-        })
+        onCheckPermissions(
+            activity = this,
+            permission = Manifest.permission.CAMERA,
+            onRequest = { permissionLaunch.launch(Manifest.permission.CAMERA) },
+            onGrant = { permissionLaunch.launch(Manifest.permission.CAMERA) },
+            onDeny = { permissionLaunch.launch(Manifest.permission.CAMERA) }
+        )
     }
 
     override fun onDestroy() {
