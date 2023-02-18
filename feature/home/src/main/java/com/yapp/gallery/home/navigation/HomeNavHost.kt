@@ -38,7 +38,8 @@ fun HomeNavHost(
         composable("record"){ ExhibitRecordScreen(
             navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
             navigateToGallery = { navToImagePicker.invoke() },
-            popBackStack = { popBackStack(context, navHostController)}
+            popBackStack = { popBackStack(context, navHostController)},
+            navigateToGallery = { navToImagePicker.invoke() }
         ) }
         composable("calendar") { CalendarScreen(
 
