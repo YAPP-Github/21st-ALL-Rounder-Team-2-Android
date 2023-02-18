@@ -31,6 +31,9 @@ okhttp3 = "4.10.0"
 # coroutines-core
 coroutines-core = "1.6.4"
 
+#image-picker
+imagePicker = "1.5.5"
+
 [libraries]
 
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -72,6 +75,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 accompanist-flowLayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref ="flowLayout"}
 
 numberPicker = { module = "com.chargemap.compose:numberpicker", version.ref = "numberPicker"}
+imagePicker = { module = "com.github.nguyenhoanglam:ImagePicker", version.ref = "imagePicker"}
 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-convertor-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit"}
