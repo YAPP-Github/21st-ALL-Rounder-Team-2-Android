@@ -7,15 +7,21 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-fun Context.onCheckPermissions(activity: Activity, permission: String, onGrant: () -> Unit) {
+fun Context.onCheckPermissions(
+    activity: Activity, permission: String,
+    onGrant: () -> Unit, onRequest: () -> Unit,
+    onDeny: () -> Unit
+) {
     when {
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED -> Unit
-
-        onRequestPermission(activity, permission) -> {
-            Log.i("yapp", "Show camera permissions dialog")
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED -> {
+            onRequest.invoke()
         }
 
-        else -> onGrant()
+        onRequestPermission(activity, permission) -> {
+            onGrant.invoke()
+        }
+
+        else -> onDeny.invoke()
     }
 }
 

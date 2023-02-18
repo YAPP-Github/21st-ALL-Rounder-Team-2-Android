@@ -1,4 +1,8 @@
 <resources>
-    <string name="saver_continuation">계속 촬영하기</string>
-    <string name="saver_save_to_file">기록하기</string>
+    <string name="saver_continuation">다시 찍기</string>
+    <string name="saver_save_to_file">작품 기록하기</string>
+    <string name="skip_name"><u>넘어가기</u></string>
+    <string name="artist_name">작가이름</string>
+    <string name="article_name">작품명</string>
+    <string name="article_emotion_tag">감정태그(최대 5개)</string>
 </resources>

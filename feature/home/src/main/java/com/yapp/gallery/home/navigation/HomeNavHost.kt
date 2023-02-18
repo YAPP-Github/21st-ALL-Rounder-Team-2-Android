@@ -21,7 +21,8 @@ fun HomeNavHost(
     profileNavigator: ProfileNavigator,
     cameraNavigator: CameraNavigator,
     infoNavigator: ExhibitInfoNavigator,
-    context: Activity
+    context: Activity,
+    navToImagePicker: () -> Unit,
 ){
     NavHost(navController = navHostController, startDestination = "home"){
         composable("home"){ HomeScreen(
@@ -35,6 +36,7 @@ fun HomeNavHost(
             // Todo : 임시로 갤러리 대신 프로필로 가게 함
             navigateToGallery = { navigateToScreen(context, profileNavigator.navigate(context)) },
             popBackStack = { popBackStack(context, navHostController)}
+            navigateToGallery = { navToImagePicker.invoke() }
         ) }
         composable("calendar") { CalendarScreen(
 

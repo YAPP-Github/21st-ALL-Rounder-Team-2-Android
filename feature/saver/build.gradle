@@ -43,12 +43,15 @@ android {
 dependencies {
 
     implementation(project(':navigation:saver'))
+    implementation(project(':common'))
 
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
     kapt libs.bundles.hilt.compilers
     implementation libs.bundles.androidx
     implementation libs.bundles.coil
+    implementation libs.bundles.fragmentx
+    implementation libs.bundles.material
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
