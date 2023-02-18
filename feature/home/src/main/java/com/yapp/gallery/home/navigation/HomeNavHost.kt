@@ -17,6 +17,7 @@ import com.yapp.navigation.camera.CameraNavigator
 fun HomeNavHost(
     navHostController: NavHostController,
     profileNavigator: ProfileNavigator,
+    navToImagePicker: () -> Unit,
     cameraNavigator: CameraNavigator
 ){
     val context = LocalContext.current
@@ -29,8 +30,7 @@ fun HomeNavHost(
         composable("record"){ ExhibitRecordScreen(
             navController = navHostController,
             navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
-            // Todo : 임시로 갤러리 대신 프로필로 가게 함
-            navigateToGallery = { navigateToScreen(context, profileNavigator.navigate(context)) }
+            navigateToGallery = { navToImagePicker.invoke() }
         ) }
         composable("calendar") { CalendarScreen(
 
@@ -38,6 +38,6 @@ fun HomeNavHost(
     }
 }
 
-fun navigateToScreen(context: Context, intent: Intent){
+private fun navigateToScreen(context: Context, intent: Intent){
     context.startActivity(intent)
 }
