@@ -1,7 +1,6 @@
 package com.yapp.gallery.home.screen.home
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -51,7 +50,7 @@ class HomeActivity : ComponentActivity() {
                                 limitMessage = "사진은 최대 5장까지 선택 가능해요!"
                             )
                         )
-                    }
+                    }, context = this
                 )
             }
         }

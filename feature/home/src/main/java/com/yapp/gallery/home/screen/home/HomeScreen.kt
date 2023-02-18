@@ -24,7 +24,11 @@ fun HomeScreen(
     navigateToRecord: () -> Unit,
     navigateToProfile: () -> Unit,
     navigateToCalendar: () -> Unit,
+<<<<<<< HEAD
     navigateToInfo: (Long) -> Unit,
+=======
+    navigateToEdit: () -> Unit
+>>>>>>> 11ab159 ([ Feature ] : 전시 정보 삭제 및 업데이트 연동)
 ){
     var webView: WebView? = null
     val baseUrl = stringResource(id = R.string.home_base_url)
@@ -36,6 +40,7 @@ fun HomeScreen(
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
+<<<<<<< HEAD
                 "NAVIGATE_TO_CALENDAR" -> navigateToInfo(12)
                 // Todo : 임시
                 else -> navigateToInfo(12)
@@ -47,6 +52,11 @@ fun HomeScreen(
         viewModel.idToken.collectLatest {
             it?.let {
                 webView?.loadUrl(baseUrl, mapOf("Authorization" to it))
+=======
+                "NAVIGATE_TO_CALENDAR" -> navigateToCalendar()
+                // Todo : 임시
+                else -> navigateToEdit()
+>>>>>>> 11ab159 ([ Feature ] : 전시 정보 삭제 및 업데이트 연동)
             }
         }
     }

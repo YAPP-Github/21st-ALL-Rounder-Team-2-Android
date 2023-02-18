@@ -6,9 +6,12 @@ import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.yapp.gallery.home.screen.calendar.CalendarScreen
+import com.yapp.gallery.home.screen.edit.ExhibitEditScreen
 import com.yapp.gallery.home.screen.home.HomeScreen
 import com.yapp.gallery.home.screen.record.ExhibitRecordScreen
 import com.yapp.gallery.navigation.info.ExhibitInfoNavigator
@@ -37,6 +40,12 @@ fun HomeNavHost(
             navigateToGallery = { navigateToScreen(context, profileNavigator.navigate(context)) },
             popBackStack = { popBackStack(context, navHostController)}
             navigateToGallery = { navToImagePicker.invoke() }
+            navigateToEdit = { navHostController.navigate("edit?id=19")}
+        ) }
+        composable("record"){ ExhibitRecordScreen(
+            navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
+            navigateToGallery = { navToImagePicker.invoke() },
+            popBackStack = { popBackStack(context, navHostController)}
         ) }
         composable("calendar") { CalendarScreen(
 
@@ -67,6 +76,7 @@ private fun navigateToScreen(context: Context, intent: Intent){
 private fun popBackStack(
     context: Activity, navHostController: NavHostController
 ){
+
     if (navHostController.previousBackStackEntry != null) {
         navHostController.popBackStack()
     }

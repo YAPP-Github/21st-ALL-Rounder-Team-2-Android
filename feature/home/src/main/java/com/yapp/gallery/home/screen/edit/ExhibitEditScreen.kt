@@ -1,5 +1,6 @@
-package com.yapp.gallery.home.screen.record
+package com.yapp.gallery.home.screen.edit
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +14,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,29 +27,29 @@ import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.home.R
+import com.yapp.gallery.home.screen.record.*
 import com.yapp.gallery.home.widget.DatePickerSheet
-import com.yapp.gallery.home.widget.RecordMenuDialog
 import com.yapp.gallery.home.widget.exhibit.ExhibitCategory
 import com.yapp.gallery.home.widget.exhibit.ExhibitDate
 import com.yapp.gallery.home.widget.exhibit.ExhibitLink
 import com.yapp.gallery.home.widget.exhibit.ExhibitRecordName
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun ExhibitRecordScreen(
-    navigateToCamera: () -> Unit,
-    navigateToGallery: () -> Unit,
+fun ExhibitEditScreen(
     popBackStack: () -> Unit,
-    viewModel: ExhibitRecordViewModel = hiltViewModel(),
-) {
+    viewModel: ExhibitEditViewModel = hiltViewModel(),
+    context: Context = LocalContext.current
+){
     // 키보드 포커스
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
     // 카테고리 State
     val categoryState: BaseState<Boolean> by viewModel.categoryState.collectAsState()
-    val exhibitRecordState : ExhibitRecordState? by viewModel.recordScreenState.collectAsState()
 
     // Bottom Sheet State
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -58,48 +60,42 @@ fun ExhibitRecordScreen(
     // ScaffoldState
     val scaffoldState = rememberScaffoldState()
 
-    // 기록 방법 다이얼로그
-    val recordMenuDialogShown = remember { mutableStateOf(false) }
-    // 임시 저장 다이얼로그
-    val tempPostDialogShown = remember { mutableStateOf(false) }
+    val exhibitDeleteDialogShown = remember { mutableStateOf(false) }
 
-
-    // 스크린 상태
-    LaunchedEffect(exhibitRecordState){
-        when(exhibitRecordState){
-            is ExhibitRecordState.Response -> {
-                tempPostDialogShown.value = true
-            }
-            is ExhibitRecordState.Delete -> {
-                scope.launch {
-                    val res = scaffoldState.snackbarHostState.showSnackbar(
-                        message = "임시 보관된 전시를 삭제하였습니다.",
-                        actionLabel = "취소",
-                        duration = SnackbarDuration.Short
-                    )
-                    when(res){
-                        SnackbarResult.Dismissed -> {viewModel.undoDelete(false)}
-                        SnackbarResult.ActionPerformed -> {viewModel.undoDelete(true)}
-                    }
-                }
-            }
-            else -> {}
+    LaunchedEffect(viewModel.errors){
+        viewModel.errors.collect{
+            scaffoldState.snackbarHostState.showSnackbar(
+                it.asString(context)
+            )
         }
     }
 
-    // 임시 포스트 다이얼로그
-    if (tempPostDialogShown.value) {
+    LaunchedEffect(viewModel.editState){
+        viewModel.editState.collectLatest {
+            when(it){
+                is ExhibitEditState.Delete -> {
+                    // Todo : 홈화면 이동
+                }
+                is ExhibitEditState.Update -> {
+                    // Todo : 이전 화면 이동 및 업데이트
+                }
+                is ExhibitEditState.Error -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        it.message.asString(context)
+                    )
+                }
+                else -> {}
+            }
+        }
+    }
+
+    // 전시 정보 삭제 다이얼로그
+    if (exhibitDeleteDialogShown.value){
         ConfirmDialog(
-            title = stringResource(id = R.string.temp_post_title),
-            subTitle = stringResource(id = R.string.temp_post_guide),
-            onDismissRequest = {
-                viewModel.setContinuousDelete(false)
-                tempPostDialogShown.value = false
-            },
-            onConfirm = {
-                viewModel.setContinuousDelete(true)
-                tempPostDialogShown.value = false},
-            important = true
+            title = stringResource(id = R.string.exhibit_delete_dialog_title),
+            subTitle = stringResource(id = R.string.exhibit_delete_dialog_guide),
+            onDismissRequest = { exhibitDeleteDialogShown.value = false },
+            onConfirm = { viewModel.deleteRemotePost() }
         )
     }
 
@@ -117,7 +113,7 @@ fun ExhibitRecordScreen(
         scrimColor = Color.Transparent,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         sheetBackgroundColor = color_popUpBottom
-    ) {
+    ){
         Scaffold(
             scaffoldState = scaffoldState,
             snackbarHost = {
@@ -150,6 +146,19 @@ fun ExhibitRecordScreen(
                                 contentDescription = "Back"
                             )
                         }
+                    },
+                    actions = {
+                        TextButton(
+                            onClick = { exhibitDeleteDialogShown.value = true },
+                        ) {
+                            Text(
+                                text = "전시 삭제",
+                                style = MaterialTheme.typography.h3.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
                 )
             },
@@ -209,15 +218,14 @@ fun ExhibitRecordScreen(
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 53.dp),
                     onClick = {
-                        recordMenuDialogShown.value = true
+                        viewModel.updateRemotePost()
                     },
                     enabled = viewModel.exhibitName.value.isNotEmpty() &&
                             viewModel.categorySelect.value != -1L &&
                             viewModel.exhibitDate.value.isNotEmpty()
                 ) {
                     Text(
-                        text = if (exhibitRecordState is ExhibitRecordState.Continuous) stringResource(id = R.string.exhibit_crate_continuous_btn)
-                            else stringResource(id = R.string.exhibit_create_btn),
+                        text = "수정 완료",
                         modifier = Modifier.padding(vertical = 12.dp),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,
@@ -225,24 +233,7 @@ fun ExhibitRecordScreen(
                     )
                 }
             }
-
         }
 
-        // 전시 기록 시작 다이얼로그
-        if (recordMenuDialogShown.value) {
-            RecordMenuDialog(
-                onCameraClick = {
-                    viewModel.createOrUpdateRecord()
-                    navigateToCamera()
-                    recordMenuDialogShown.value = false },
-                onGalleryClick = {
-                    // Todo : 저장소 모듈로 이동
-                    viewModel.createOrUpdateRecord()
-                    navigateToGallery()
-                    recordMenuDialogShown.value = false },
-                onDismissRequest = { recordMenuDialogShown.value = false }
-            )
-        }
     }
-
 }
