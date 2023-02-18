@@ -1,26 +1,31 @@
 package com.yapp.gallery.home.screen.home
 
+import android.annotation.SuppressLint
+import android.webkit.CookieManager
+import android.webkit.WebSettings
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.web.AccompanistWebChromeClient
-import com.google.accompanist.web.AccompanistWebViewClient
+import androidx.webkit.WebSettingsCompat
+import androidx.webkit.WebSettingsCompat.FORCE_DARK_ON
 import com.google.accompanist.web.WebView
-import com.yapp.gallery.common.util.WebViewClient.webChromeClient
-import com.yapp.gallery.common.util.WebViewClient.webViewClient
+import com.yapp.gallery.common.util.WebViewUtils.cookieManager
+import com.yapp.gallery.common.util.WebViewUtils.webChromeClient
+import com.yapp.gallery.common.util.WebViewUtils.webViewClient
 import com.yapp.gallery.home.utils.NavigateJsObject
 
+@SuppressLint("RequiresFeature")
 @Composable
 fun HomeScreen(
     navigateToRecord: () -> Unit,
     navigateToProfile: () -> Unit,
     navigateToCalendar: () -> Unit,
-    navigateToInfo: (Long) -> Unit
+    navigateToInfo: (Long) -> Unit,
 ){
     val viewModel = hiltViewModel<HomeViewModel>()
 
@@ -52,10 +57,14 @@ fun HomeScreen(
                         addJavascriptInterface(
                             NavigateJsObject { e -> viewModel.setSideEffect(e) }, "android")
                         settings.run {
+                            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                            cookieManager.setAcceptCookie(true)
+                            cookieManager.setAcceptThirdPartyCookies(it, true)
                             javaScriptEnabled = true
                         }
                     }
                 },
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
