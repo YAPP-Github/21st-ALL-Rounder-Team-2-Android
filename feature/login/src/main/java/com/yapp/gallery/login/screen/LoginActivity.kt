@@ -101,6 +101,9 @@ class LoginActivity : ComponentActivity(){
                 firebaseAuthWithGoogle(account.result)
                 viewModel.setLoading()
             }
+            else {
+                // Todo : 에러 로직
+            }
         }
         naverResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when(result.resultCode) {
@@ -109,11 +112,8 @@ class LoginActivity : ComponentActivity(){
                         viewModel.postNaverLogin(it)
                     }
                 }
-                RESULT_CANCELED -> {
-                    // 실패 or 에러
-                    val errorCode = NaverIdLoginSDK.getLastErrorCode().code
-                    val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-                    // Toast.makeText(this, "errorCode:$errorCode, errorDesc:$errorDescription", Toast.LENGTH_SHORT).show()
+                else -> {
+                    // Todo : 에러 로직
                 }
             }
         }
