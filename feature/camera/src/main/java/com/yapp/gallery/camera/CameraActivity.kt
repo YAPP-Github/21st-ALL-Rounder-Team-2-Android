@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.yapp.gallery.camera.databinding.ActivityCameraBinding
+import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.common.util.onCheckPermissions
 import com.yapp.navigator.saver.SaverNavigator
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,12 +26,14 @@ class CameraActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGrant ->
             if (isGrant) {
                 binding.composeView.setContent {
-                    CameraView(
-                        onImageCapture = { startActivity(saverNavigator.intentTo(this, it)) },
-                        onDismiss = { finish() },
-                        outputDirectory = getFileOutput(),
-                        executor = cameraExecutor
-                    )
+                    GalleryTheme {
+                        CameraView(
+                            onImageCapture = { startActivity(saverNavigator.intentTo(this, it)) },
+                            onDismiss = { finish() },
+                            outputDirectory = getFileOutput(),
+                            executor = cameraExecutor
+                        )
+                    }
                 }
             } else {
                 // todo 퍼미션 거절 되었을 시 dialog 노출 후 화면 이탈 필요
