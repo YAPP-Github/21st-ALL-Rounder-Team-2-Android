@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yapp.gallery.domain.usecase.record.DeleteRecordUseCase
+import com.yapp.gallery.domain.usecase.record.DeleteBothUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -13,13 +13,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignOutViewModel @Inject constructor(
-    private val deleteRecordUseCase: DeleteRecordUseCase,
+    private val deleteBothUseCase: DeleteBothUseCase,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel(){
 
     fun removeInfo(){
         viewModelScope.launch {
-            deleteRecordUseCase()
+            deleteBothUseCase()
                 .catch {
                     Log.e("removeProfile", it.message.toString())
                 }

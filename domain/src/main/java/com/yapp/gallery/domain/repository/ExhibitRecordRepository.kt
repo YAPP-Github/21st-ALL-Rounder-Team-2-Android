@@ -8,11 +8,12 @@ interface ExhibitRecordRepository {
     fun getCategoryList() : Flow<List<CategoryItem>>
     fun createCategory(category: String) : Flow<Long>
     fun createRecord(name: String, categoryId: Long, postDate: String, attachedLink: String?) : Flow<Long>
-    fun updateRecord(
+    // 서버, 로컬 둘 다 업데이트
+    fun updateBoth(
         postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?
     ): Flow<Long>
     fun getTempPost() : Flow<TempPostInfo>
     fun deleteTempPost() : Flow<Long>
     // 서버, 로컬 다 지우는 역할
-    fun deleteRecord() : Flow<Boolean>
+    fun deleteBoth() : Flow<Boolean>
 }
