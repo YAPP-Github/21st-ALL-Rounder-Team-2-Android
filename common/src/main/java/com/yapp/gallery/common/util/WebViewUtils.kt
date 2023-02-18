@@ -1,11 +1,11 @@
 package com.yapp.gallery.common.util
 
 import android.webkit.CookieManager
-import com.google.accompanist.web.AccompanistWebChromeClient
-import com.google.accompanist.web.AccompanistWebViewClient
+import android.webkit.WebChromeClient
+import android.webkit.WebViewClient
 
 object WebViewUtils {
-    val webViewClient = AccompanistWebViewClient()
-    val webChromeClient = AccompanistWebChromeClient()
+    val webViewClient = WebViewClient()
+    val webChromeClient = WebChromeClient()
     val cookieManager: CookieManager = CookieManager.getInstance()
 }

@@ -1,25 +1,24 @@
 package com.yapp.gallery.home.screen.home
 
-import android.annotation.SuppressLint
-import android.webkit.CookieManager
+import android.view.ViewGroup
 import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebSettingsCompat.FORCE_DARK_ON
-import com.google.accompanist.web.WebView
+import com.yapp.gallery.common.util.WebViewUtils
 import com.yapp.gallery.common.util.WebViewUtils.cookieManager
-import com.yapp.gallery.common.util.WebViewUtils.webChromeClient
-import com.yapp.gallery.common.util.WebViewUtils.webViewClient
+import com.yapp.gallery.home.R
 import com.yapp.gallery.home.utils.NavigateJsObject
+import kotlinx.coroutines.flow.collectLatest
 
-@SuppressLint("RequiresFeature")
 @Composable
 fun HomeScreen(
     navigateToRecord: () -> Unit,
@@ -27,6 +26,9 @@ fun HomeScreen(
     navigateToCalendar: () -> Unit,
     navigateToInfo: (Long) -> Unit,
 ){
+    var webView: WebView? = null
+    val baseUrl = stringResource(id = R.string.home_base_url)
+
     val viewModel = hiltViewModel<HomeViewModel>()
 
     LaunchedEffect(viewModel.homeSideEffect){
@@ -41,31 +43,40 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(viewModel.idToken){
+        viewModel.idToken.collectLatest {
+            it?.let {
+                webView?.loadUrl(baseUrl, mapOf("Authorization" to it))
+            }
+        }
+    }
+
     Scaffold(
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
         ) {
-            WebView(
-                state = viewModel.webViewState,
-                client = webViewClient,
-                chromeClient = webChromeClient,
-                navigator = viewModel.webViewNavigator,
-                onCreated = {
-                    with(it){
-                        addJavascriptInterface(
-                            NavigateJsObject { e -> viewModel.setSideEffect(e) }, "android")
-                        settings.run {
-                            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                            cookieManager.setAcceptCookie(true)
-                            cookieManager.setAcceptThirdPartyCookies(it, true)
-                            javaScriptEnabled = true
-                        }
+            AndroidView(factory = {
+                WebView(it).apply {
+                    webView = this
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    webViewClient = WebViewUtils.webViewClient
+                    webChromeClient = WebViewUtils.webChromeClient
+                    addJavascriptInterface(
+                        NavigateJsObject { e -> viewModel.setSideEffect(e) }, "android")
+                    settings.run {
+                        mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                        cookieManager.setAcceptCookie(true)
+                        cookieManager.setAcceptThirdPartyCookies(webView, true)
+                        javaScriptEnabled = true
+                        javaScriptCanOpenWindowsAutomatically = true
                     }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
+                }
+            })
         }
     }
 

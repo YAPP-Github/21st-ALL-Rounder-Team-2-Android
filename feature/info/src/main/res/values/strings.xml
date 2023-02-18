@@ -7,4 +7,6 @@
 
     <string name="exhibit_edit_appbar_title">전시 정보 수정</string>
     <string name="exhibit_edit_update_btn">전시정보 수정하기</string>
+
+    <string name="exhibit_info_base_url">https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/exhibition/</string>
 </resources>

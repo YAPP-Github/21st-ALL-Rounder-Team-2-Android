@@ -59,8 +59,8 @@ dependencies {
     implementation libs.firebase.auth.ktx
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
-    implementation libs.accompanist.webview
     implementation libs.accompanist.flowLayout
     implementation libs.numberPicker
+    implementation libs.androidx.webview
     kapt libs.bundles.hilt.compilers
 }

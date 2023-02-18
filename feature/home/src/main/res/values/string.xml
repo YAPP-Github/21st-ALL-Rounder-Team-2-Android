@@ -23,4 +23,6 @@
     <string name="temp_post_guide">작성을 그만둘 시 전시 정보가 삭제됩니다</string>
 
     <string name="exhibit_crate_continuous_btn">이어서 기록하기</string>
+
+    <string name="home_base_url">https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home</string>
 </resources>

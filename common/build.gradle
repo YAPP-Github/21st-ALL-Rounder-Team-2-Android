@@ -48,5 +48,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
     implementation libs.bundles.compose
-    implementation libs.accompanist.webview
+    implementation libs.androidx.webview
 }

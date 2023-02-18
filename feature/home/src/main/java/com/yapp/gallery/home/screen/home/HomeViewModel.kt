@@ -4,32 +4,39 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.web.WebContent
-import com.google.accompanist.web.WebViewNavigator
-import com.google.accompanist.web.WebViewState
+import com.yapp.gallery.domain.usecase.auth.GetRefreshedTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
     sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    private val idToken = sharedPreferences.getString("idToken", "")
     private var _homeSideEffect = Channel<String>()
     val homeSideEffect = _homeSideEffect.receiveAsFlow()
 
-    val webViewState = WebViewState(
-        WebContent.Url(
-            url = "https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home",
-            additionalHttpHeaders = if (idToken != null) mapOf("Authorization" to idToken) else emptyMap()
-        )
+    private val _idToken = MutableStateFlow<String?>(null)
+    val idToken : StateFlow<String?>
+        get() = _idToken
 
-    )
+    init {
+        viewModelScope.launch {
+            getRefreshedTokenUseCase()
+                .collect{
+                    _idToken.value = it
+                    it?.let {
+                        sharedPreferences.edit().putString("idToken", it).apply()
+                    }
+                }
+        }
+    }
 
-    val webViewNavigator = WebViewNavigator(viewModelScope)
 
     fun setSideEffect(action: String){
         viewModelScope.launch {
