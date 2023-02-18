@@ -22,7 +22,8 @@ import com.yapp.gallery.common.theme.*
 fun SaverView(
     onRetryListener: () -> Unit,
     saveToFile: (Uri) -> Unit,
-    uri: Uri
+    uri: Uri = Uri.EMPTY,
+    uris: List<Uri> = emptyList()
 ) {
 
     Box(modifier = Modifier
@@ -30,7 +31,11 @@ fun SaverView(
         .fillMaxSize()) {
 
         Image(
-            painter = rememberImagePainter(uri),
+            painter = if(uris.isNotEmpty()) {
+                rememberImagePainter(uris.first())
+            } else {
+                rememberImagePainter(uri)
+            },
             contentDescription = null,
             modifier = Modifier.fillMaxSize()
         )

@@ -23,8 +23,19 @@ class SaverActivity : AppCompatActivity() {
                 }
 
         val uri = intent.getParcelableExtra("uri") as? Uri
+        val uris = intent.getParcelableArrayExtra("uris")
 
         binding.composeView.setContent {
+            if(!uris.isNullOrEmpty()) {
+                GalleryTheme {
+                    SaverView(onRetryListener = {
+                        finish()
+                    }, saveToFile = {
+                        SaverDialog.show(supportFragmentManager)
+                    }, uris= uris.filterIsInstance<Uri>())
+                }
+            }
+
             uri?.let {
                 GalleryTheme {
                     SaverView(
