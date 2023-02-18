@@ -101,9 +101,6 @@ class LoginActivity : ComponentActivity(){
                 firebaseAuthWithGoogle(account.result)
                 viewModel.setLoading()
             }
-            else {
-                // Todo : 에러 로직
-            }
         }
         naverResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when(result.resultCode) {
@@ -111,9 +108,6 @@ class LoginActivity : ComponentActivity(){
                     NaverIdLoginSDK.getAccessToken()?.let {
                         viewModel.postNaverLogin(it)
                     }
-                }
-                else -> {
-                    // Todo : 에러 로직
                 }
             }
         }

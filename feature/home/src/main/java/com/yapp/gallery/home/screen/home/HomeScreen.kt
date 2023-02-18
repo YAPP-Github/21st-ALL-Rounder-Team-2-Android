@@ -40,9 +40,9 @@ fun HomeScreen(
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
-                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(12)
+                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(16)
                 // Todo : 임시
-                else -> navigateToInfo(12)
+                else -> navigateToInfo(16)
             }
         }
     }
