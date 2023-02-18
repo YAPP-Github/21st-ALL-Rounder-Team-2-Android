@@ -7,4 +7,6 @@ import com.yapp.gallery.core.Navigator
 
 interface SaverNavigator : Navigator {
     fun intentTo(context: Context, uri: Uri): Intent
+
+    fun intentTo(context: Context, uris: List<Uri>): Intent
 }

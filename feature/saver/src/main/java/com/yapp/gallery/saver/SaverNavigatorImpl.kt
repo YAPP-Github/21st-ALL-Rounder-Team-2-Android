@@ -11,6 +11,10 @@ class SaverNavigatorImpl @Inject constructor(): SaverNavigator {
         return Intent(context, SaverActivity::class.java).putExtra("uri", uri)
     }
 
+    override fun intentTo(context: Context, uris: List<Uri>): Intent {
+        return Intent(context, SaverActivity::class.java).putExtra("uris", uris.toTypedArray())
+    }
+
     override fun navigate(context: Context): Intent {
         return Intent(context, SaverActivity::class.java)
     }
