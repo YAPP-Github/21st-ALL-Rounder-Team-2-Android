@@ -62,8 +62,9 @@ dependencies {
     implementation libs.bundles.hilt.deps
     implementation libs.accompanist.flowLayout
     implementation libs.numberPicker
-    implementation libs.androidx.webview
+
     implementation libs.imagePicker
     implementation libs.androidx.webview
+
     kapt libs.bundles.hilt.compilers
 }
