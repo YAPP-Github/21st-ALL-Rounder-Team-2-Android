@@ -26,12 +26,12 @@ import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
-import com.yapp.gallery.home.R
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.exhibit.ExhibitCategory
 import com.yapp.gallery.home.widget.exhibit.ExhibitDate
 import com.yapp.gallery.home.widget.exhibit.ExhibitLink
 import com.yapp.gallery.home.widget.exhibit.ExhibitRecordName
+import com.yapp.gallery.info.R
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExhibitEditScreen(
     popBackStack: () -> Unit,
+    navigateToHome: () -> Unit,
     viewModel: ExhibitEditViewModel = hiltViewModel(),
     context: Context = LocalContext.current
 ){
@@ -72,7 +73,7 @@ fun ExhibitEditScreen(
         viewModel.editState.collectLatest {
             when(it){
                 is ExhibitEditState.Delete -> {
-                    // Todo : 홈화면 이동
+                    navigateToHome()
                 }
                 is ExhibitEditState.Update -> {
                     // Todo : 이전 화면 이동 및 업데이트
@@ -131,7 +132,7 @@ fun ExhibitEditScreen(
                     elevation = 0.dp,
                     title = {
                         Text(
-                            text = stringResource(id = R.string.exhibit_title),
+                            text = stringResource(id = R.string.exhibit_edit_appbar_title),
                             style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -223,7 +224,7 @@ fun ExhibitEditScreen(
                             viewModel.exhibitDate.value.isNotEmpty()
                 ) {
                     Text(
-                        text = "수정 완료",
+                        text = stringResource(id = R.string.exhibit_edit_update_btn),
                         modifier = Modifier.padding(vertical = 12.dp),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,

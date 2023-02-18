@@ -12,7 +12,7 @@ import com.yapp.gallery.domain.usecase.edit.DeleteRemotePostUseCase
 import com.yapp.gallery.domain.usecase.edit.UpdateRemotePostUseCase
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
 import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
-import com.yapp.gallery.home.R
+import com.yapp.gallery.info.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -27,8 +27,6 @@ class ExhibitEditViewModel @Inject constructor(
     private val updateRemotePostUseCase: UpdateRemotePostUseCase,
     private val deleteRemotePostUseCase: DeleteRemotePostUseCase
 ) : ViewModel(){
-    // Todo : 카테고리 조회 기능
-    // Todo : 전시 삭제
     private val id : Long = checkNotNull(savedStateHandle["id"])
 
     val exhibitName = mutableStateOf(savedStateHandle["exhibitName"] ?: "")
