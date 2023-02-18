@@ -24,4 +24,5 @@
 
     <string name="exhibit_crate_continuous_btn">이어서 기록하기</string>
 
+    <string name="home_base_url">https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home</string>
 </resources>

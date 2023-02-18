@@ -31,7 +31,7 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun updateRecord(
+    override fun updateBoth(
         postId: Long,
         name: String,
         categoryId: Long,
@@ -53,7 +53,7 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
         return localDataSource.deleteTempPost()
     }
 
-    override fun deleteRecord(): Flow<Boolean> {
+    override fun deleteBoth(): Flow<Boolean> {
         // 로컬에 있는지 먼저 판단하고 지우기
         return localDataSource.deleteTempPost().flatMapConcat {
             remoteDataSource.deleteRecord(it)

@@ -1,7 +1,6 @@
 package com.yapp.gallery.home.screen.home
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +10,7 @@ import com.nguyenhoanglam.imagepicker.model.ImagePickerConfig
 import com.nguyenhoanglam.imagepicker.ui.imagepicker.registerImagePicker
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.home.navigation.HomeNavHost
+import com.yapp.gallery.navigation.info.ExhibitInfoNavigator
 import com.yapp.gallery.navigation.profile.ProfileNavigator
 import com.yapp.navigation.camera.CameraNavigator
 import com.yapp.navigator.saver.SaverNavigator
@@ -21,7 +21,9 @@ import javax.inject.Inject
 class HomeActivity : ComponentActivity() {
     @Inject lateinit var cameraNavigator: CameraNavigator
     @Inject lateinit var profileNavigator: ProfileNavigator
+    @Inject lateinit var infoNavigator: ExhibitInfoNavigator
     @Inject lateinit var saverNavigator: SaverNavigator
+
     private lateinit var navController : NavHostController
 
     private var backKeyPressedTime: Long = 0
@@ -38,7 +40,8 @@ class HomeActivity : ComponentActivity() {
             navController = rememberNavController()
             GalleryTheme {
                 HomeNavHost(navHostController = navController, profileNavigator = profileNavigator,
-                    cameraNavigator = cameraNavigator, navToImagePicker = {
+                    cameraNavigator = cameraNavigator, infoNavigator = infoNavigator,
+                    navToImagePicker = {
                         imagePicker.launch(
                             ImagePickerConfig(
                                 isMultipleMode = true,
@@ -47,7 +50,7 @@ class HomeActivity : ComponentActivity() {
                                 limitMessage = "사진은 최대 5장까지 선택 가능해요!"
                             )
                         )
-                    }
+                    }, context = this
                 )
             }
         }

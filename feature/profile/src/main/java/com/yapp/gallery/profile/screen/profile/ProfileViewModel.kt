@@ -8,7 +8,7 @@ import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.model.UiText
 import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.domain.usecase.profile.GetUserUseCase
-import com.yapp.gallery.domain.usecase.record.DeleteRecordUseCase
+import com.yapp.gallery.domain.usecase.record.DeleteBothUseCase
 import com.yapp.gallery.profile.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
-    private val deleteRecordUseCase: DeleteRecordUseCase,
+    private val deleteBothUseCase: DeleteBothUseCase,
     private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
     private var _userData = MutableStateFlow<BaseState<User>>(BaseState.Loading)
@@ -34,7 +34,7 @@ class ProfileViewModel @Inject constructor(
 
     fun removeInfo(){
         viewModelScope.launch {
-            deleteRecordUseCase()
+            deleteBothUseCase()
                 .catch {
                     Log.e("removeProfile", it.message.toString())
                 }

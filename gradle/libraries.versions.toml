@@ -13,11 +13,11 @@ camera = "1.1.0-beta01"
 coil = "2.2.2"
 room = "2.5.0"
 splash = "1.0.0"
+webkit = "1.6.0"
 # social login
 kakao = "2.12.0"
 naver = "5.3.0"
 # compose layout
-webview = "0.25.1"
 flowLayout = "0.28.0"
 numberPicker = "1.0.3"
 constraintLayout = "1.0.1"
@@ -54,6 +54,7 @@ androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", versi
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash"}
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentx" }
 androidx-material = { module = "com.google.android.material:material", version.ref = "material" }
+androidx-webview = { module = "androidx.webkit:webkit", version.ref = "webkit"}
 
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx"}
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
@@ -67,7 +68,6 @@ hilt-integrations-work = { module = "androidx.hilt:hilt-work", version.ref = "hi
 hilt-integrations-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-integrations"}
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
 
-accompanist-webview = { module = "com.google.accompanist:accompanist-webview", version.ref = "webview"}
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil"}
 
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-core"}

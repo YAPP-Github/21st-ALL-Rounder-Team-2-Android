@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exhibit_update_error">전시 정보 수정이 정상적으로 이루어지지 않았습니다.</string>
+    <string name="exhibit_delete_error">전시가 삭제되지 않았습니다.</string>
+    <string name="exhibit_delete_dialog_title">전시 정보 삭제</string>
+    <string name="exhibit_delete_dialog_guide">정말로 전시 정보를 삭제하시겠습니까?</string>
+
+    <string name="exhibit_edit_appbar_title">전시 정보 수정</string>
+    <string name="exhibit_edit_update_btn">전시정보 수정하기</string>
+
+    <string name="exhibit_info_base_url">https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/exhibition/</string>
+</resources>

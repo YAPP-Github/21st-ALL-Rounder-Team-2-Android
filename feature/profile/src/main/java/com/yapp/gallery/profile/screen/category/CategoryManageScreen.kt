@@ -4,7 +4,10 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
@@ -16,9 +19,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -279,15 +284,19 @@ fun CategoryListTile(
         Spacer(modifier = Modifier.height(24.dp))
         // 카테고리 브리프 정보 및 첫 행
         ConstraintLayout(
-            modifier = Modifier.padding(start = 20.dp).fillMaxWidth()
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .fillMaxWidth()
         ) {
             val (button, row, text1, text2) = createRefs()
             IconButton(onClick = { viewModel.expandCategory(index) },
-                modifier = Modifier.size(18.dp).constrainAs(button) {
-                    start.linkTo(parent.start)
-                    top.linkTo(text1.top)
-                    bottom.linkTo(text1.bottom)
-                }
+                modifier = Modifier
+                    .size(18.dp)
+                    .constrainAs(button) {
+                        start.linkTo(parent.start)
+                        top.linkTo(text1.top)
+                        bottom.linkTo(text1.bottom)
+                    }
             ) {
                 Icon(painter = if (categoryPostState is CategoryPostState.Expanded) painterResource(id = R.drawable.arrow_up)
                         else painterResource(id = R.drawable.arrow_down),
@@ -360,8 +369,13 @@ fun CategoryListTile(
                         ) {
                             AsyncImage(
                                 model = item.mainImage,
+                                error = painterResource(id = R.drawable.bg_image_placeholder),
+                                placeholder = painterResource(id = R.drawable.bg_image_placeholder),
                                 contentDescription = null,
-                                modifier = Modifier.size(80.dp)
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(4.5.dp)),
+                                contentScale = ContentScale.Crop
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(

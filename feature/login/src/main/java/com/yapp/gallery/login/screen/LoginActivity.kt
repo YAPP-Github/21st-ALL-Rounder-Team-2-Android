@@ -78,12 +78,10 @@ class LoginActivity : ComponentActivity(){
                 viewModel.loginState.collect{
                     when(it){
                         is BaseState.Success -> {
-                            // Todo : uid 저장
                             navigateToHome()
                             isLoading.value = false
                         }
                         is BaseState.Loading -> {
-                            // Todo : 로딩 화면 만들기
                             isLoading.value = true
                         }
                         is BaseState.Error -> {
@@ -110,12 +108,6 @@ class LoginActivity : ComponentActivity(){
                     NaverIdLoginSDK.getAccessToken()?.let {
                         viewModel.postNaverLogin(it)
                     }
-                }
-                RESULT_CANCELED -> {
-                    // 실패 or 에러
-                    val errorCode = NaverIdLoginSDK.getLastErrorCode().code
-                    val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-                    // Toast.makeText(this, "errorCode:$errorCode, errorDesc:$errorDescription", Toast.LENGTH_SHORT).show()
                 }
             }
         }

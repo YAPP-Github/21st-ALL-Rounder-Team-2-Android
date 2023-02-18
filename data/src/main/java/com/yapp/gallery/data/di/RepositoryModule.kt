@@ -30,4 +30,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindNoticeRepository(repositoryImpl: NoticeRepositoryImpl) : NoticeRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExhibitEditRepository(editRepositoryImpl: ExhibitEditRepositoryImpl) : ExhibitEditRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl) : AuthRepository
 }

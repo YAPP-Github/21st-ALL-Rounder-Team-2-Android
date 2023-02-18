@@ -1,10 +1,8 @@
 package com.yapp.gallery.home.screen.record
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState
@@ -21,19 +19,19 @@ class ExhibitRecordViewModel @Inject constructor(
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val createRecordUseCase: CreateRecordUseCase,
     private val getTempPostUseCase: GetTempPostUseCase,
-    private val updateRecordUseCase: UpdateRecordUseCase,
-    private val deleteRecordUseCase: DeleteRecordUseCase,
+    private val updateRecordUseCase: UpdateBothUseCase,
+    private val deleteBothUseCase: DeleteBothUseCase,
 ) : ViewModel(){
-    private var _categoryList = mutableStateListOf<CategoryItem>()
+    private val _categoryList = mutableStateListOf<CategoryItem>()
     val categoryList : List<CategoryItem>
         get() = _categoryList
 
-    private var _categoryState = MutableStateFlow<BaseState<Boolean>>(BaseState.Loading)
+    private val _categoryState = MutableStateFlow<BaseState<Boolean>>(BaseState.Loading)
     val categoryState : StateFlow<BaseState<Boolean>>
         get() = _categoryState
 
     // 전시 기록 화면 상태
-    private var _recordScreenState = MutableStateFlow<ExhibitRecordState>(ExhibitRecordState.Initial)
+    private val _recordScreenState = MutableStateFlow<ExhibitRecordState>(ExhibitRecordState.Initial)
     val recordScreenState : StateFlow<ExhibitRecordState>
         get() = _recordScreenState
 
@@ -170,8 +168,9 @@ class ExhibitRecordViewModel @Inject constructor(
     }
 
     private fun deleteRecord(){
+        // 로컬, 서버 다 지우기
         viewModelScope.launch {
-            deleteRecordUseCase()
+            deleteBothUseCase()
                 .catch {
                     Log.e("room failure", it.message.toString())
                 }

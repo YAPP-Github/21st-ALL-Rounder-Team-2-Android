@@ -7,15 +7,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.yapp.gallery.common.model.BaseState
-import com.yapp.gallery.common.theme.*
+import com.yapp.gallery.common.theme.color_black
+import com.yapp.gallery.common.theme.color_mainGreen
+import com.yapp.gallery.common.theme.grey_bdbdbd
+import com.yapp.gallery.common.theme.pretendard
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.profile.R
@@ -26,8 +27,6 @@ fun SignOutScreen(
     signOut: () -> Unit,
     viewModel: SignOutViewModel = hiltViewModel()
 ){
-    val signOutDialogShown = remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             CenterTopAppBar(modifier = Modifier.fillMaxWidth(),
@@ -62,7 +61,8 @@ fun SignOutScreen(
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 53.dp),
                 onClick = {
-                    signOutDialogShown.value = true
+                    viewModel.removeInfo()
+                    signOut()
                 },
             ) {
                 Text(
@@ -97,19 +97,6 @@ fun SignOutScreen(
                     lineHeight = 25.6.sp
                 ),
             )
-            // 회원탈퇴 다이얼로그
-            if (signOutDialogShown.value){
-                // Todo : 서버에서 탈퇴까지 구현해야함
-                ConfirmDialog(
-                    title = stringResource(id = R.string.sign_out_dialog_title),
-                    subTitle = stringResource(id = R.string.sign_out_dialog_guide),
-                    onDismissRequest = { signOutDialogShown.value = false },
-                    onConfirm = {
-                        viewModel.removeInfo()
-                        signOut()
-                    }
-                )
-            }
         }
     }  
 }
