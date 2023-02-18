@@ -32,7 +32,6 @@ val color_gray300 = Color(0xFFEAEAEA)
 val color_purple500 = Color(0xFF6200EE)
 
 // Color Scheme 지정
-// Todo : 임시 값들 존재
 val colorScheme = Colors(
     primary = color_mainGreen,
     primaryVariant = color_mainGreen,
