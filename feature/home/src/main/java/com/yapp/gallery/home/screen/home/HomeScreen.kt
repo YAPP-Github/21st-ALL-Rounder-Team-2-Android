@@ -3,11 +3,9 @@ package com.yapp.gallery.home.screen.home
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
-<<<<<<< HEAD
-=======
-import android.webkit.WebViewClient
->>>>>>> 088001c ([ Refactor ] : Webview 변경 및 Authorization Header 추가)
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -16,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.yapp.gallery.common.theme.color_background
 import com.yapp.gallery.common.util.WebViewUtils
 import com.yapp.gallery.common.util.WebViewUtils.cookieManager
 import com.yapp.gallery.home.R
@@ -60,6 +59,7 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
+                .fillMaxSize()
         ) {
             AndroidView(factory = {
                 WebView(it).apply {
@@ -80,7 +80,9 @@ fun HomeScreen(
                         javaScriptCanOpenWindowsAutomatically = true
                     }
                 }
-            })
+            },
+            modifier = Modifier.fillMaxSize()
+            )
         }
     }
 
