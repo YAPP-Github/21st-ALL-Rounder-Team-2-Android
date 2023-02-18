@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -374,6 +375,7 @@ fun CategoryListTile(
                                 modifier = Modifier
                                     .size(80.dp)
                                     .clip(RoundedCornerShape(4.5.dp)),
+                                contentScale = ContentScale.Crop
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(

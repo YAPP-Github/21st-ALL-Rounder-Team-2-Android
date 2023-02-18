@@ -23,6 +23,7 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.CustomSplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,25 +36,31 @@
         </activity>
 
         <activity android:name=".profile.screen.profile.ProfileActivity"
+            android:screenOrientation="portrait"
             android:exported="true" />
 
         <activity android:name=".login.screen.LoginActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.YAPPALLRounderTeam2.NoAnim"/>
 
         <activity android:name=".home.screen.home.HomeActivity"
             android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.YAPPALLRounderTeam2.NoAnim"
             android:exported="true"></activity>
 
         <activity
             android:name=".camera.CameraActivity"
+            android:screenOrientation="portrait"
             android:exported="true"></activity>
         <activity android:name=".info.screen.info.ExhibitInfoActivity"
+            android:screenOrientation="portrait"
             android:exported="true"></activity>
 
         <activity
             android:name=".saver.SaverActivity"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -62,6 +69,7 @@
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
