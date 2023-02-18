@@ -1,4 +1,4 @@
-package com.yapp.gallery.home.screen.edit
+package com.yapp.gallery.info.screen.edit
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -93,7 +93,8 @@ class ExhibitEditViewModel @Inject constructor(
                 id, exhibitName.value, categorySelect.value,
                 exhibitDate.value, exhibitLink.value.ifEmpty { null }
             ).catch {
-                _editState.value = ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_update_error))
+                _editState.value =
+                    ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_update_error))
             }.collectLatest {
                 _editState.value = ExhibitEditState.Update
             }
@@ -103,7 +104,8 @@ class ExhibitEditViewModel @Inject constructor(
         viewModelScope.launch {
             deleteRemotePostUseCase(id)
                 .catch {
-                    _editState.value = ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_delete_error))
+                    _editState.value =
+                        ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_delete_error))
                 }
                 .collectLatest {
                     _editState.value = ExhibitEditState.Delete

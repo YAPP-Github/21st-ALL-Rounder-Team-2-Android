@@ -1,4 +1,4 @@
-package com.yapp.gallery.home.screen.edit
+package com.yapp.gallery.info.screen.edit
 
 import android.content.Context
 import androidx.compose.foundation.layout.*

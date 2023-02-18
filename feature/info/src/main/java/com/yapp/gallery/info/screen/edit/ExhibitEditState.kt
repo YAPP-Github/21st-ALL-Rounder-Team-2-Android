@@ -1,4 +1,4 @@
-package com.yapp.gallery.home.screen.edit
+package com.yapp.gallery.info.screen.edit
 
 import com.yapp.gallery.common.model.UiText
 

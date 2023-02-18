@@ -46,6 +46,7 @@ android {
 dependencies {
     implementation project(":feature:login")
     implementation project(":feature:home")
+    implementation project(":feature:info")
     implementation project(":feature:camera")
     implementation project(":feature:saver")
     implementation project(":feature:profile")

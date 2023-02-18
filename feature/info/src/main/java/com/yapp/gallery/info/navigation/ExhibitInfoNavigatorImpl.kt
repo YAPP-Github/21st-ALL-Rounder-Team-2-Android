@@ -10,4 +10,9 @@ class ExhibitInfoNavigatorImpl @Inject constructor() : ExhibitInfoNavigator {
     override fun navigate(context: Context): Intent {
         return Intent(context, ExhibitInfoActivity::class.java)
     }
+
+    override fun navigateToInfo(context: Context, exhibitId: Long): Intent {
+        return Intent(context, ExhibitInfoActivity::class.java).putExtra("exhibitId", exhibitId)
+    }
+
 }

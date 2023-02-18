@@ -6,10 +6,13 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.web.AccompanistWebChromeClient
 import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.WebView
+import com.yapp.gallery.common.util.WebViewClient.webChromeClient
+import com.yapp.gallery.common.util.WebViewClient.webViewClient
 import com.yapp.gallery.home.utils.NavigateJsObject
 
 @Composable
@@ -17,21 +20,18 @@ fun HomeScreen(
     navigateToRecord: () -> Unit,
     navigateToProfile: () -> Unit,
     navigateToCalendar: () -> Unit,
-    navigateToEdit: () -> Unit
+    navigateToInfo: (Long) -> Unit
 ){
     val viewModel = hiltViewModel<HomeViewModel>()
-
-    val webViewClient = AccompanistWebViewClient()
-    val webChromeClient = AccompanistWebChromeClient()
 
     LaunchedEffect(viewModel.homeSideEffect){
         viewModel.homeSideEffect.collect {
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
-                "NAVIGATE_TO_CALENDAR" -> navigateToCalendar()
+                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(12)
                 // Todo : 임시
-                else -> navigateToEdit()
+                else -> navigateToInfo(12)
             }
         }
     }

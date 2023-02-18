@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.home.navigation.HomeNavHost
+import com.yapp.gallery.navigation.info.ExhibitInfoNavigator
 import com.yapp.gallery.navigation.profile.ProfileNavigator
 import com.yapp.navigation.camera.CameraNavigator
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,6 +18,8 @@ import javax.inject.Inject
 class HomeActivity : ComponentActivity() {
     @Inject lateinit var cameraNavigator: CameraNavigator
     @Inject lateinit var profileNavigator: ProfileNavigator
+    @Inject lateinit var infoNavigator: ExhibitInfoNavigator
+
     private lateinit var navController : NavHostController
 
     private var backKeyPressedTime: Long = 0
@@ -27,8 +30,7 @@ class HomeActivity : ComponentActivity() {
             navController = rememberNavController()
             GalleryTheme {
                 HomeNavHost(navHostController = navController, profileNavigator = profileNavigator,
-                    cameraNavigator = cameraNavigator, context = this
-                )
+                    cameraNavigator = cameraNavigator, infoNavigator = infoNavigator, context = this)
             }
         }
     }

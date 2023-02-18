@@ -45,6 +45,7 @@ dependencies {
     implementation project(":domain")
     implementation project(":navigation:home")
     implementation project(":navigation:camera")
+    implementation project(":navigation:info")
     implementation project(":navigation:profile")
 
     implementation 'androidx.core:core-ktx:1.7.0'
