@@ -46,6 +46,7 @@ dependencies {
     implementation project(":navigation:home")
     implementation project(":navigation:camera")
     implementation project(":navigation:profile")
+    implementation project(":navigation:saver")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -61,5 +62,6 @@ dependencies {
     implementation libs.accompanist.webview
     implementation libs.accompanist.flowLayout
     implementation libs.numberPicker
+    implementation libs.imagePicker
     kapt libs.bundles.hilt.compilers
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="opacity12_black">#1F1F1F</color>
+    <color name="gray_400">#D9D9D9</color>
+    <color name="gray_600">#979797</color>
+    <color name="gray_700">#727272</color>
+    <color name="gray_900">#3F3F3F</color>
+
+    <color name="main_green">#E1FCAD</color>
+</resources>
