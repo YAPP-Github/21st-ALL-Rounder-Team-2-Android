@@ -21,6 +21,8 @@ webview = "0.25.1"
 flowLayout = "0.28.0"
 numberPicker = "1.0.3"
 constraintLayout = "1.0.1"
+fragmentx = "1.5.5"
+material = "1.6.1"
 
 # retrofit, okhttp
 retrofit = "2.9.0"
@@ -47,6 +49,8 @@ androidx-camera = { module = "androidx.camera:camera-camera2", version.ref = "ca
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camera" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splash"}
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentx" }
+androidx-material = { module = "com.google.android.material:material", version.ref = "material" }
 
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebase-auth-ktx"}
 gms-auth = { module = "com.google.android.gms:play-services-auth", version.ref ="gms-auth"}
@@ -91,6 +95,8 @@ compose = [ "androidx-compose-foundation", "androidx-compose-ui", "androidx-comp
     "androidx-compose-icon", "androidx-compose-constraintLayout"
 ]
 androidx = [ "androidx-camera", "androidx-camera-view", "androidx-camera-lifecycle" ]
+fragmentx = [ "androidx-fragment-ktx" ]
+material = [ "androidx-material" ]
 coil = [ "coil-compose" ]
 
 room = ["room-ktx", "room-paging", "room-runtime"]
