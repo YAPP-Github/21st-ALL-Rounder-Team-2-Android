@@ -39,9 +39,9 @@ fun HomeScreen(
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
-                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(16)
+                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(18)
                 // Todo : 임시
-                else -> navigateToInfo(16)
+                else -> navigateToInfo(18)
             }
         }
     }

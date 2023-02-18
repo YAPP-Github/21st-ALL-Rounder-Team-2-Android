@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.YAPPALLRounderTeam2" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#FF161616</item>
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:windowBackground">#FF161616</item>
+        <item name="android:fontFamily">@font/font_pretendard</item>
+        <item name="android:font">@font/pretendard_regular</item>
+        <item name="android:navigationBarColor">#FF1F1F1F</item>
+    </style>
+    <style name="Theme.FitSystemWindow" parent="Theme.YAPPALLRounderTeam2">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+</resources>

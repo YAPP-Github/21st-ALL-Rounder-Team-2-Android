@@ -16,11 +16,17 @@ class ExhibitInfoActivity : ComponentActivity() {
     lateinit var cameraNavigator: CameraNavigator
     @Inject
     lateinit var homeNavigator: HomeNavigator
+
+    private val exhibitId by lazy {
+        intent.getLongExtra("exhibitId", 1)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GalleryTheme {
                 ExhibitInfoNavHost(
+                    exhibitId = exhibitId,
                     cameraNavigator = cameraNavigator, homeNavigator = homeNavigator,
                     context = this
                 )

@@ -1,6 +1,8 @@
 package com.yapp.gallery.info.screen.edit
 
+import android.app.Activity
 import android.content.Context
+import android.view.WindowManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +43,7 @@ fun ExhibitEditScreen(
     popBackStack: () -> Unit,
     navigateToHome: () -> Unit,
     viewModel: ExhibitEditViewModel = hiltViewModel(),
-    context: Context = LocalContext.current
+    context: Activity
 ){
     // 키보드 포커스
     val focusRequester = remember { FocusRequester() }
@@ -61,6 +63,13 @@ fun ExhibitEditScreen(
 
     val exhibitDeleteDialogShown = remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit){
+        // 전체 화면 및 상태바 투명화 종료
+        context.window.clearFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        context.setTheme(R.style.Theme_YAPPALLRounderTeam2)
+    }
+    
     LaunchedEffect(viewModel.errors){
         viewModel.errors.collect{
             scaffoldState.snackbarHostState.showSnackbar(
@@ -76,7 +85,7 @@ fun ExhibitEditScreen(
                     navigateToHome()
                 }
                 is ExhibitEditState.Update -> {
-                    // Todo : 이전 화면 이동 및 업데이트
+                    popBackStack()
                 }
                 is ExhibitEditState.Error -> {
                     scaffoldState.snackbarHostState.showSnackbar(

@@ -17,11 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ExhibitInfoViewModel @Inject constructor(
     getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
-    sharedPreferences: SharedPreferences,
-    savedStateHandle: SavedStateHandle
+    sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    val exhibitId = savedStateHandle["exhibitId"] ?: 1
-
     private val _idToken = MutableStateFlow<String?>(null)
     val idToken : StateFlow<String?>
         get() = _idToken
@@ -41,7 +38,7 @@ class ExhibitInfoViewModel @Inject constructor(
     private val _infoSideEffect = Channel<NavigatePayload>()
     val infoSideEffect = _infoSideEffect.receiveAsFlow()
 
-    fun setInfoSideEffect(action: String, payload: String){
+    fun setInfoSideEffect(action: String, payload: String?){
         viewModelScope.launch {
             _infoSideEffect.send(NavigatePayload(action, payload))
         }
