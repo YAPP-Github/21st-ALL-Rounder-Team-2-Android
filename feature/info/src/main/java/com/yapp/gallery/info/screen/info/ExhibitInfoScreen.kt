@@ -1,11 +1,17 @@
 package com.yapp.gallery.info.screen.info
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 =======
 >>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
+=======
+import android.view.ViewGroup
+import android.webkit.WebSettings
+import android.webkit.WebView
+>>>>>>> 088001c ([ Refactor ] : Webview 변경 및 Authorization Header 추가)
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -56,6 +62,7 @@ fun ExhibitInfoScreen(
     }
     
     
+<<<<<<< HEAD
 =======
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,6 +75,8 @@ fun ExhibitInfoScreen(
     viewModel : ExhibitInfoViewModel = hiltViewModel()
 ){
 >>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
+=======
+>>>>>>> 088001c ([ Refactor ] : Webview 변경 및 Authorization Header 추가)
     Scaffold(
     ) { paddingValues ->
         Column(
@@ -75,6 +84,9 @@ fun ExhibitInfoScreen(
                 .padding(paddingValues)
         ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 088001c ([ Refactor ] : Webview 변경 및 Authorization Header 추가)
             AndroidView(factory = {
                 WebView(it).apply {
                     webView = this
@@ -92,6 +104,7 @@ fun ExhibitInfoScreen(
                         cookieManager.setAcceptThirdPartyCookies(webView, true)
                         javaScriptEnabled = true
                         javaScriptCanOpenWindowsAutomatically = true
+<<<<<<< HEAD
                     }
                 }
             })
@@ -112,6 +125,11 @@ fun ExhibitInfoScreen(
                 },
             )
 >>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
+=======
+                    }
+                }
+            })
+>>>>>>> 088001c ([ Refactor ] : Webview 변경 및 Authorization Header 추가)
         }
     }
 }

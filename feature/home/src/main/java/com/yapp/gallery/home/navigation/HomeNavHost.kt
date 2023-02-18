@@ -21,12 +21,8 @@ fun HomeNavHost(
     profileNavigator: ProfileNavigator,
     cameraNavigator: CameraNavigator,
     infoNavigator: ExhibitInfoNavigator,
-<<<<<<< HEAD
     context: Activity,
     navToImagePicker: () -> Unit,
-=======
-    context: Activity
->>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
 ){
     NavHost(navController = navHostController, startDestination = "home"){
         composable("home"){ HomeScreen(
@@ -34,17 +30,11 @@ fun HomeNavHost(
             navigateToProfile = { navigateToScreen(context, profileNavigator.navigate(context))},
             navigateToCalendar = { navHostController.navigate("calendar")},
             navigateToInfo = { navigateToScreen(context, infoNavigator.navigateToInfo(context, it))}
-<<<<<<< HEAD
         ) }
         composable("record"){ ExhibitRecordScreen(
             navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
-            // Todo : 임시로 갤러리 대신 프로필로 가게 함
-            navigateToGallery = { navigateToScreen(context, profileNavigator.navigate(context)) },
-            popBackStack = { popBackStack(context, navHostController)}
+            popBackStack = { popBackStack(context, navHostController)},
             navigateToGallery = { navToImagePicker.invoke() }
-            navigateToEdit = { navHostController.navigate("edit?id=19")}
-=======
->>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
         ) }
         composable("record"){ ExhibitRecordScreen(
             navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
@@ -80,10 +70,6 @@ private fun navigateToScreen(context: Context, intent: Intent){
 private fun popBackStack(
     context: Activity, navHostController: NavHostController
 ){
-<<<<<<< HEAD
-
-=======
->>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
     if (navHostController.previousBackStackEntry != null) {
         navHostController.popBackStack()
     }

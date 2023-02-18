@@ -3,6 +3,10 @@ package com.yapp.gallery.home.screen.home
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
+<<<<<<< HEAD
+=======
+import android.webkit.WebViewClient
+>>>>>>> 088001c ([ Refactor ] : Webview 변경 및 Authorization Header 추가)
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -16,6 +20,7 @@ import com.yapp.gallery.common.util.WebViewUtils
 import com.yapp.gallery.common.util.WebViewUtils.cookieManager
 import com.yapp.gallery.home.R
 import com.yapp.gallery.home.utils.NavigateJsObject
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(

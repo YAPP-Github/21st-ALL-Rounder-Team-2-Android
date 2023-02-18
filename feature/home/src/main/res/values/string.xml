@@ -24,13 +24,5 @@
 
     <string name="exhibit_crate_continuous_btn">이어서 기록하기</string>
 
-<<<<<<< HEAD
     <string name="home_base_url">https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home</string>
-=======
-<!--    전시 정보 수정 관련-->
-    <string name="exhibit_update_error">전시 정보 수정이 정상적으로 이루어지지 않았습니다.</string>
-    <string name="exhibit_delete_error">전시가 삭제되지 않았습니다.</string>
-    <string name="exhibit_delete_dialog_title">전시 정보 삭제</string>
-    <string name="exhibit_delete_dialog_guide">정말로 전시 정보를 삭제하시겠습니까?</string>
->>>>>>> 11ab159 ([ Feature ] : 전시 정보 삭제 및 업데이트 연동)
 </resources>

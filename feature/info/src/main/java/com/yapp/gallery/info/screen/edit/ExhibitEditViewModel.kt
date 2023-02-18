@@ -12,11 +12,7 @@ import com.yapp.gallery.domain.usecase.edit.DeleteRemotePostUseCase
 import com.yapp.gallery.domain.usecase.edit.UpdateRemotePostUseCase
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
 import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
-<<<<<<< HEAD:feature/info/src/main/java/com/yapp/gallery/info/screen/edit/ExhibitEditViewModel.kt
 import com.yapp.gallery.info.R
-=======
-import com.yapp.gallery.home.R
->>>>>>> 11ab159 ([ Feature ] : 전시 정보 삭제 및 업데이트 연동):feature/home/src/main/java/com/yapp/gallery/home/screen/edit/ExhibitEditViewModel.kt
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -95,17 +91,8 @@ class ExhibitEditViewModel @Inject constructor(
                 id, exhibitName.value, categorySelect.value,
                 exhibitDate.value, exhibitLink.value.ifEmpty { null }
             ).catch {
-<<<<<<< HEAD
-<<<<<<< HEAD:feature/info/src/main/java/com/yapp/gallery/info/screen/edit/ExhibitEditViewModel.kt
                 _editState.value =
                     ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_update_error))
-=======
-                _editState.value = ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_update_error))
->>>>>>> 11ab159 ([ Feature ] : 전시 정보 삭제 및 업데이트 연동):feature/home/src/main/java/com/yapp/gallery/home/screen/edit/ExhibitEditViewModel.kt
-=======
-                _editState.value =
-                    ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_update_error))
->>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
             }.collectLatest {
                 _editState.value = ExhibitEditState.Update
             }
@@ -115,17 +102,8 @@ class ExhibitEditViewModel @Inject constructor(
         viewModelScope.launch {
             deleteRemotePostUseCase(id)
                 .catch {
-<<<<<<< HEAD
-<<<<<<< HEAD:feature/info/src/main/java/com/yapp/gallery/info/screen/edit/ExhibitEditViewModel.kt
                     _editState.value =
                         ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_delete_error))
-=======
-                    _editState.value = ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_delete_error))
->>>>>>> 11ab159 ([ Feature ] : 전시 정보 삭제 및 업데이트 연동):feature/home/src/main/java/com/yapp/gallery/home/screen/edit/ExhibitEditViewModel.kt
-=======
-                    _editState.value =
-                        ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_delete_error))
->>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
                 }
                 .collectLatest {
                     _editState.value = ExhibitEditState.Delete

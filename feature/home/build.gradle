@@ -64,5 +64,6 @@ dependencies {
     implementation libs.numberPicker
     implementation libs.androidx.webview
     implementation libs.imagePicker
+    implementation libs.androidx.webview
     kapt libs.bundles.hilt.compilers
 }

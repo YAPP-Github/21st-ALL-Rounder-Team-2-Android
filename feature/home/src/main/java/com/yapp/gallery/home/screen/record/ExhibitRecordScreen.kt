@@ -236,7 +236,6 @@ fun ExhibitRecordScreen(
                     navigateToCamera()
                     recordMenuDialogShown.value = false },
                 onGalleryClick = {
-                    // Todo : 저장소 모듈로 이동
                     viewModel.createOrUpdateRecord()
                     navigateToGallery()
                     recordMenuDialogShown.value = false },
