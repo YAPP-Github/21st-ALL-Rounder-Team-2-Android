@@ -26,12 +26,19 @@ import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
+<<<<<<< HEAD
+=======
+import com.yapp.gallery.home.R
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.exhibit.ExhibitCategory
 import com.yapp.gallery.home.widget.exhibit.ExhibitDate
 import com.yapp.gallery.home.widget.exhibit.ExhibitLink
 import com.yapp.gallery.home.widget.exhibit.ExhibitRecordName
+<<<<<<< HEAD
 import com.yapp.gallery.info.R
+=======
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -39,7 +46,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExhibitEditScreen(
     popBackStack: () -> Unit,
+<<<<<<< HEAD
     navigateToHome: () -> Unit,
+=======
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
     viewModel: ExhibitEditViewModel = hiltViewModel(),
     context: Context = LocalContext.current
 ){
@@ -73,7 +83,11 @@ fun ExhibitEditScreen(
         viewModel.editState.collectLatest {
             when(it){
                 is ExhibitEditState.Delete -> {
+<<<<<<< HEAD
                     navigateToHome()
+=======
+                    // Todo : 홈화면 이동
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
                 }
                 is ExhibitEditState.Update -> {
                     // Todo : 이전 화면 이동 및 업데이트
@@ -132,7 +146,11 @@ fun ExhibitEditScreen(
                     elevation = 0.dp,
                     title = {
                         Text(
+<<<<<<< HEAD
                             text = stringResource(id = R.string.exhibit_edit_appbar_title),
+=======
+                            text = stringResource(id = R.string.exhibit_title),
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
                             style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.SemiBold),
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -224,7 +242,11 @@ fun ExhibitEditScreen(
                             viewModel.exhibitDate.value.isNotEmpty()
                 ) {
                     Text(
+<<<<<<< HEAD
                         text = stringResource(id = R.string.exhibit_edit_update_btn),
+=======
+                        text = "수정 완료",
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
                         modifier = Modifier.padding(vertical = 12.dp),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp,

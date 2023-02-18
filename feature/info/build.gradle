@@ -44,8 +44,11 @@ dependencies {
     implementation project(":common")
     implementation project(":domain")
     implementation project(":feature:home")
+<<<<<<< HEAD
     implementation project(":navigation:camera")
     implementation project(":navigation:home")
+=======
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
     implementation project(":navigation:info")
 
     implementation 'androidx.core:core-ktx:1.7.0'

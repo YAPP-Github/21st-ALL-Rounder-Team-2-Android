@@ -1,12 +1,16 @@
 package com.yapp.gallery.info.screen.info
 
+<<<<<<< HEAD
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
+=======
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+<<<<<<< HEAD
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -52,12 +56,25 @@ fun ExhibitInfoScreen(
     }
     
     
+=======
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.web.WebView
+import com.yapp.gallery.common.util.WebViewClient.webChromeClient
+import com.yapp.gallery.common.util.WebViewClient.webViewClient
+
+@Composable
+fun ExhibitInfoScreen(
+    viewModel : ExhibitInfoViewModel = hiltViewModel()
+){
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
     Scaffold(
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
         ) {
+<<<<<<< HEAD
             AndroidView(factory = {
                 WebView(it).apply {
                     webView = this
@@ -78,6 +95,23 @@ fun ExhibitInfoScreen(
                     }
                 }
             })
+=======
+            WebView(
+                state = viewModel.webViewState,
+                client = webViewClient,
+                chromeClient = webChromeClient,
+                navigator = viewModel.webViewNavigator,
+                onCreated = {
+                    with(it){
+//                        addJavascriptInterface(
+//                            NavigateJsObject { e -> viewModel.setSideEffect(e) }, "android")
+                        settings.run {
+                            javaScriptEnabled = true
+                        }
+                    }
+                },
+            )
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
         }
     }
 }

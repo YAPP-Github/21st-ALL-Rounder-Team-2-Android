@@ -23,6 +23,7 @@ fun HomeScreen(
     navigateToProfile: () -> Unit,
     navigateToCalendar: () -> Unit,
     navigateToInfo: (Long) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ){
     var webView: WebView? = null
     val baseUrl = stringResource(id = R.string.home_base_url)
@@ -45,7 +46,6 @@ fun HomeScreen(
         viewModel.idToken.collectLatest {
             it?.let {
                 webView?.loadUrl(baseUrl, mapOf("Authorization" to it))
-                // Todo : 임시
             }
         }
     }

@@ -21,9 +21,17 @@ import javax.inject.Inject
 class HomeActivity : ComponentActivity() {
     @Inject lateinit var cameraNavigator: CameraNavigator
     @Inject lateinit var profileNavigator: ProfileNavigator
+<<<<<<< HEAD
     @Inject lateinit var infoNavigator: ExhibitInfoNavigator
 
+=======
+<<<<<<< HEAD
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
     @Inject lateinit var saverNavigator: SaverNavigator
+=======
+    @Inject lateinit var infoNavigator: ExhibitInfoNavigator
+
+>>>>>>> 7f8521c ([ Feature ] : 전시 정보 화면 구현)
     private lateinit var navController : NavHostController
 
     private var backKeyPressedTime: Long = 0

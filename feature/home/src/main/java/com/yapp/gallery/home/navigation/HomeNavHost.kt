@@ -6,12 +6,9 @@ import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.yapp.gallery.home.screen.calendar.CalendarScreen
-import com.yapp.gallery.home.screen.edit.ExhibitEditScreen
 import com.yapp.gallery.home.screen.home.HomeScreen
 import com.yapp.gallery.home.screen.record.ExhibitRecordScreen
 import com.yapp.gallery.navigation.info.ExhibitInfoNavigator
@@ -24,8 +21,12 @@ fun HomeNavHost(
     profileNavigator: ProfileNavigator,
     cameraNavigator: CameraNavigator,
     infoNavigator: ExhibitInfoNavigator,
+<<<<<<< HEAD
     context: Activity,
     navToImagePicker: () -> Unit,
+=======
+    context: Activity
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
 ){
     NavHost(navController = navHostController, startDestination = "home"){
         composable("home"){ HomeScreen(
@@ -33,6 +34,7 @@ fun HomeNavHost(
             navigateToProfile = { navigateToScreen(context, profileNavigator.navigate(context))},
             navigateToCalendar = { navHostController.navigate("calendar")},
             navigateToInfo = { navigateToScreen(context, infoNavigator.navigateToInfo(context, it))}
+<<<<<<< HEAD
         ) }
         composable("record"){ ExhibitRecordScreen(
             navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
@@ -41,6 +43,8 @@ fun HomeNavHost(
             popBackStack = { popBackStack(context, navHostController)}
             navigateToGallery = { navToImagePicker.invoke() }
             navigateToEdit = { navHostController.navigate("edit?id=19")}
+=======
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
         ) }
         composable("record"){ ExhibitRecordScreen(
             navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
@@ -76,7 +80,10 @@ private fun navigateToScreen(context: Context, intent: Intent){
 private fun popBackStack(
     context: Activity, navHostController: NavHostController
 ){
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6ed6ef1 ([ Feature ] : 전시 정보 화면 구현)
     if (navHostController.previousBackStackEntry != null) {
         navHostController.popBackStack()
     }
