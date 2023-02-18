@@ -20,6 +20,7 @@ fun HomeScreen(
     navigateToRecord: () -> Unit,
     navigateToProfile: () -> Unit,
     navigateToCalendar: () -> Unit,
+    navigateToEdit: () -> Unit
 ){
     val viewModel = hiltViewModel<HomeViewModel>()
 
@@ -32,7 +33,8 @@ fun HomeScreen(
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
                 "NAVIGATE_TO_CALENDAR" -> navigateToCalendar()
-                else -> {}
+                // Todo : 임시
+                else -> navigateToEdit()
             }
         }
     }

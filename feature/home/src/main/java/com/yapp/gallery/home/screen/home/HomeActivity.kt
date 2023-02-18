@@ -27,7 +27,7 @@ class HomeActivity : ComponentActivity() {
             navController = rememberNavController()
             GalleryTheme {
                 HomeNavHost(navHostController = navController, profileNavigator = profileNavigator,
-                    cameraNavigator = cameraNavigator
+                    cameraNavigator = cameraNavigator, context = this
                 )
             }
         }

@@ -8,8 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.model.UiText
 import com.yapp.gallery.domain.entity.home.CategoryItem
+import com.yapp.gallery.domain.usecase.edit.DeleteRemotePostUseCase
+import com.yapp.gallery.domain.usecase.edit.UpdateRemotePostUseCase
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
 import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
+import com.yapp.gallery.home.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -20,7 +23,9 @@ import javax.inject.Inject
 class ExhibitEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getCategoryListUseCase: GetCategoryListUseCase,
-    private val createCategoryUseCase: CreateCategoryUseCase
+    private val createCategoryUseCase: CreateCategoryUseCase,
+    private val updateRemotePostUseCase: UpdateRemotePostUseCase,
+    private val deleteRemotePostUseCase: DeleteRemotePostUseCase
 ) : ViewModel(){
     // Todo : 카테고리 조회 기능
     // Todo : 전시 삭제
@@ -30,6 +35,10 @@ class ExhibitEditViewModel @Inject constructor(
     val categorySelect = mutableStateOf(savedStateHandle["categorySelect"] ?: -1L)
     val exhibitDate = mutableStateOf(savedStateHandle["exhibitDate"] ?: "")
     val exhibitLink = mutableStateOf(savedStateHandle["exhibitLink"] ?: "")
+
+    private val _editState = MutableStateFlow<ExhibitEditState>(ExhibitEditState.Initial)
+    val editState : StateFlow<ExhibitEditState>
+        get() = _editState
 
     private val _categoryState = MutableStateFlow<BaseState<Boolean>>(BaseState.Loading)
     val categoryState : StateFlow<BaseState<Boolean>>
@@ -50,7 +59,7 @@ class ExhibitEditViewModel @Inject constructor(
         viewModelScope.launch {
             getCategoryListUseCase()
                 .catch {
-
+                    _errors.send(UiText.DynamicString("카테고리 조회에 실패하였습니다."))
                 }
                 .collectLatest {
                     _categoryList.addAll(it)
@@ -76,5 +85,29 @@ class ExhibitEditViewModel @Inject constructor(
             _categoryState.value = BaseState.Error("카테고리는 10자 이하이어야 합니다.")
         else
             _categoryState.value = BaseState.Success(category.isNotEmpty())
+    }
+
+    fun updateRemotePost(){
+        viewModelScope.launch {
+            updateRemotePostUseCase(
+                id, exhibitName.value, categorySelect.value,
+                exhibitDate.value, exhibitLink.value.ifEmpty { null }
+            ).catch {
+                _editState.value = ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_update_error))
+            }.collectLatest {
+                _editState.value = ExhibitEditState.Update
+            }
+        }
+    }
+    fun deleteRemotePost(){
+        viewModelScope.launch {
+            deleteRemotePostUseCase(id)
+                .catch {
+                    _editState.value = ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_delete_error))
+                }
+                .collectLatest {
+                    _editState.value = ExhibitEditState.Delete
+                }
+        }
     }
 }

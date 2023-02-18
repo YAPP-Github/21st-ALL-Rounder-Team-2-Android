@@ -78,12 +78,10 @@ class LoginActivity : ComponentActivity(){
                 viewModel.loginState.collect{
                     when(it){
                         is BaseState.Success -> {
-                            // Todo : uid 저장
                             navigateToHome()
                             isLoading.value = false
                         }
                         is BaseState.Loading -> {
-                            // Todo : 로딩 화면 만들기
                             isLoading.value = true
                         }
                         is BaseState.Error -> {

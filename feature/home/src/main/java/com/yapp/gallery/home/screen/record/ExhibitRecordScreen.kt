@@ -58,9 +58,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ExhibitRecordScreen(
-    navController: NavHostController,
     navigateToCamera: () -> Unit,
     navigateToGallery: () -> Unit,
+    popBackStack: () -> Unit,
     viewModel: ExhibitRecordViewModel = hiltViewModel(),
 ) {
     // 키보드 포커스
@@ -165,17 +165,13 @@ fun ExhibitRecordScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
                     },
-                    navigationIcon = if (navController.previousBackStackEntry != null) {
-                        {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowBack,
-                                    contentDescription = "Back"
-                                )
-                            }
+                    navigationIcon = {
+                        IconButton(onClick = { popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
                         }
-                    } else {
-                        null
                     }
                 )
             },

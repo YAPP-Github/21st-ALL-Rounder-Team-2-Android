@@ -7,5 +7,5 @@ class UpdateBothUseCase @Inject constructor(
     private val repository: ExhibitRecordRepository
 ) {
     operator fun invoke(postId: Long, name: String, categoryId: Long, postDate: String, postLink: String?)
-        = repository.updateRecord(postId, name, categoryId, postDate, postLink)
+        = repository.updateBoth(postId, name, categoryId, postDate, postLink)
 }
