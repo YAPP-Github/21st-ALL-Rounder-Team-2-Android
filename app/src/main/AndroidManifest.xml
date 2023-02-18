@@ -61,11 +61,8 @@
         <activity
             android:name=".saver.SaverActivity"
             android:screenOrientation="portrait"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.YAPPALLRounderTeam2.NoAnim" />
 
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
