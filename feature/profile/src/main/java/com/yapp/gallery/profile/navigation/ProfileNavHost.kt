@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.yapp.gallery.profile.screen.category.CategoryManageScreen
 import com.yapp.gallery.profile.screen.legacy.LegacyScreen
+import com.yapp.gallery.profile.screen.nickname.NicknameScreen
 import com.yapp.gallery.profile.screen.notice.NoticeDetailScreen
 import com.yapp.gallery.profile.screen.notice.NoticeScreen
 import com.yapp.gallery.profile.screen.profile.ProfileScreen
@@ -32,6 +33,7 @@ fun ProfileNavHost(
         composable("profile"){
             ProfileScreen(
                 navigateToManage = { navHostController.navigate("manage") },
+                navigateToNickname = { nickname -> navHostController.navigate("nickname?nickname=${nickname}")},
                 navigateToNotice = { navHostController.navigate("notice")},
                 navigateToLegacy = { navHostController.navigate("legacy") },
                 navigateToSignOut = { navHostController.navigate("signOut")},
@@ -41,6 +43,16 @@ fun ProfileNavHost(
         }
         composable("manage"){
             CategoryManageScreen(popBackStack = { popBackStack(context, navHostController) })
+        }
+        composable(
+            route = "nickname?nickname={nickname}",
+            arguments = listOf(
+                navArgument("nickname"){
+                    type = NavType.StringType
+                }
+            )
+        ){
+            NicknameScreen(popBackStack = { popBackStack(context, navHostController)})
         }
         composable("notice"){
             NoticeScreen(

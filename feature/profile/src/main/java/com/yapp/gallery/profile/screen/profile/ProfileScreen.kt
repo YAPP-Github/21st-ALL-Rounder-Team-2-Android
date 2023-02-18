@@ -23,11 +23,11 @@ import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.domain.entity.profile.User
 import com.yapp.gallery.profile.R
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun ProfileScreen(
     navigateToManage: () -> Unit,
+    navigateToNickname: (String) -> Unit,
     navigateToNotice: () -> Unit,
     navigateToLegacy: () -> Unit,
     navigateToSignOut: () -> Unit,
@@ -107,7 +107,11 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(32.dp))
             ProfileFeature(
                 featureName = stringResource(id = R.string.feature_profile_edit),
-                onFeatureClick = { /*TODO*/ },
+                onFeatureClick = {
+                    if (user is BaseState.Success) {
+                        navigateToNickname((user as BaseState.Success<User>).value.name)
+                    }
+                },
                 isLast = false
             )
             ProfileFeature(

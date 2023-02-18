@@ -3,6 +3,7 @@
     <string name="profile_appbar_title">마이페이지</string>
     <string name="notice_appbar_title">공지사항</string>
     <string name="legacy_appbar_title">서비스 약관</string>
+    <string name="nickname_appbar_title">닉네임 수정</string>
     <string name="sign_out_appbar_title">회원 탈퇴</string>
     <string name="sign_out_complete_appbar_title">회원 탈퇴 완료</string>
 
@@ -57,4 +58,6 @@
 
     <string name="notice_empty_guide">아직 공지사항이 없어요!</string>
     <string name="notice_get_error">공지사항을 불러오지 못했습니다.</string>
+
+    <string name="nickname_guide">변경할 닉네임을 입력해주세요.</string>
 </resources>
