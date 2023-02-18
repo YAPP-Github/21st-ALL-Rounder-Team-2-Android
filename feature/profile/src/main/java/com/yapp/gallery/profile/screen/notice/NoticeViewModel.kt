@@ -1,6 +1,5 @@
 package com.yapp.gallery.profile.screen.notice
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.model.BaseState

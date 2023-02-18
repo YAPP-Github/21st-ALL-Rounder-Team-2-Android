@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LiveData
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.color_background
 import com.yapp.gallery.common.theme.color_gray600
@@ -33,6 +34,7 @@ fun ProfileScreen(
     navigateToSignOut: () -> Unit,
     logout: () -> Unit,
     popBackStack: () -> Unit,
+    editedNicknameData: LiveData<String>,
     viewModel: ProfileViewModel = hiltViewModel(),
     context : Context = LocalContext.current
 ){
@@ -82,7 +84,8 @@ fun ProfileScreen(
                 .fillMaxWidth()) {
                 Column {
                     Row {
-                        Text(text = (user as? BaseState.Success<User>)?.value?.name ?: "",
+                        Text(text =
+                            editedNicknameData.value?: (user as? BaseState.Success<User>)?.value?.name ?: "",
                             style = MaterialTheme.typography.h1.copy(fontWeight = FontWeight.SemiBold))
                         Text(text = "이", style = MaterialTheme.typography.h1)
                     }
@@ -108,8 +111,12 @@ fun ProfileScreen(
             ProfileFeature(
                 featureName = stringResource(id = R.string.feature_profile_edit),
                 onFeatureClick = {
-                    if (user is BaseState.Success) {
-                        navigateToNickname((user as BaseState.Success<User>).value.name)
+                    editedNicknameData.value?.let {
+                        navigateToNickname(it)
+                    } ?: run{
+                        if (user is BaseState.Success) {
+                            navigateToNickname((user as BaseState.Success<User>).value.name)
+                        }
                     }
                 },
                 isLast = false

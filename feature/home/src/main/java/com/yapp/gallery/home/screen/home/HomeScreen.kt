@@ -1,11 +1,9 @@
 package com.yapp.gallery.home.screen.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -13,7 +11,6 @@ import com.google.accompanist.web.AccompanistWebChromeClient
 import com.google.accompanist.web.AccompanistWebViewClient
 import com.google.accompanist.web.WebView
 import com.yapp.gallery.home.utils.NavigateJsObject
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(

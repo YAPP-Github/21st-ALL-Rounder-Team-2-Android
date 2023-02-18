@@ -29,8 +29,9 @@ fun ProfileNavHost(
     context: Activity
 ){
     val navHostController = rememberNavController()
+
     NavHost(navController = navHostController, startDestination = "profile"){
-        composable("profile"){
+        composable("profile"){backStackEntry ->
             ProfileScreen(
                 navigateToManage = { navHostController.navigate("manage") },
                 navigateToNickname = { nickname -> navHostController.navigate("nickname?nickname=${nickname}")},
@@ -39,6 +40,7 @@ fun ProfileNavHost(
                 navigateToSignOut = { navHostController.navigate("signOut")},
                 logout = { logout() },
                 popBackStack = { popBackStack(context, navHostController) },
+                editedNicknameData = backStackEntry.savedStateHandle.getLiveData<String>("editedName")
             )
         }
         composable("manage"){
@@ -52,7 +54,10 @@ fun ProfileNavHost(
                 }
             )
         ){
-            NicknameScreen(popBackStack = { popBackStack(context, navHostController)})
+            NicknameScreen(
+                popBackStack = { popBackStack(context, navHostController)},
+                nicknameUpdate = { setNicknameArgument(context, navHostController, it) }
+            )
         }
         composable("notice"){
             NoticeScreen(
@@ -133,4 +138,16 @@ private fun navigateToWebPage(
     with(context){
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(linkRes))))
     }
+}
+
+private fun setNicknameArgument(
+    context: Activity,
+    navHostController: NavHostController,
+    editedNickname: String
+){
+    navHostController.previousBackStackEntry?.savedStateHandle?.set(
+        "editedName",
+        editedNickname
+    )
+    popBackStack(context, navHostController)
 }

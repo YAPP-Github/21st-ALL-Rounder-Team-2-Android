@@ -26,6 +26,7 @@ import com.yapp.gallery.profile.R
 @Composable
 fun NicknameScreen(
     popBackStack: () -> Unit,
+    nicknameUpdate: (String) -> Unit,
     viewModel: NicknameViewModel = hiltViewModel()
 ){
     val scaffoldState = rememberScaffoldState()
@@ -72,7 +73,7 @@ fun NicknameScreen(
                     .padding(bottom = 53.dp),
                 onClick = {
                     // Todo : 닉네임 변경
-                    popBackStack()
+                    nicknameUpdate(viewModel.nickname.value)
                 },
                 enabled = nicknameState is NicknameState.Normal
             ) {

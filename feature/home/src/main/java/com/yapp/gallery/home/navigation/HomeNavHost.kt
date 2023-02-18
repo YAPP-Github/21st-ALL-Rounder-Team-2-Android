@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
