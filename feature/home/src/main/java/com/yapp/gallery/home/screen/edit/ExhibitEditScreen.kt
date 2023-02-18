@@ -27,13 +27,11 @@ import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.home.R
-import com.yapp.gallery.home.screen.record.*
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.exhibit.ExhibitCategory
 import com.yapp.gallery.home.widget.exhibit.ExhibitDate
 import com.yapp.gallery.home.widget.exhibit.ExhibitLink
 import com.yapp.gallery.home.widget.exhibit.ExhibitRecordName
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
