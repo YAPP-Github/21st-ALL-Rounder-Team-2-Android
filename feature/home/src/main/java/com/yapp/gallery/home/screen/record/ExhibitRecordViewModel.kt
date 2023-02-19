@@ -123,7 +123,7 @@ class ExhibitRecordViewModel @Inject constructor(
             _categoryState.value = BaseState.Success(category.isNotEmpty())
     }
 
-    fun createOrUpdateRecord() {
+    fun createOrUpdateRecord(type: CreateType) {
         when (_recordScreenState.value){
             // 일반적 생성 상태
             is ExhibitRecordState.Normal -> {
@@ -134,27 +134,39 @@ class ExhibitRecordViewModel @Inject constructor(
                             _recordScreenState.value = ExhibitRecordState.Normal
                         }
                         .collect{
-                            _recordScreenState.value = ExhibitRecordState.Created(it)
+                            _recordScreenState.value = if(type == CreateType.ALBUM) {
+                                ExhibitRecordState.CreatedAlbum(it)
+                            } else {
+                                ExhibitRecordState.CreatedCamera(it)
+                            }
                         }
                 }
             }
             // 이어서 생성중
             is ExhibitRecordState.Continuous -> {
                 val id = (_recordScreenState.value as ExhibitRecordState.Continuous).tempPostInfo.postId
-                _recordScreenState.value = ExhibitRecordState.Created(id)
+                _recordScreenState.value = if(type == CreateType.ALBUM) {
+                    ExhibitRecordState.CreatedAlbum(id)
+                } else {
+                    ExhibitRecordState.CreatedCamera(id)
+                }
                 viewModelScope.launch {
                     updateRecordUseCase(id, exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value.ifEmpty { null })
                         .catch {
 
                         }
                         .collect{
-                            _recordScreenState.value = ExhibitRecordState.Created(it)
+                            _recordScreenState.value = if(type == CreateType.ALBUM) {
+                                ExhibitRecordState.CreatedAlbum(id)
+                            } else {
+                                ExhibitRecordState.CreatedCamera(id)
+                            }
                         }
                 }
             }
             // 만들어 진적 있음
-            is ExhibitRecordState.Created -> {
-                val id = (_recordScreenState.value as ExhibitRecordState.Created).postId
+            is ExhibitRecordState.CreatedCamera, is ExhibitRecordState.CreatedAlbum -> {
+                val id = (_recordScreenState.value as ExhibitRecordState.Create).postId
                 viewModelScope.launch {
                     updateRecordUseCase(id, exhibitName.value, categorySelect.value, exhibitDate.value, exhibitLink.value)
                         .catch {
@@ -180,3 +192,5 @@ class ExhibitRecordViewModel @Inject constructor(
         }
     }
 }
+
+enum class CreateType { CAMERA, ALBUM }

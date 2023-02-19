@@ -1,15 +1,18 @@
 package com.yapp.gallery.saver
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.yapp.gallery.saver.databinding.DialogSaverBinding
+import kotlinx.coroutines.launch
 
 class SaverDialog : BottomSheetDialogFragment() {
 
@@ -21,6 +24,7 @@ class SaverDialog : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isCancelable = false
         setStyle(DialogFragment.STYLE_NORMAL, R.style.DialogStyle)
     }
 
@@ -42,6 +46,18 @@ class SaverDialog : BottomSheetDialogFragment() {
         }
 
         binding.setOnTextChangeListener()
+
+        lifecycleScope.launch {
+            viewModel.publishRecord.collect {
+                dismiss()
+            }
+        }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+
+        requireActivity().finishAffinity()
     }
 
     override fun onDestroyView() {
@@ -61,10 +77,22 @@ class SaverDialog : BottomSheetDialogFragment() {
                 copy(title = text.toString())
             }
         }
+
+        tvSave.setOnClickListener {
+            val postId = requireArguments().getLong("postId")
+
+            this@SaverDialog.viewModel.onPublishRecord(postId)
+        }
+
+        tvSkip.setOnClickListener { dismiss() }
     }
 
     companion object {
-        fun show(fragmentManager: FragmentManager) =
-            SaverDialog().show(fragmentManager, "saverDialog")
+        fun getInstance(postId: Long): SaverDialog {
+            val bundle = bundleOf("postId" to postId)
+            return SaverDialog().apply {
+                arguments = bundle
+            }
+        }
     }
 }

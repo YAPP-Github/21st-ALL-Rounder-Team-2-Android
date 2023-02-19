@@ -21,28 +21,55 @@ fun HomeNavHost(
     cameraNavigator: CameraNavigator,
     infoNavigator: ExhibitInfoNavigator,
     context: Activity,
-    navToImagePicker: () -> Unit,
-){
-    NavHost(navController = navHostController, startDestination = "home"){
-        composable("home"){ HomeScreen(
-            navigateToRecord = { navHostController.navigate("record")},
-            navigateToProfile = { navigateToScreen(context, profileNavigator.navigate(context))},
-            navigateToCalendar = { navHostController.navigate("calendar")},
-            navigateToInfo = { navigateToScreen(context, infoNavigator.navigateToInfo(context, it))}
-        ) }
-        composable("record"){ ExhibitRecordScreen(
-            navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
-            popBackStack = { popBackStack(context, navHostController)},
-            navigateToGallery = { navToImagePicker.invoke() }
-        ) }
-        composable("record"){ ExhibitRecordScreen(
-            navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context)) },
-            navigateToGallery = { navToImagePicker.invoke() },
-            popBackStack = { popBackStack(context, navHostController)}
-        ) }
-        composable("calendar") { CalendarScreen(
+    navToImagePicker: (Long) -> Unit,
+) {
+    NavHost(navController = navHostController, startDestination = "home") {
 
-        ) }
+        composable("home") {
+            HomeScreen(
+                navigateToRecord = { navHostController.navigate("record") },
+                navigateToProfile = {
+                    navigateToScreen(
+                        context,
+                        profileNavigator.navigate(context)
+                    )
+                },
+                navigateToCalendar = { navHostController.navigate("calendar") },
+                navigateToInfo = {
+                    navigateToScreen(
+                        context,
+                        infoNavigator.navigateToInfo(context, it)
+                    )
+                }
+            )
+        }
+        composable("record") {
+            ExhibitRecordScreen(
+                navigateToCamera = { postId ->
+                    navigateToScreen(
+                        context = context,
+                        intent = cameraNavigator.navigate(context)
+                            .putExtra("postId", postId)
+                    )
+                },
+                popBackStack = { popBackStack(context, navHostController) },
+                navigateToGallery = { postId -> navToImagePicker.invoke(postId) },
+                navigateToHome = {
+                    navHostController.navigate("home") {
+                        popUpTo(navHostController.graph.id) {
+                            inclusive = true
+                        }
+                    }
+                }
+            )
+        }
+        composable("calendar") {
+            CalendarScreen(
+
+            )
+        }
+    }
+}
 //        // Todo : 나중에 따로 빼야함
 //        composable(
 //            route = "edit?id={id}",
@@ -59,20 +86,31 @@ fun HomeNavHost(
 //                )
 //            })
 //        }
-    }
-}
+//=======
+//    navToImagePicker: (Long) -> Unit,
+//    cameraNavigator: CameraNavigator
+//) {
+//    val context = LocalContext.current
+//    NavHost(navController = navHostController, startDestination = "home") {
+//
+//        composable("calendar") {
+//            CalendarScreen(
+//
+//            )
+//        }
+//    }
+//}
 
-private fun navigateToScreen(context: Context, intent: Intent){
+private fun navigateToScreen(context: Context, intent: Intent) {
     context.startActivity(intent)
 }
 
 private fun popBackStack(
     context: Activity, navHostController: NavHostController
-){
+) {
     if (navHostController.previousBackStackEntry != null) {
         navHostController.popBackStack()
-    }
-    else{
+    } else {
         context.finish()
     }
 }
