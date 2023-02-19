@@ -44,6 +44,7 @@ dependencies {
 
     implementation(project(':navigation:saver'))
     implementation(project(':common'))
+    implementation(project(":domain"))
 
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
