@@ -50,4 +50,8 @@ class ExhibitRecordRemoteDataSourceImpl @Inject constructor(
     ): Flow<Boolean> = flow {
         emit(artieSerivce.deleteRecord(postId).isSuccessful)
     }
+
+    override fun publishRecord(postId: Long): Flow<Boolean> = flow {
+        emit(artieSerivce.publishRecord(postId).isSuccessful)
+    }
 }

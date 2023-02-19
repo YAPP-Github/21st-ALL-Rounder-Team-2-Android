@@ -15,5 +15,8 @@ interface ExhibitRecordRepository {
     fun getTempPost() : Flow<TempPostInfo>
     fun deleteTempPost() : Flow<Long>
     // 서버, 로컬 다 지우는 역할
+
     fun deleteBoth() : Flow<Boolean>
+    fun deleteRecord() : Flow<Boolean>
+    fun publishRecord(postId: Long): Flow<Boolean>
 }
