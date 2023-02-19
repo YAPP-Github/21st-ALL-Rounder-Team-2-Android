@@ -71,6 +71,7 @@ fun HomeScreen(
                     addJavascriptInterface(
                         NavigateJsObject { e -> viewModel.setSideEffect(e) }, "android")
                     settings.run {
+                        setBackgroundColor(0)
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                         cookieManager.setAcceptCookie(true)
                         cookieManager.setAcceptThirdPartyCookies(webView, true)

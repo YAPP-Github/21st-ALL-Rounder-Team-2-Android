@@ -98,6 +98,7 @@ fun ExhibitInfoScreen(
                     addJavascriptInterface(InfoNavigateJsObject { action, payload ->
                         viewModel.setInfoSideEffect(action, payload) }, "android")
                     settings.run {
+                        setBackgroundColor(0)
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                         WebViewUtils.cookieManager.setAcceptCookie(true)
                         WebViewUtils.cookieManager.setAcceptThirdPartyCookies(webView, true)
