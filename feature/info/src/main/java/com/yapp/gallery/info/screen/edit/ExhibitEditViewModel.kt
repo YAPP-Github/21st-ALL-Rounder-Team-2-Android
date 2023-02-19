@@ -71,7 +71,7 @@ class ExhibitEditViewModel @Inject constructor(
             createCategoryUseCase(category)
                 .catch {}
                 .collect{
-                    _categoryList.add(CategoryItem(it, category, _categoryList.size))
+                    _categoryList.add(CategoryItem(it, category, _categoryList.size, 0))
                 }
         }
     }
