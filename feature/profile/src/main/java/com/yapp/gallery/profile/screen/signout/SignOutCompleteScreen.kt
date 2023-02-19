@@ -71,7 +71,7 @@ fun SignOutCompleteScreen(
             Text(
                 text = stringResource(id = R.string.sign_out_complete),
                 style = MaterialTheme.typography.h1.copy(
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Medium,
                     fontSize = 22.sp
                 ),
             )

@@ -15,6 +15,7 @@ class AuthRepositoryImpl @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val auth: FirebaseAuth
 ) : AuthRepository{
+    // Todo : callback flow로 바꿔보기?!
     override fun getRefreshedToken(): Flow<String?> = flow {
         val task = auth.currentUser!!.getIdToken(true)
         emit(Tasks.await(task).token.also {
