@@ -14,6 +14,10 @@ sealed class ExhibitRecordState{
     // 기본 상태
     // 해당 상태에서 전시 기록할 시 서버로 요청 보내야 함
     object Normal : ExhibitRecordState()
+    interface Create {
+        val postId: Long
+    }
     // 이미 생성된 적 있는 상태
-    data class Created(val postId: Long) : ExhibitRecordState()
+    data class CreatedCamera(override val postId: Long) : ExhibitRecordState(), Create
+    data class CreatedAlbum(override val postId: Long) : ExhibitRecordState(), Create
 }
