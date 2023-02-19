@@ -3,6 +3,8 @@ package com.yapp.gallery.info.screen.info
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import android.view.KeyEvent
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebSettings
@@ -93,10 +95,21 @@ fun ExhibitInfoScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
+                    setOnKeyListener { _, keyCode, event ->
+                        if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
+                            if (this.canGoBack()) {
+                                this.goBack()
+                            } else {
+                                popBackStack()
+                            }
+                        }
+                        return@setOnKeyListener true
+                    }
                     webViewClient = WebViewUtils.webViewClient
                     webChromeClient = WebViewUtils.webChromeClient
                     addJavascriptInterface(InfoNavigateJsObject { action, payload ->
-                        viewModel.setInfoSideEffect(action, payload) }, "android")
+                        viewModel.setInfoSideEffect(action, payload)
+                    }, "android")
                     settings.run {
                         setBackgroundColor(0)
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
@@ -109,13 +122,4 @@ fun ExhibitInfoScreen(
             })
         }
     }
-
-    BackHandler(enabled = true,
-        onBack = {
-            if (webView?.canGoBack() == true)
-                // Todo : Routing 방식 알아내서 적용
-                webView?.goBack()
-            else
-                popBackStack() }
-    )
 }
