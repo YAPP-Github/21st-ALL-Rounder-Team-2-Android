@@ -3,7 +3,6 @@ package com.yapp.gallery.home.screen.home
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.yapp.gallery.common.theme.color_background
 import com.yapp.gallery.common.util.WebViewUtils
 import com.yapp.gallery.common.util.WebViewUtils.cookieManager
 import com.yapp.gallery.home.R
@@ -39,9 +37,9 @@ fun HomeScreen(
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
-                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(18)
+                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(19)
                 // Todo : 임시
-                else -> navigateToInfo(18)
+                else -> navigateToInfo(19)
             }
         }
     }
@@ -85,6 +83,5 @@ fun HomeScreen(
             )
         }
     }
-
 }
 

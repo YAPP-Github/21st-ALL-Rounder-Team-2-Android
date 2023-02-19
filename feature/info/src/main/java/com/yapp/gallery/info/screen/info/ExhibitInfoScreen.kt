@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebSettings
 import android.webkit.WebView
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -107,4 +108,13 @@ fun ExhibitInfoScreen(
             })
         }
     }
+
+    BackHandler(enabled = true,
+        onBack = {
+            if (webView?.canGoBack() == true)
+                // Todo : Routing 방식 알아내서 적용
+                webView?.goBack()
+            else
+                popBackStack() }
+    )
 }

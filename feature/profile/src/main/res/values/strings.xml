@@ -60,4 +60,6 @@
     <string name="notice_get_error">공지사항을 불러오지 못했습니다.</string>
 
     <string name="nickname_guide">변경할 닉네임을 입력해주세요.</string>
+
+    <string name="edit_nickname_success">닉네임 변경에 성공하였습니다.</string>
 </resources>

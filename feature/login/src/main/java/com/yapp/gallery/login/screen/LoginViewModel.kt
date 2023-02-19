@@ -1,5 +1,6 @@
 package com.yapp.gallery.login.screen
 
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val tokenKakaoLoginUseCase: PostKakaoLoginUseCase,
     private val tokenNaverLoginUseCase: PostNaverLoginUseCase,
-    private val createUserUseCase: CreateUserUseCase
+    private val createUserUseCase: CreateUserUseCase,
+    private val sharedPreferences: SharedPreferences
 ): ViewModel(){
     private var _tokenState = MutableStateFlow<BaseState<String>>(BaseState.None)
     val tokenState : StateFlow<BaseState<String>>
@@ -65,6 +67,7 @@ class LoginViewModel @Inject constructor(
             runCatching { createUserUseCase(firebaseUserId) }
                 .onSuccess {
                     _loginState.value = BaseState.Success(it)
+                    sharedPreferences.edit().putLong("uid", it).apply()
                 }
                 .onFailure {
                     Log.e("error", it.message.toString())
