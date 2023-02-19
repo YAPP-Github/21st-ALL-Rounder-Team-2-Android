@@ -47,6 +47,7 @@ dependencies {
     implementation project(":navigation:camera")
     implementation project(":navigation:home")
     implementation project(":navigation:info")
+    implementation project(":navigation:saver")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -58,5 +59,6 @@ dependencies {
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
     implementation libs.androidx.webview
+    implementation libs.imagePicker
     kapt libs.bundles.hilt.compilers
 }

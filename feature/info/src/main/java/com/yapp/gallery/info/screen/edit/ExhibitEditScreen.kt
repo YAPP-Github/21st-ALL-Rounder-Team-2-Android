@@ -1,8 +1,6 @@
 package com.yapp.gallery.info.screen.edit
 
 import android.app.Activity
-import android.content.Context
-import android.view.WindowManager
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +14,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,8 +23,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
+import com.yapp.gallery.common.util.getStatusBarHeight
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
+import com.yapp.gallery.common.widget.toPx
 import com.yapp.gallery.home.widget.DatePickerSheet
 import com.yapp.gallery.home.widget.exhibit.ExhibitCategory
 import com.yapp.gallery.home.widget.exhibit.ExhibitDate
@@ -36,6 +35,7 @@ import com.yapp.gallery.home.widget.exhibit.ExhibitRecordName
 import com.yapp.gallery.info.R
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -43,7 +43,7 @@ fun ExhibitEditScreen(
     popBackStack: () -> Unit,
     navigateToHome: () -> Unit,
     viewModel: ExhibitEditViewModel = hiltViewModel(),
-    context: Activity
+    context: Activity,
 ){
     // 키보드 포커스
     val focusRequester = remember { FocusRequester() }
@@ -62,13 +62,6 @@ fun ExhibitEditScreen(
     val scaffoldState = rememberScaffoldState()
 
     val exhibitDeleteDialogShown = remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit){
-        // 전체 화면 및 상태바 투명화 종료
-        context.window.clearFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
-        context.setTheme(R.style.Theme_YAPPALLRounderTeam2)
-    }
     
     LaunchedEffect(viewModel.errors){
         viewModel.errors.collect{
@@ -120,7 +113,8 @@ fun ExhibitEditScreen(
         },
         scrimColor = Color.Transparent,
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        sheetBackgroundColor = color_popUpBottom
+        sheetBackgroundColor = color_popUpBottom,
+        modifier = Modifier.padding(top = getStatusBarHeight(context).dp)
     ){
         Scaffold(
             scaffoldState = scaffoldState,

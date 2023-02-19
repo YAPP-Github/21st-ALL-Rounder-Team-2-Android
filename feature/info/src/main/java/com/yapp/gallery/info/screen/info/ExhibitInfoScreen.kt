@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
@@ -47,10 +48,10 @@ fun ExhibitInfoScreen(
                     }
                 }
                 "NAVIGATE_TO_CAMERA" -> {
-
+                    navigateToCamera()
                 }
                 "NAVIGATE_TO_GALLERY" -> {
-
+                    navigateToGallery()
                 }
                 "GO_BACK" -> {
                     popBackStack()
@@ -64,7 +65,6 @@ fun ExhibitInfoScreen(
 
     // 전체 화면 및 상태바 투명화
     LaunchedEffect(Unit){
-        context.setTheme(R.style.Theme_FitSystemWindow)
         context.window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS

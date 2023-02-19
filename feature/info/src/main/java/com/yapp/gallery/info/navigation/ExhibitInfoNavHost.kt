@@ -22,6 +22,7 @@ fun ExhibitInfoNavHost(
     exhibitId: Long,
     cameraNavigator: CameraNavigator,
     homeNavigator: HomeNavigator,
+    navToImgPicker: () -> Unit,
     context: Activity
 ){
     val navHostController = rememberNavController()
@@ -30,8 +31,8 @@ fun ExhibitInfoNavHost(
             ExhibitInfoScreen(
                 exhibitId = exhibitId,
                 navigateToEdit = { payload -> navigateWithPayload(payload, navHostController) },
-                navigateToGallery = {},
-                navigateToCamera = {},
+                navigateToGallery = { navToImgPicker() },
+                navigateToCamera = { navigateToScreen(context, cameraNavigator.navigate(context))},
                 popBackStack = { popBackStack(context, navHostController)},
                 context = context
             )

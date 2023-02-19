@@ -43,22 +43,6 @@ fun HomeNavHost(
         composable("calendar") { CalendarScreen(
 
         ) }
-//        // Todo : 나중에 따로 빼야함
-//        composable(
-//            route = "edit?id={id}",
-//            arguments = listOf(
-//                navArgument("id"){
-//                    type = NavType.LongType
-//                }
-//            )
-//        ) {
-//            com.yapp.gallery.info.screen.edit.ExhibitEditScreen(popBackStack = {
-//                popBackStack(
-//                    context,
-//                    navHostController
-//                )
-//            })
-//        }
     }
 }
 
