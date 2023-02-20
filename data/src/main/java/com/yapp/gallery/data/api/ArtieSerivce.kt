@@ -40,6 +40,9 @@ interface ArtieSerivce {
     @POST("/post")
     suspend fun createRecord(@Body createRecordBody: CreateRecordBody) : CreatedId
 
+    @PUT("/post/publish/{id}")
+    suspend fun publishRecord(@Path("id") postId: Long) : Response<Unit>
+
     // 전시 업데이트
     @PUT("/post/{id}")
     suspend fun updateRecord(@Path("id") postId: Long, @Body createRecordBody: CreateRecordBody) : Response<Unit>

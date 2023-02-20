@@ -1,6 +1,7 @@
 package com.yapp.gallery.home.screen.home
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,10 +28,15 @@ class HomeActivity : ComponentActivity() {
     private lateinit var navController : NavHostController
 
     private var backKeyPressedTime: Long = 0
+    private var postId: Long = 0
 
     private val imagePicker = registerImagePicker {
         if(it.isNotEmpty()) {
-            startActivity(saverNavigator.intentTo(context = this, uris = it.map { image -> image.uri }))
+            startActivity(saverNavigator.intentTo(context = this, uris = it.map { image -> image.uri })
+                .putExtra("postId", postId)
+            )
+
+            postId = 0
         }
     }
 
@@ -39,9 +45,11 @@ class HomeActivity : ComponentActivity() {
         setContent {
             navController = rememberNavController()
             GalleryTheme {
-                HomeNavHost(navHostController = navController, profileNavigator = profileNavigator,
+                HomeNavHost(
+                    navHostController = navController, profileNavigator = profileNavigator,
                     cameraNavigator = cameraNavigator, infoNavigator = infoNavigator,
-                    navToImagePicker = {
+                    navToImagePicker = { postId ->
+                        this.postId = postId
                         imagePicker.launch(
                             ImagePickerConfig(
                                 isMultipleMode = true,

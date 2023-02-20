@@ -9,4 +9,5 @@ interface ExhibitRecordRemoteDataSource {
     fun createRecord(name: String, categoryId: Long, postDate: String, attachedLink: String?) : Flow<Long>
     fun updateRecord(postId: Long, name: String, categoryId: Long, postDate: String, attachedLink: String?) : Flow<Boolean>
     fun deleteRecord(postId: Long) : Flow<Boolean>
+    fun publishRecord(postId: Long): Flow<Boolean>
 }

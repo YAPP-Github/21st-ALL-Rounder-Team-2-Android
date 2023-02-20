@@ -59,4 +59,8 @@ class ExhibitRecordRepositoryImpl @Inject constructor(
             remoteDataSource.deleteRecord(it)
         }
     }
+
+    override fun publishRecord(postId: Long): Flow<Boolean> {
+        return remoteDataSource.publishRecord(postId)
+    }
 }

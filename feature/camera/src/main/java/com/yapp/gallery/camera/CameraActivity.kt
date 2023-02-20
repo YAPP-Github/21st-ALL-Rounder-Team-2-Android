@@ -28,7 +28,16 @@ class CameraActivity : AppCompatActivity() {
                 binding.composeView.setContent {
                     GalleryTheme {
                         CameraView(
-                            onImageCapture = { startActivity(saverNavigator.intentTo(this, it)) },
+                            onImageCapture = {
+                                val postId = intent.getLongExtra("postId", 0L)
+
+                                if (postId != 0L) {
+                                    startActivity(
+                                        saverNavigator.intentTo(this, it)
+                                            .putExtra("postId", postId)
+                                    )
+                                }
+                            },
                             onDismiss = { finish() },
                             outputDirectory = getFileOutput(),
                             executor = cameraExecutor
