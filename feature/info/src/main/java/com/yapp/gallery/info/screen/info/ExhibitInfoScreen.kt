@@ -16,8 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.util.WebViewUtils
+import com.yapp.gallery.common.util.webview.NavigateJsObject
 import com.yapp.gallery.info.R
-import com.yapp.gallery.info.utils.InfoNavigateJsObject
 import kotlinx.coroutines.flow.collectLatest
 
 
@@ -100,7 +100,7 @@ fun ExhibitInfoScreen(
                     }
                     webViewClient = WebViewUtils.webViewClient
                     webChromeClient = WebViewUtils.webChromeClient
-                    addJavascriptInterface(InfoNavigateJsObject { action, payload ->
+                    addJavascriptInterface(NavigateJsObject { action, payload ->
                         viewModel.setInfoSideEffect(action, payload)
                     }, "android")
                     settings.run {

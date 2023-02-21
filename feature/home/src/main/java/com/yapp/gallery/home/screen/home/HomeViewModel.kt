@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yapp.gallery.common.util.webview.NavigatePayload
 import com.yapp.gallery.domain.usecase.auth.GetRefreshedTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -18,7 +19,7 @@ class HomeViewModel @Inject constructor(
     getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
     sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    private var _homeSideEffect = Channel<String>()
+    private var _homeSideEffect = Channel<NavigatePayload>()
     val homeSideEffect = _homeSideEffect.receiveAsFlow()
 
     private val _idToken = MutableStateFlow<String?>(null)
@@ -38,9 +39,9 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun setSideEffect(action: String){
+    fun setSideEffect(action: String, payload: String?){
         viewModelScope.launch {
-            _homeSideEffect.send(action)
+            _homeSideEffect.send(NavigatePayload(action, payload))
         }
         Log.e("homeSideEffect", action)
     }

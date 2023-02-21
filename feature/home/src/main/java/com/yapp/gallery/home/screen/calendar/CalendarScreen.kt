@@ -14,8 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.util.WebViewUtils
+import com.yapp.gallery.common.util.webview.NavigateJsObject
 import com.yapp.gallery.home.R
-import com.yapp.gallery.home.utils.NavigateJsObject
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -58,8 +58,8 @@ fun CalendarScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
 
-                    addJavascriptInterface(NavigateJsObject {
-                        viewModel.setSideEffect(it)
+                    addJavascriptInterface(NavigateJsObject { action, payload ->
+                        viewModel.setSideEffect(action, payload)
                     }, "android")
                     webViewClient = WebViewUtils.webViewClient
                     webChromeClient = WebViewUtils.webChromeClient

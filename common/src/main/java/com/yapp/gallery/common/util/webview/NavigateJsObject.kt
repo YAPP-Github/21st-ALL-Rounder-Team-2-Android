@@ -1,10 +1,10 @@
-package com.yapp.gallery.info.utils
+package com.yapp.gallery.common.util.webview
 
 import android.util.Log
 import android.webkit.JavascriptInterface
 import org.json.JSONObject
 
-class InfoNavigateJsObject(
+class NavigateJsObject(
     private val setSideEffect : (String, String?) -> Unit
 ) {
     @JavascriptInterface

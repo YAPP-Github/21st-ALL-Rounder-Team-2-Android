@@ -15,9 +15,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.util.WebViewUtils
 import com.yapp.gallery.common.util.WebViewUtils.cookieManager
+import com.yapp.gallery.common.util.webview.NavigateJsObject
 import com.yapp.gallery.home.R
-import com.yapp.gallery.home.utils.NavigateJsObject
 import kotlinx.coroutines.flow.collectLatest
+import org.json.JSONObject
 
 @Composable
 fun HomeScreen(
@@ -32,12 +33,17 @@ fun HomeScreen(
 
     LaunchedEffect(viewModel.homeSideEffect){
         viewModel.homeSideEffect.collect {
-            when(it){
+            when(it.action){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
                 "NAVIGATE_TO_CALENDAR" -> navigateToCalendar()
-                // Todo : 임시
-                else -> navigateToInfo(19)
+                "NAVIGATE_TO_EXHIBITION_DETAIL" -> {
+                    it.payload?.let { p ->
+                        val exhibitId = JSONObject(p).getLong("id")
+                        navigateToInfo(exhibitId)
+                    }
+                }
+                else -> {}
             }
         }
     }
@@ -67,7 +73,8 @@ fun HomeScreen(
                     webViewClient = WebViewUtils.webViewClient
                     webChromeClient = WebViewUtils.webChromeClient
                     addJavascriptInterface(
-                        NavigateJsObject { e -> viewModel.setSideEffect(e) }, "android")
+                        NavigateJsObject { action, payload -> viewModel.setSideEffect(action, payload) }
+                        , "android")
                     settings.run {
                         setBackgroundColor(0)
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW

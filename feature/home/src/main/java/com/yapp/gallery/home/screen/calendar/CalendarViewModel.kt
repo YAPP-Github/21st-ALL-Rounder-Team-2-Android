@@ -38,7 +38,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    fun setSideEffect(action: String){
+    fun setSideEffect(action: String, payload : String?){
         viewModelScope.launch {
             _calendarSideEffect.send(NavigatePayload(action, payload = null))
         }
