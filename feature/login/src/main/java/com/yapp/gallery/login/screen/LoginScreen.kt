@@ -103,10 +103,3 @@ fun LoginScreen(
 
 fun Modifier.modifyIf(condition: Boolean, modify: Modifier.() -> Modifier) =
     if (condition) modify() else this
-
-@SuppressLint("UnrememberedMutableState")
-@Composable
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-fun LoginPreview(){
-    LoginScreen(naverLogin = { /*TODO*/}, googleLogin = { /*TODO*/ }, kakaoLogin = { /*TODO*/ }, isLoading = mutableStateOf(false))
-}

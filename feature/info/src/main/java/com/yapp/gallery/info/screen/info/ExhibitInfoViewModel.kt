@@ -1,11 +1,10 @@
 package com.yapp.gallery.info.screen.info
 
 import android.content.SharedPreferences
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.domain.usecase.auth.GetRefreshedTokenUseCase
-import com.yapp.gallery.info.utils.NavigatePayload
+import com.yapp.gallery.common.util.webview.NavigatePayload
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

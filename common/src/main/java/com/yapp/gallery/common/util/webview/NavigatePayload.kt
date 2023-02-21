@@ -1,4 +1,4 @@
-package com.yapp.gallery.info.utils
+package com.yapp.gallery.common.util.webview
 
 data class NavigatePayload(
     val action: String,

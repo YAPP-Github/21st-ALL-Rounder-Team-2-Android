@@ -71,7 +71,6 @@ class ProfileActivity : ComponentActivity() {
 
     private fun signOut(){
         Log.e("loginType", loginType)
-        // Todo : 서버에서 회원 탈퇴하는것도 만들어야함
         when(loginType){
             "kakao" -> {
                 kakaoClient.unlink {

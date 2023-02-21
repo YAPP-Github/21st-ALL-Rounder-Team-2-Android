@@ -30,14 +30,12 @@ fun HomeScreen(
     var webView: WebView? = null
     val baseUrl = stringResource(id = R.string.home_base_url)
 
-    val viewModel = hiltViewModel<HomeViewModel>()
-
     LaunchedEffect(viewModel.homeSideEffect){
         viewModel.homeSideEffect.collect {
             when(it){
                 "NAVIGATE_TO_EDIT" -> navigateToRecord()
                 "NAVIGATE_TO_MY" -> navigateToProfile()
-                "NAVIGATE_TO_CALENDAR" -> navigateToInfo(19)
+                "NAVIGATE_TO_CALENDAR" -> navigateToCalendar()
                 // Todo : 임시
                 else -> navigateToInfo(19)
             }

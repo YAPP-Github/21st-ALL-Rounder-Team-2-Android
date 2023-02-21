@@ -64,7 +64,7 @@ fun HomeNavHost(
         }
         composable("calendar") {
             CalendarScreen(
-
+                popBackStack = { popBackStack(context, navHostController) }
             )
         }
     }
