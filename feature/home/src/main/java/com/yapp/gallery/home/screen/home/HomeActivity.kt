@@ -1,7 +1,6 @@
 package com.yapp.gallery.home.screen.home
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

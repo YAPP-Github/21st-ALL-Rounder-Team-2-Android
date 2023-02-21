@@ -1,5 +1,6 @@
 package com.yapp.gallery.info.screen.edit
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -30,7 +31,7 @@ class ExhibitEditViewModel @Inject constructor(
     private val id : Long = checkNotNull(savedStateHandle["id"])
 
     val exhibitName = mutableStateOf(savedStateHandle["exhibitName"] ?: "")
-    val categorySelect = mutableStateOf(savedStateHandle["categorySelect"] ?: -1L)
+    val categorySelect = mutableStateOf(savedStateHandle["categoryId"] ?: -1L)
     val exhibitDate = mutableStateOf(savedStateHandle["exhibitDate"] ?: "")
     val exhibitLink = mutableStateOf(savedStateHandle["exhibitLink"] ?: "")
 
@@ -70,7 +71,7 @@ class ExhibitEditViewModel @Inject constructor(
             createCategoryUseCase(category)
                 .catch {}
                 .collect{
-                    _categoryList.add(CategoryItem(it, category, _categoryList.size))
+                    _categoryList.add(CategoryItem(it, category, _categoryList.size, 0))
                 }
         }
     }
@@ -91,6 +92,7 @@ class ExhibitEditViewModel @Inject constructor(
                 id, exhibitName.value, categorySelect.value,
                 exhibitDate.value, exhibitLink.value.ifEmpty { null }
             ).catch {
+                Log.e("updateError", it.message.toString())
                 _editState.value =
                     ExhibitEditState.Error(UiText.StringResource(R.string.exhibit_update_error))
             }.collectLatest {

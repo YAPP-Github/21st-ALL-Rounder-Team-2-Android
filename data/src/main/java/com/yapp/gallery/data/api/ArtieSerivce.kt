@@ -62,4 +62,12 @@ interface ArtieSerivce {
     // 공지사항 조회
     @GET("/notice")
     suspend fun getNoticeList() : List<NoticeItem>
+
+    // 닉네임 변경
+    @PATCH("/user/{id}")
+    suspend fun updateNickname(@Path("id") id: Long, @Query("name") name: String) : Response<Unit>
+
+    // 회원 탈퇴
+    @DELETE("/user/")
+    suspend fun signOut() : Response<Unit>
 }

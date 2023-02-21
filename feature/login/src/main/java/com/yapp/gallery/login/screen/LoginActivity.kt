@@ -4,9 +4,7 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.transition.Transition
 import android.util.Log
-import android.view.Window
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,13 +13,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
-import androidx.transition.Explode
-import androidx.transition.Fade
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.material.transition.MaterialContainerTransform.FADE_MODE_OUT
-import com.google.android.material.transition.MaterialContainerTransform.FadeMode
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.kakao.sdk.auth.model.OAuthToken
@@ -31,28 +25,31 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.GalleryTheme
-import com.yapp.gallery.login.BuildConfig
-import com.yapp.gallery.login.R
 import com.yapp.gallery.navigation.home.HomeNavigator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class LoginActivity : ComponentActivity(){
+class LoginActivity : ComponentActivity() {
     private val viewModel by viewModels<LoginViewModel>()
-    @Inject lateinit var auth: FirebaseAuth
-    @Inject lateinit var homeNavigator: HomeNavigator
-    @Inject lateinit var sharedPreferences: SharedPreferences
+    @Inject
+    lateinit var auth: FirebaseAuth
+    @Inject
+    lateinit var homeNavigator: HomeNavigator
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
 
-    @Inject lateinit var googleSignInClient: GoogleSignInClient
-    @Inject lateinit var kakaoClient: UserApiClient
+    @Inject
+    lateinit var googleSignInClient: GoogleSignInClient
+    @Inject
+    lateinit var kakaoClient: UserApiClient
 
     private lateinit var naverResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var googleResultLauncher: ActivityResultLauncher<Intent>
 
     private var isLoading = mutableStateOf(false)
-    private var loginType : String? = null
+    private var loginType: String? = null
 
     private var backKeyPressedTime: Long = 0
 
@@ -61,11 +58,16 @@ class LoginActivity : ComponentActivity(){
         initResultLauncher()
         setContent {
             GalleryTheme {
-                LoginScreen(naverLogin =  {naverLogin()}, googleLogin = {googleSignIn()}, kakaoLogin = {kakaoLogin()}, isLoading = isLoading)
+                LoginScreen(
+                    naverLogin = { naverLogin() },
+                    googleLogin = { googleSignIn() },
+                    kakaoLogin = { kakaoLogin() },
+                    isLoading = isLoading
+                )
             }
 
-            LaunchedEffect(viewModel.tokenState){
-                viewModel.tokenState.collect{
+            LaunchedEffect(viewModel.tokenState) {
+                viewModel.tokenState.collect {
                     when (it) {
                         is BaseState.Success -> {
                             firebaseTokenLogin(it.value)
@@ -74,9 +76,9 @@ class LoginActivity : ComponentActivity(){
                     }
                 }
             }
-            LaunchedEffect(viewModel.loginState){
-                viewModel.loginState.collect{
-                    when(it){
+            LaunchedEffect(viewModel.loginState) {
+                viewModel.loginState.collect {
+                    when (it) {
                         is BaseState.Success -> {
                             navigateToHome()
                             isLoading.value = false
@@ -94,26 +96,29 @@ class LoginActivity : ComponentActivity(){
         }
     }
 
-    private fun initResultLauncher(){
-        googleResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-            if (it.resultCode == RESULT_OK){
-                val account = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-                firebaseAuthWithGoogle(account.result)
-                viewModel.setLoading()
+    private fun initResultLauncher() {
+        googleResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == RESULT_OK) {
+                    val account = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+                    firebaseAuthWithGoogle(account.result)
+                    viewModel.setLoading()
+                }
             }
-        }
-        naverResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            when(result.resultCode) {
-                RESULT_OK -> {
-                    NaverIdLoginSDK.getAccessToken()?.let {
-                        viewModel.postNaverLogin(it)
+        naverResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                when (result.resultCode) {
+                    RESULT_OK -> {
+                        NaverIdLoginSDK.getAccessToken()?.let {
+                            viewModel.postNaverLogin(it)
+                        }
                     }
                 }
             }
-        }
 
     }
-    private fun googleSignIn(){
+
+    private fun googleSignIn() {
         loginType = "google"
         val signInIntent = googleSignInClient.signInIntent
         googleResultLauncher.launch(signInIntent)
@@ -131,22 +136,22 @@ class LoginActivity : ComponentActivity(){
                             putString("loginType", "google")
                         }.apply()
 
-                        uid.let { viewModel.createUser(it)}
+                        uid.let { viewModel.createUser(it) }
                     }
                 }
-            }else {
+            } else {
                 Log.e("google 로그인", task.exception.toString())
             }
         }
     }
 
-    private fun naverLogin(){
+    private fun naverLogin() {
         loginType = "naver"
         NaverIdLoginSDK.authenticate(this, naverResultLauncher)
     }
-   
 
-    private val kakaoCallback : (OAuthToken?, Throwable?) -> Unit = { token, error ->
+
+    private val kakaoCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (error != null) {
             Log.e(TAG, "카카오계정으로 로그인 실패", error)
         } else if (token != null) {
@@ -155,7 +160,7 @@ class LoginActivity : ComponentActivity(){
         }
     }
 
-    private fun kakaoLogin(){
+    private fun kakaoLogin() {
         loginType = "kakao"
         // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
         if (kakaoClient.isKakaoTalkLoginAvailable(this)) {
@@ -183,16 +188,17 @@ class LoginActivity : ComponentActivity(){
     }
 
     // 카카오, 네이버 로그인
-    private fun firebaseTokenLogin(firebaseToken: String){
+    private fun firebaseTokenLogin(firebaseToken: String) {
         auth.signInWithCustomToken(firebaseToken)
             .addOnCompleteListener { task ->
                 task.result.user?.apply {
-                    getIdToken(false).addOnCompleteListener { t->
-                        sharedPreferences.edit().apply {
-                            putString("idToken", t.result.token)
-                            loginType?.let { putString("loginType", it) }
-                        }.apply()
-                        uid.let { viewModel.createUser(it)}
+                    getIdToken(false).addOnCompleteListener { t ->
+                        with(sharedPreferences.edit()) {
+                            putString("idToken", t.result.token).apply()
+                            loginType?.let { putString("loginType", it).apply() }
+                            Log.e("loginType", loginType.toString())
+                        }
+                        uid.let { viewModel.createUser(it) }
                     }
                 }
             }.addOnFailureListener {
@@ -200,7 +206,7 @@ class LoginActivity : ComponentActivity(){
             }
     }
 
-    private fun navigateToHome(){
+    private fun navigateToHome() {
         finishAffinity()
         startActivity(homeNavigator.navigate(this))
     }

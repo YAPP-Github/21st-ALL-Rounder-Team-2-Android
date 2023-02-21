@@ -96,7 +96,7 @@ class CategoryManageViewModel @Inject constructor(
                     Log.e("카테고리 편집", it.toString())
                     if (it)
                         _categoryList[_categoryList.indexOf(category)] = CategoryItem(
-                            category.id,editedName, category.sequence)
+                            category.id,editedName, category.sequence, category.postNum)
                     else
                         _errorChannel.send(UiText.StringResource(R.string.category_edit_error))
                 }
@@ -126,7 +126,7 @@ class CategoryManageViewModel @Inject constructor(
                     _errorChannel.send(UiText.StringResource(R.string.category_add_error))
                 }
                 .collectLatest {
-                    _categoryList.add(CategoryItem(it, categoryName, categoryList.size).also { c ->
+                    _categoryList.add(CategoryItem(it, categoryName, categoryList.size, 0).also { c ->
                         _categoryPostList.add(CategoryPostState.Initial(c))
                     })
                     _categoryManageState.value = BaseState.Success(true)

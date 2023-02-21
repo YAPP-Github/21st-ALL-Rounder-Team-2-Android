@@ -2,8 +2,15 @@
     <!-- Base application theme. -->
     <style name="Theme.YAPPALLRounderTeam2" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/background</item>
+        <item name="android:fitsSystemWindows">false</item>
         <item name="android:windowBackground">@color/background</item>
+        <item name="android:fontFamily">@font/font_pretendard</item>
+        <item name="android:font">@font/pretendard_regular</item>
         <item name="android:navigationBarColor">@color/black_1f1f1f</item>
+    </style>
+    <style name="Theme.FitSystemWindow" parent="Theme.YAPPALLRounderTeam2">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
     <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
         <item name="android:statusBarColor">@color/background</item>

@@ -24,8 +24,8 @@ import com.yapp.gallery.profile.screen.signout.SignOutScreen
 @Composable
 fun ProfileNavHost(
     logout : () -> Unit,
-    signOut : () -> Unit,
     navigateToLogin : () -> Unit,
+    loginType: String,
     context: Activity
 ){
     val navHostController = rememberNavController()
@@ -104,8 +104,8 @@ fun ProfileNavHost(
         composable("signOut"){
             SignOutScreen(
                 popBackStack = { popBackStack(context, navHostController) },
+                loginType = loginType,
                 signOut = {
-                    signOut()
                     navHostController.navigate("signOutComplete"){
                         launchSingleTop = true
                     }

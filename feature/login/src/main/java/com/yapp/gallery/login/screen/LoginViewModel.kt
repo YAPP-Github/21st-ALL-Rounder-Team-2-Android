@@ -1,5 +1,6 @@
 package com.yapp.gallery.login.screen
 
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,17 +18,18 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val tokenKakaoLoginUseCase: PostKakaoLoginUseCase,
     private val tokenNaverLoginUseCase: PostNaverLoginUseCase,
-    private val createUserUseCase: CreateUserUseCase
-): ViewModel(){
+    private val createUserUseCase: CreateUserUseCase,
+    private val sharedPreferences: SharedPreferences,
+) : ViewModel() {
     private var _tokenState = MutableStateFlow<BaseState<String>>(BaseState.None)
-    val tokenState : StateFlow<BaseState<String>>
+    val tokenState: StateFlow<BaseState<String>>
         get() = _tokenState
 
     private var _loginState = MutableStateFlow<BaseState<Long>>(BaseState.None)
-    val loginState : StateFlow<BaseState<Long>>
+    val loginState: StateFlow<BaseState<Long>>
         get() = _loginState
 
-    fun postKakaoLogin(accessToken: String){
+    fun postKakaoLogin(accessToken: String) {
         Log.e("login 전", accessToken)
         setLoading()
         viewModelScope.launch {
@@ -42,7 +44,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun postNaverLogin(accessToken: String){
+    fun postNaverLogin(accessToken: String) {
         setLoading()
         viewModelScope.launch {
             runCatching { tokenNaverLoginUseCase(accessToken) }
@@ -56,7 +58,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun setLoading(){
+    fun setLoading() {
         _loginState.value = BaseState.Loading
     }
 
@@ -65,6 +67,7 @@ class LoginViewModel @Inject constructor(
             runCatching { createUserUseCase(firebaseUserId) }
                 .onSuccess {
                     _loginState.value = BaseState.Success(it)
+                    sharedPreferences.edit().putLong("uid", it).apply()
                 }
                 .onFailure {
                     Log.e("error", it.message.toString())

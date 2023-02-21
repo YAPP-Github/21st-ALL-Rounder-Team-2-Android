@@ -1,5 +1,6 @@
 package com.yapp.gallery.profile.screen.nickname
 
+import android.content.Context
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -21,13 +23,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.profile.R
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NicknameScreen(
     popBackStack: () -> Unit,
     nicknameUpdate: (String) -> Unit,
-    viewModel: NicknameViewModel = hiltViewModel()
+    viewModel: NicknameViewModel = hiltViewModel(),
 ){
     val scaffoldState = rememberScaffoldState()
 
@@ -72,7 +75,7 @@ fun NicknameScreen(
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 53.dp),
                 onClick = {
-                    // Todo : 닉네임 변경
+                    viewModel.updateNickname()
                     nicknameUpdate(viewModel.nickname.value)
                 },
                 enabled = nicknameState is NicknameState.Normal

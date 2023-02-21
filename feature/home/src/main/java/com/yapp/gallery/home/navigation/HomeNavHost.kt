@@ -24,7 +24,6 @@ fun HomeNavHost(
     navToImagePicker: (Long) -> Unit,
 ) {
     NavHost(navController = navHostController, startDestination = "home") {
-
         composable("home") {
             HomeScreen(
                 navigateToRecord = { navHostController.navigate("record") },
@@ -65,41 +64,11 @@ fun HomeNavHost(
         }
         composable("calendar") {
             CalendarScreen(
-
+                popBackStack = { popBackStack(context, navHostController) }
             )
         }
     }
 }
-//        // Todo : 나중에 따로 빼야함
-//        composable(
-//            route = "edit?id={id}",
-//            arguments = listOf(
-//                navArgument("id"){
-//                    type = NavType.LongType
-//                }
-//            )
-//        ) {
-//            com.yapp.gallery.info.screen.edit.ExhibitEditScreen(popBackStack = {
-//                popBackStack(
-//                    context,
-//                    navHostController
-//                )
-//            })
-//        }
-//=======
-//    navToImagePicker: (Long) -> Unit,
-//    cameraNavigator: CameraNavigator
-//) {
-//    val context = LocalContext.current
-//    NavHost(navController = navHostController, startDestination = "home") {
-//
-//        composable("calendar") {
-//            CalendarScreen(
-//
-//            )
-//        }
-//    }
-//}
 
 private fun navigateToScreen(context: Context, intent: Intent) {
     context.startActivity(intent)

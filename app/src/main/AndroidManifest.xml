@@ -57,7 +57,9 @@
             android:exported="true"/>
         <activity android:name=".info.screen.info.ExhibitInfoActivity"
             android:screenOrientation="portrait"
-            android:exported="true"/>
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/Theme.FitSystemWindow"
+            android:exported="true"></activity>
 
         <activity
             android:name=".saver.SaverActivity"

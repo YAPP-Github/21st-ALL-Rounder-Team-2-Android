@@ -1,11 +1,10 @@
 package com.yapp.gallery.info.screen.info
 
 import android.content.SharedPreferences
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.domain.usecase.auth.GetRefreshedTokenUseCase
-import com.yapp.gallery.info.utils.NavigatePayload
+import com.yapp.gallery.common.util.webview.NavigatePayload
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ExhibitInfoViewModel @Inject constructor(
     getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
-    sharedPreferences: SharedPreferences,
-    savedStateHandle: SavedStateHandle
+    sharedPreferences: SharedPreferences
 ) : ViewModel() {
-    val exhibitId = savedStateHandle["exhibitId"] ?: 1
-
     private val _idToken = MutableStateFlow<String?>(null)
     val idToken : StateFlow<String?>
         get() = _idToken
@@ -41,7 +37,7 @@ class ExhibitInfoViewModel @Inject constructor(
     private val _infoSideEffect = Channel<NavigatePayload>()
     val infoSideEffect = _infoSideEffect.receiveAsFlow()
 
-    fun setInfoSideEffect(action: String, payload: String){
+    fun setInfoSideEffect(action: String, payload: String?){
         viewModelScope.launch {
             _infoSideEffect.send(NavigatePayload(action, payload))
         }

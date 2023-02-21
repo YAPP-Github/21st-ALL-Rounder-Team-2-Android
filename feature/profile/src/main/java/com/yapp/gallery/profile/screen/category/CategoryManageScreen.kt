@@ -344,8 +344,7 @@ fun CategoryListTile(
 
             // 전시 기록 개수
             Text(
-                // Todo : 임시로 0개로 넣어놈
-                text = "${0}${stringResource(id = R.string.category_exhibit_cnt)}",
+                text = "${category.postNum}${stringResource(id = R.string.category_exhibit_cnt)}",
                 style = MaterialTheme.typography.h4.copy(color = color_gray500),
                 modifier = Modifier.constrainAs(text2) {
                     start.linkTo(text1.start)

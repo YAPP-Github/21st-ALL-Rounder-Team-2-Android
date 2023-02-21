@@ -12,4 +12,12 @@ class ProfileRepositoryImpl @Inject constructor(
     override fun loadUserData(): Flow<User> {
         return profileRemoteDataSource.loadUserData()
     }
+
+    override fun changeNickname(userId: Long, editedName: String): Flow<Boolean> {
+        return profileRemoteDataSource.changeNickname(userId, editedName)
+    }
+
+    override fun signOut(): Flow<Boolean> {
+        return profileRemoteDataSource.signOut()
+    }
 }

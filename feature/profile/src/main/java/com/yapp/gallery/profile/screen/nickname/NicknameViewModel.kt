@@ -1,17 +1,26 @@
 package com.yapp.gallery.profile.screen.nickname
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.yapp.gallery.common.model.UiText
+import com.yapp.gallery.domain.usecase.profile.UpdateNicknameUseCase
+import com.yapp.gallery.profile.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NicknameViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val updateNicknameUseCase: UpdateNicknameUseCase,
+    sharedPreferences: SharedPreferences
 ) : ViewModel(){
+    private val userId = sharedPreferences.getLong("uid", 2)
     private val originNickname = savedStateHandle["nickname"] ?: ""
 
     val nickname = mutableStateOf(originNickname)
@@ -20,14 +29,24 @@ class NicknameViewModel @Inject constructor(
     val nicknameState : StateFlow<NicknameState>
         get() = _nicknameState
 
-    fun changeNickname(data: String){
-        nickname.value = data
-        if (data == originNickname || data.isEmpty()){
+    fun changeNickname(editedName: String){
+        nickname.value = editedName
+        if (editedName == originNickname || editedName.isEmpty()){
             _nicknameState.value = NicknameState.None
-        } else if (data.length in 1..10){
-            _nicknameState.value = NicknameState.Normal(data)
+        } else if (editedName.length in 1..10){
+            _nicknameState.value = NicknameState.Normal(editedName)
         } else {
             _nicknameState.value = NicknameState.Error("닉네임은 10자 이하이어야 합니다.")
+        }
+    }
+
+    fun updateNickname(){
+        viewModelScope.launch {
+            updateNicknameUseCase(userId, nickname.value)
+                .catch {
+                }
+                .collectLatest {
+                }
         }
     }
 }
