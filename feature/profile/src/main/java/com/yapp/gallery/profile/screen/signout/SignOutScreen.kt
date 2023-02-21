@@ -25,6 +25,7 @@ import com.yapp.gallery.profile.R
 fun SignOutScreen(
     popBackStack: () -> Unit,
     signOut: () -> Unit,
+    loginType: String,
     viewModel: SignOutViewModel = hiltViewModel()
 ){
     Scaffold(
@@ -61,7 +62,7 @@ fun SignOutScreen(
                     .padding(horizontal = 20.dp)
                     .padding(bottom = 53.dp),
                 onClick = {
-                    viewModel.removeInfo()
+                    viewModel.removeInfo(loginType)
                     signOut()
                 },
             ) {

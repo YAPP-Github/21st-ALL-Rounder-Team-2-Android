@@ -10,5 +10,5 @@ import dagger.hilt.android.components.ActivityComponent
 @InstallIn(ActivityComponent::class)
 abstract class LoginNavigatorModule {
     @Binds
-    abstract fun bindLoginNavigator(loginNavigatorImpl: LoginNavigatorImpl) : LoginNavigator
+    abstract fun bindLoginNavigator(loginNavigatorImpl: LoginNavigatorImpl): LoginNavigator
 }

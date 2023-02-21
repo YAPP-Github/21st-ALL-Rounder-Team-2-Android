@@ -27,17 +27,16 @@ class ProfileActivity : ComponentActivity() {
     @Inject lateinit var kakaoClient: UserApiClient
 
     @Inject lateinit var sharedPreferences : SharedPreferences
-
-    private val loginType by lazy {
-        sharedPreferences.getString("loginType", "").toString()
-    }
+    private lateinit var loginType: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        loginType = sharedPreferences.getString("loginType", "").toString()
         setContent {
             GalleryTheme {
-                ProfileNavHost(logout = { logout() }, signOut = { signOut() }, context = this,
-                    navigateToLogin = { navigateToLogin() }
+                ProfileNavHost(logout = { logout() }, context = this,
+                    navigateToLogin = { navigateToLogin() }, loginType = loginType
                 )
             }
         }
@@ -69,40 +68,7 @@ class ProfileActivity : ComponentActivity() {
         }
     }
 
-    private fun signOut(){
-        Log.e("loginType", loginType)
-        when(loginType){
-            "kakao" -> {
-                kakaoClient.unlink {
-                    auth.currentUser?.delete()
-                }
-            }
-            "naver" -> {
-                NidOAuthLogin().callDeleteTokenApi(this, object : OAuthLoginCallback{
-                    override fun onError(errorCode: Int, message: String) {
-                        onFailure(errorCode, message)
-                    }
 
-                    override fun onFailure(httpStatus: Int, message: String) {
-                        Log.d("네이버 회원탈퇴", "errorCode: ${NaverIdLoginSDK.getLastErrorCode().code}")
-                        Log.d("네이버 회원탈퇴", "errorDesc: ${NaverIdLoginSDK.getLastErrorDescription()}")
-                    }
-
-                    override fun onSuccess() {
-                        auth.currentUser?.delete()?.addOnCompleteListener {
-                            Log.e("firebase 삭제", it.isSuccessful.toString())
-                        }
-                    }
-
-                })
-            }
-            else -> {
-                googleSignInClient.revokeAccess().addOnCompleteListener {
-                    auth.currentUser?.delete()
-                }
-            }
-        }
-    }
 
     private fun navigateToLogin(){
         finishAffinity()

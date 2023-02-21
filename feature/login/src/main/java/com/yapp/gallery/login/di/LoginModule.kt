@@ -4,7 +4,6 @@ import android.content.Context
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.kakao.sdk.user.UserApi
 import com.kakao.sdk.user.UserApiClient
 import com.yapp.gallery.login.BuildConfig
 import dagger.Module
@@ -19,13 +18,16 @@ import javax.inject.Singleton
 object LoginModule {
     @Provides
     @Singleton
-    fun provideGoogleSignInClient(@ApplicationContext context: Context, gso : GoogleSignInOptions) : GoogleSignInClient {
+    fun provideGoogleSignInClient(
+        @ApplicationContext context: Context,
+        gso: GoogleSignInOptions,
+    ): GoogleSignInClient {
         return GoogleSignIn.getClient(context, gso)
     }
 
     @Provides
     @Singleton
-    fun provideGoogleSignInOptions() : GoogleSignInOptions {
+    fun provideGoogleSignInOptions(): GoogleSignInOptions {
         return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(BuildConfig.FIREBASE_WEB_CLIENT_ID)
             .requestEmail()
@@ -34,5 +36,5 @@ object LoginModule {
 
     @Provides
     @Singleton
-    fun provideKakaoClient() : UserApiClient = UserApiClient.instance
+    fun provideKakaoClient(): UserApiClient = UserApiClient.instance
 }

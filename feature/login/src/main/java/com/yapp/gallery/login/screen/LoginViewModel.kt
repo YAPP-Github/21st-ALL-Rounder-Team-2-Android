@@ -19,17 +19,17 @@ class LoginViewModel @Inject constructor(
     private val tokenKakaoLoginUseCase: PostKakaoLoginUseCase,
     private val tokenNaverLoginUseCase: PostNaverLoginUseCase,
     private val createUserUseCase: CreateUserUseCase,
-    private val sharedPreferences: SharedPreferences
-): ViewModel(){
+    private val sharedPreferences: SharedPreferences,
+) : ViewModel() {
     private var _tokenState = MutableStateFlow<BaseState<String>>(BaseState.None)
-    val tokenState : StateFlow<BaseState<String>>
+    val tokenState: StateFlow<BaseState<String>>
         get() = _tokenState
 
     private var _loginState = MutableStateFlow<BaseState<Long>>(BaseState.None)
-    val loginState : StateFlow<BaseState<Long>>
+    val loginState: StateFlow<BaseState<Long>>
         get() = _loginState
 
-    fun postKakaoLogin(accessToken: String){
+    fun postKakaoLogin(accessToken: String) {
         Log.e("login 전", accessToken)
         setLoading()
         viewModelScope.launch {
@@ -44,7 +44,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun postNaverLogin(accessToken: String){
+    fun postNaverLogin(accessToken: String) {
         setLoading()
         viewModelScope.launch {
             runCatching { tokenNaverLoginUseCase(accessToken) }
@@ -58,7 +58,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun setLoading(){
+    fun setLoading() {
         _loginState.value = BaseState.Loading
     }
 

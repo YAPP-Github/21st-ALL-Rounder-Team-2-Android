@@ -20,7 +20,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val deleteBothUseCase: DeleteBothUseCase,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
     private var _userData = MutableStateFlow<BaseState<User>>(BaseState.Loading)
     val userData : StateFlow<BaseState<User>> get() = _userData
@@ -41,7 +41,7 @@ class ProfileViewModel @Inject constructor(
                 .collect()
         }
 
-        sharedPreferences.edit().apply {
+        with(sharedPreferences.edit()) {
             remove("idToken").apply()
             remove("loginType").apply()
         }
