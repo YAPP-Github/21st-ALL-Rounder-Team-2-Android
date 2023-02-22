@@ -58,6 +58,7 @@
 
     <string name="notice_empty_guide">아직 공지사항이 없어요!</string>
     <string name="notice_get_error">공지사항을 불러오지 못했습니다.</string>
+    <string name="sign_out_error">회원탈퇴가 정상적으로 이루어지지 않았습니다.</string>
 
     <string name="nickname_guide">변경할 닉네임을 입력해주세요.</string>
 

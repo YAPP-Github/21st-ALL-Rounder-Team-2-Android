@@ -68,6 +68,6 @@ interface ArtieSerivce {
     suspend fun updateNickname(@Path("id") id: Long, @Query("name") name: String) : Response<Unit>
 
     // 회원 탈퇴
-    @DELETE("/user/")
+    @DELETE("/user")
     suspend fun signOut() : Response<Unit>
 }

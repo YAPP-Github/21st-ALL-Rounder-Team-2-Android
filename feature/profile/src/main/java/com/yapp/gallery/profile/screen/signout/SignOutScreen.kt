@@ -1,10 +1,13 @@
 package com.yapp.gallery.profile.screen.signout
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,14 +23,29 @@ import com.yapp.gallery.common.theme.pretendard
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
 import com.yapp.gallery.profile.R
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SignOutScreen(
     popBackStack: () -> Unit,
     signOut: () -> Unit,
     loginType: String,
+    context: Activity,
     viewModel: SignOutViewModel = hiltViewModel()
 ){
+    LaunchedEffect(viewModel.signOutState){
+        viewModel.signOutState.collectLatest {
+            when(it){
+                is SignOutState.Success -> {
+                    signOut()
+                }
+                is SignOutState.Failure -> {
+                    Toast.makeText(context, it.message.asString(context), Toast.LENGTH_SHORT).show()
+                }
+                else -> {}
+            }
+        }
+    }
     Scaffold(
         topBar = {
             CenterTopAppBar(modifier = Modifier.fillMaxWidth(),
@@ -63,7 +81,6 @@ fun SignOutScreen(
                     .padding(bottom = 53.dp),
                 onClick = {
                     viewModel.removeInfo(loginType)
-                    signOut()
                 },
             ) {
                 Text(
