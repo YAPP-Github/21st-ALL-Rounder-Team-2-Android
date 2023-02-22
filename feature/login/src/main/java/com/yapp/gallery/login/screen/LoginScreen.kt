@@ -48,8 +48,6 @@ fun LoginScreen(
                     painter = painterResource(id = R.drawable.ic_typo), contentDescription = "logo",
                     alignment = Alignment.Center
                 )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = stringResource(id = R.string.service_name), fontSize = 18.sp)
                 Spacer(modifier = Modifier.height(30.dp))
                 Text(
                     text = stringResource(id = R.string.service_slogan),
