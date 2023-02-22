@@ -11,13 +11,13 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
-import com.yapp.gallery.common.model.UiText
 import com.yapp.gallery.domain.usecase.profile.SignOutUseCase
 import com.yapp.gallery.domain.usecase.record.DeleteBothUseCase
-import com.yapp.gallery.profile.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.sign
@@ -32,47 +32,33 @@ class SignOutViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     @ApplicationContext val context: Context
 ) : ViewModel(){
-    private val _signOutState = MutableStateFlow<SignOutState>(SignOutState.Initial)
-    val signOutState : StateFlow<SignOutState>
-        get() = _signOutState
-
     fun removeInfo(loginType: String){
         viewModelScope.launch {
             deleteBothUseCase()
                 .catch {
-                    signOut(loginType)
+                    signOutUseCase()
+                        .collectLatest{
+                            sharedPreferences.edit().apply {
+                                remove("idToken").apply()
+                                remove("loginType").apply()
+                            }
+                            signOut(loginType)
+                        }
                 }
                 .collect{
-                    signOut(loginType)
+                    signOutUseCase()
+                        .collectLatest{
+                            sharedPreferences.edit().apply {
+                                remove("idToken").apply()
+                                remove("loginType").apply()
+                            }
+                            signOut(loginType)
+                        }
                 }
         }
     }
 
     private fun signOut(loginType: String){
-        viewModelScope.launch {
-            signOutUseCase()
-                .catch {
-                    // 회원 탈퇴 실패
-                    _signOutState.value = SignOutState.Failure(UiText.StringResource(R.string.sign_out_error))
-                }
-                .collectLatest {
-                    if (it){
-                        sharedPreferences.edit().apply {
-                            remove("idToken").apply()
-                            remove("loginType").apply()
-                        }
-                        signOutFromSocial(loginType)
-                        // 회원 탈퇴 성공
-                        _signOutState.value = SignOutState.Success
-                    }
-                    else{
-                        _signOutState.value = SignOutState.Failure(UiText.StringResource(R.string.sign_out_error))
-                    }
-                }
-        }
-    }
-
-    private fun signOutFromSocial(loginType: String){
         Log.e("loginType", loginType)
         when(loginType){
             "kakao" -> {

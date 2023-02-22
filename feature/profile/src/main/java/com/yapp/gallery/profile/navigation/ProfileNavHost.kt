@@ -109,8 +109,7 @@ fun ProfileNavHost(
                     navHostController.navigate("signOutComplete"){
                         launchSingleTop = true
                     }
-                },
-                context = context
+                }
             )
         }
         composable("signOutComplete"){
