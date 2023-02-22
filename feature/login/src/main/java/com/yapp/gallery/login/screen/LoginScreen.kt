@@ -1,5 +1,6 @@
 package com.yapp.gallery.login.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,16 +11,20 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.common.theme.color_gray300
 import com.yapp.gallery.common.theme.color_mainBlue
-import com.yapp.gallery.common.theme.grey_929191
+import com.yapp.gallery.common.theme.grey_d5d5d5
 import com.yapp.gallery.login.R
 
 @Composable
@@ -38,23 +43,40 @@ fun LoginScreen(
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+                val (logo, typo, slogan) = createRefs()
                 Image(
-                    painter = painterResource(id = R.drawable.ic_typo), contentDescription = "logo",
-                    alignment = Alignment.Center
+                    painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "logo",
+                    modifier = Modifier
+                        .constrainAs(logo) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(typo.top, margin = 34.dp)
+                        }
                 )
-                Spacer(modifier = Modifier.height(30.dp))
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_typo),
+                    contentDescription = "typo",
+                    modifier = Modifier.constrainAs(typo){
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom, margin = 40.dp)
+                    }
+                )
+
                 Text(
-                    text = stringResource(id = R.string.service_slogan),
-                    textAlign = TextAlign.Center,
+                    text = stringResource(id = com.yapp.gallery.login.R.string.service_slogan),
                     style = MaterialTheme.typography.h3.copy(
-                        lineHeight = 24.sp, color = grey_929191
-                    )
+                        lineHeight = 24.sp, color = grey_d5d5d5),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.constrainAs(slogan){
+                        top.linkTo(typo.bottom, margin = 30.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                 )
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
@@ -113,3 +135,17 @@ fun LoginScreen(
 
 fun Modifier.modifyIf(condition: Boolean, modify: Modifier.() -> Modifier) =
     if (condition) modify() else this
+
+@SuppressLint("UnrememberedMutableState")
+@Preview(showBackground = true)
+@Composable
+fun LoginPreview(){
+    GalleryTheme {
+        LoginScreen(
+            naverLogin = { /*TODO*/ },
+            googleLogin = { /*TODO*/ },
+            kakaoLogin = { /*TODO*/ },
+            isLoading = mutableStateOf(false)
+        )
+    }
+}

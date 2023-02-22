@@ -69,6 +69,7 @@ dependencies {
     implementation libs.bundles.auth
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
+    implementation libs.androidx.core.splashscreen
     kapt libs.bundles.hilt.compilers
 }
 
