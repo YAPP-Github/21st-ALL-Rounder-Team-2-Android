@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yapp.gallery.common.theme.color_gray300
 import com.yapp.gallery.common.theme.color_mainBlue
+import com.yapp.gallery.common.theme.grey_929191
 import com.yapp.gallery.login.R
 
 @Composable
@@ -47,8 +50,14 @@ fun LoginScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = stringResource(id = R.string.service_name), fontSize = 18.sp)
-                Spacer(modifier = Modifier.height(38.dp))
-                Text(text = stringResource(id = R.string.service_slogan), fontSize = 16.sp)
+                Spacer(modifier = Modifier.height(30.dp))
+                Text(
+                    text = stringResource(id = R.string.service_slogan),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.h3.copy(
+                        lineHeight = 24.sp, color = grey_929191
+                    )
+                )
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 Row {
