@@ -21,7 +21,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".screen.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CustomSplashScreenTheme">
