@@ -1,25 +1,32 @@
 package com.yapp.gallery.data.repository
 
-import android.util.Log
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.FirebaseAuth
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
+import com.yapp.gallery.data.source.prefs.AuthPrefsDataSource
 import com.yapp.gallery.domain.repository.AuthRepository
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
+    private val authPrefsDataSource: AuthPrefsDataSource,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    private val auth: FirebaseAuth
 ) : AuthRepository{
-    // Todo : callback flow로 바꿔보기?!
-    override fun getRefreshedToken(): Flow<String?> = flow {
-        val task = auth.currentUser!!.getIdToken(true)
-        emit(Tasks.await(task).token.also {
-            Log.e("token refresh", it.toString())
-        })
+    override fun setLoginType(loginType: String): Flow<Unit> = flow {
+        emit(authPrefsDataSource.setLoginType(loginType))
     }.flowOn(dispatcher)
+
+    override fun setIdToken(idToken: String): Flow<Unit> = flow {
+        emit(authPrefsDataSource.setIdToken(idToken))
+    }.flowOn(dispatcher)
+
+    override fun getIdToken(): Flow<String> {
+        return authPrefsDataSource.getIdToken()
+    }
+
+    override fun getRefreshedToken(): Flow<String?> {
+        return authPrefsDataSource.getRefreshedToken()
+            .onEach {token ->
+                token?.let { authPrefsDataSource.setIdToken(token) }
+            }
+    }
 }
