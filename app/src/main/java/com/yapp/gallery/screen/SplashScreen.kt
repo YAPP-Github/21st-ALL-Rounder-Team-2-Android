@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.common.theme.color_background
-import com.yapp.gallery.common.theme.grey_929191
+import com.yapp.gallery.common.theme.grey_d5d5d5
 
 @Composable
 fun SplashScreen()
@@ -51,7 +50,7 @@ fun SplashScreen()
         Text(
             text = stringResource(id = com.yapp.gallery.login.R.string.service_slogan),
             style = MaterialTheme.typography.h3.copy(
-                lineHeight = 24.sp, color = grey_929191),
+                lineHeight = 24.sp, color = grey_d5d5d5),
             textAlign = TextAlign.Center,
             modifier = Modifier.constrainAs(slogan){
                 top.linkTo(typo.bottom, margin = 30.dp)

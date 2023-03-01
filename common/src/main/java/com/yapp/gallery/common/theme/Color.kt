@@ -3,12 +3,8 @@ package com.yapp.gallery.common.theme
 import androidx.compose.material.Colors
 import androidx.compose.ui.graphics.Color
 
-val grey_838383 = Color(0xFF838383)
-val grey_bdbdbd = Color(0xFFbdbdbd)
-val grey_929191 = Color(0xFF929191)
-
-val black_4f4f4f = Color(0xFF4f4f4f)
-val black_252525 = Color(0xFF252525)
+val grey_d5d5d5 = Color(0xFFD4D4D4)
+val grey_bdbdbd = Color(0xFFBDBDBD)
 
 // 검정, 화이트 색상
 val color_white = Color(0xFFFFFFFF)
