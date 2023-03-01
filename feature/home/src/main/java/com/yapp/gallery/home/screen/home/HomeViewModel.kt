@@ -1,9 +1,11 @@
 package com.yapp.gallery.home.screen.home
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.util.webview.NavigatePayload
+import com.yapp.gallery.common.util.webview.WebViewState
 import com.yapp.gallery.domain.usecase.auth.GetRefreshedTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -13,18 +15,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
+    private val getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
 ) : ViewModel() {
     private var _homeSideEffect = Channel<NavigatePayload>()
     val homeSideEffect = _homeSideEffect.receiveAsFlow()
 
-    private val _idToken = MutableStateFlow<String?>(null)
-    val idToken : StateFlow<String?>
-        get() = _idToken
+    private val _homeState = MutableStateFlow<WebViewState>(WebViewState.Initial)
+    val homeState : StateFlow<WebViewState>
+        get() = _homeState
 
     init {
+        getRefreshedToken()
+    }
+
+    fun getRefreshedToken(){
         getRefreshedTokenUseCase()
-            .onEach { _idToken.value = it }
+            .catch {
+                Log.e("error", it.message.toString())
+                _homeState.value = WebViewState.Disconnected
+            }
+            .onEach {
+                Log.e("success", it)
+                _homeState.value = WebViewState.Connected(it)
+            }
             .launchIn(viewModelScope)
     }
 

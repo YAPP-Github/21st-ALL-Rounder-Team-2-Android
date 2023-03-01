@@ -24,6 +24,9 @@
 
     <string name="exhibit_crate_continuous_btn">이어서 기록하기</string>
 
+    <string name="home_network_error">네트워크에 연결되지 않았습니다.\n네트워크 상태를 확인해주세요.</string>
+    <string name="home_network_reload_btn">다시 접속하기</string>
+
     <string name="home_base_url">https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/home</string>
     <string name="calendar_base_url">https://21st-all-rounder-team-2-web-bobeenlee.vercel.app/calendar</string>
 </resources>

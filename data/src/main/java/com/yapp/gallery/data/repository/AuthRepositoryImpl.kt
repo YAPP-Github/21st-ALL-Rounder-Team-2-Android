@@ -23,10 +23,10 @@ class AuthRepositoryImpl @Inject constructor(
         return authPrefsDataSource.getIdToken()
     }
 
-    override fun getRefreshedToken(): Flow<String?> {
+    override fun getRefreshedToken(): Flow<String> {
         return authPrefsDataSource.getRefreshedToken()
-            .onEach {token ->
-                token?.let { authPrefsDataSource.setIdToken(token) }
+            .onEach {
+                authPrefsDataSource.setIdToken(it)
             }
     }
 }

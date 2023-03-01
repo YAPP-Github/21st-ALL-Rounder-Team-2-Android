@@ -34,12 +34,16 @@ class AuthPrefsDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getRefreshedToken(): Flow<String?> = callbackFlow {
+    override fun getRefreshedToken(): Flow<String> = callbackFlow {
         auth.currentUser?.getIdToken(true)?.addOnSuccessListener { result ->
-            trySend(result.token)
+            result.token?.let {
+                trySend(it)
+            }
+        }?.addOnFailureListener {
+            close(Error(it))
         }
 
-        awaitClose { }
+        awaitClose()
     }.flowOn(dispatcher)
 
     override fun getIdToken(): Flow<String> =

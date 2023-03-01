@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -236,7 +237,10 @@ private fun CategoryListView(
                     ) {
                         Text(
                             text = stringResource(id = R.string.category_manage_empty_guide),
-                            style = MaterialTheme.typography.h3.copy(color = color_gray600),
+                            style = MaterialTheme.typography.h3.copy(
+                                color = color_gray600,
+                                lineHeight = 24.sp
+                            ),
                             textAlign = TextAlign.Center
                         )
                         Spacer(modifier = Modifier.height(20.dp))

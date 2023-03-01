@@ -39,7 +39,8 @@ fun HomeNavHost(
                         context,
                         infoNavigator.navigateToInfo(context, it)
                     )
-                }
+                },
+                context = context
             )
         }
         composable("record") {
@@ -64,7 +65,8 @@ fun HomeNavHost(
         }
         composable("calendar") {
             CalendarScreen(
-                popBackStack = { popBackStack(context, navHostController) }
+                popBackStack = { popBackStack(context, navHostController) },
+                context = context
             )
         }
     }
