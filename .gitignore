@@ -26,6 +26,8 @@ misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
 
+google-services.json
+
 # Keystore files
 *.jks
 *.keystore

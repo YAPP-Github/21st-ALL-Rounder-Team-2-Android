@@ -1,6 +1,7 @@
 package com.yapp.gallery.info.screen.info
 
 import android.app.Activity
+import android.util.Log
 import android.view.KeyEvent
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -160,7 +161,7 @@ private fun InfoWebView(
                     factory = { webView },
                     update = {
                         if (infoState is WebViewState.Connected){
-                            webView.loadUrl(baseUrl + exhibitId, mapOf("Authorization" to infoState.idToken))
+                            it.loadUrl(baseUrl + exhibitId, mapOf("Authorization" to infoState.idToken))
                         }
                     }
                 )

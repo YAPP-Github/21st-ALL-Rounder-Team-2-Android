@@ -20,10 +20,11 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/bg_splash_screen</item>
         <item name="android:statusBarColor">@color/background</item>
-        <item name="windowSplashScreenAnimationDuration">0</item>
-        <item name="windowSplashScreenBackground">@color/background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="android:navigationBarColor">@color/black_1f1f1f</item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="s">0</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@color/background</item>
         <item name="postSplashScreenTheme">@style/Theme.YAPPALLRounderTeam2.NoAnim</item>
     </style>
 </resources>

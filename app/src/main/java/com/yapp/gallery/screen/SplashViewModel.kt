@@ -19,7 +19,7 @@ class SplashViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            delay(2000)
+            delay(1000)
             auth.currentUser?.let {
                 _splashSideEffect.send(SplashEffect.MoveToHome)
             } ?: run {
