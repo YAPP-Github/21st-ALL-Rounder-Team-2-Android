@@ -2,7 +2,7 @@ package com.yapp.gallery.home.navigation
 
 import android.content.Context
 import android.content.Intent
-import com.yapp.gallery.home.screen.home.HomeActivity
+import com.yapp.gallery.home.ui.home.HomeActivity
 import com.yapp.gallery.navigation.home.HomeNavigator
 import javax.inject.Inject
 

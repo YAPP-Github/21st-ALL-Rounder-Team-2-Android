@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.yapp.gallery.home.screen.calendar.CalendarScreen
-import com.yapp.gallery.home.screen.home.HomeScreen
-import com.yapp.gallery.home.screen.record.ExhibitRecordScreen
+import com.yapp.gallery.home.ui.calendar.CalendarScreen
+import com.yapp.gallery.home.ui.home.HomeScreen
+import com.yapp.gallery.home.ui.record.ExhibitRecordScreen
 import com.yapp.gallery.navigation.info.ExhibitInfoNavigator
 import com.yapp.gallery.navigation.profile.ProfileNavigator
 import com.yapp.navigation.camera.CameraNavigator

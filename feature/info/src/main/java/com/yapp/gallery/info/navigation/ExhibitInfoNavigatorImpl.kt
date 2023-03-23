@@ -2,7 +2,7 @@ package com.yapp.gallery.info.navigation
 
 import android.content.Context
 import android.content.Intent
-import com.yapp.gallery.info.screen.info.ExhibitInfoActivity
+import com.yapp.gallery.info.ui.info.ExhibitInfoActivity
 import com.yapp.gallery.navigation.info.ExhibitInfoNavigator
 import javax.inject.Inject
 

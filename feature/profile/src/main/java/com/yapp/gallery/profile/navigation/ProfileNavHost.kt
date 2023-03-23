@@ -12,14 +12,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.yapp.gallery.profile.screen.category.CategoryManageScreen
-import com.yapp.gallery.profile.screen.legacy.LegacyScreen
-import com.yapp.gallery.profile.screen.nickname.NicknameScreen
-import com.yapp.gallery.profile.screen.notice.NoticeDetailScreen
-import com.yapp.gallery.profile.screen.notice.NoticeScreen
-import com.yapp.gallery.profile.screen.profile.ProfileScreen
-import com.yapp.gallery.profile.screen.signout.SignOutCompleteScreen
-import com.yapp.gallery.profile.screen.signout.SignOutScreen
+import com.yapp.gallery.profile.ui.category.CategoryManageScreen
+import com.yapp.gallery.profile.ui.legacy.LegacyScreen
+import com.yapp.gallery.profile.ui.nickname.NicknameScreen
+import com.yapp.gallery.profile.ui.notice.NoticeDetailScreen
+import com.yapp.gallery.profile.ui.notice.NoticeScreen
+import com.yapp.gallery.profile.ui.profile.ProfileScreen
+import com.yapp.gallery.profile.ui.signout.SignOutCompleteScreen
+import com.yapp.gallery.profile.ui.signout.SignOutScreen
 
 @Composable
 fun ProfileNavHost(
