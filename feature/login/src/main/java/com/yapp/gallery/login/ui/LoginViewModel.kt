@@ -25,6 +25,10 @@ class LoginViewModel @Inject constructor(
 
     private val _loginType : MutableStateFlow<LoginType> = MutableStateFlow(LoginType.None)
 
+    val isLoading = _viewState.map {
+        it is LoginState.Loading || it is LoginState.LoginSuccess || it is LoginState.TokenSuccess
+    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+
     private fun postKakaoLogin(accessToken: String) {
         setViewState(LoginState.Loading)
         tokenKakaoLoginUseCase(accessToken)
@@ -74,8 +78,8 @@ class LoginViewModel @Inject constructor(
     private fun createUser(firebaseUserId: String) {
         createUserUseCase(firebaseUserId)
             .onEach {
-                setViewState(LoginState.LoginSuccess(it))
                 sendSideEffect(LoginSideEffect.NavigateToHome)
+                setViewState(LoginState.LoginSuccess(it))
             }
             .catch {
                 Timber.e("Login 오류 : ${it.message}")
@@ -93,17 +97,17 @@ class LoginViewModel @Inject constructor(
     override fun handleEvents(event: LoginEvent) {
         when(event){
             is LoginEvent.OnGoogleLogin -> {
-                if (_viewState.value !is LoginState.Loading) {
+                if (!isLoading.value) {
                     sendSideEffect(LoginSideEffect.LaunchGoogleLauncher)
                 }
             }
             is LoginEvent.OnKakaoLogin -> {
-                if (_viewState.value !is LoginState.Loading) {
+                if (!isLoading.value) {
                     sendSideEffect(LoginSideEffect.LaunchKakaoLauncher)
                 }
             }
             is LoginEvent.OnNaverLogin -> {
-                if (_viewState.value !is LoginState.Loading) {
+                if (!isLoading.value) {
                     sendSideEffect(LoginSideEffect.LaunchNaverLauncher)
                 }
             }
@@ -111,6 +115,7 @@ class LoginViewModel @Inject constructor(
                 setViewState(LoginState.TokenError(event.message))
             }
             is LoginEvent.OnCreateGoogleUser -> {
+                setViewState(LoginState.Loading)
                 _loginType.value = LoginType.Google
                 setLoginInfo(event.firebaseId, event.idToken)
             }

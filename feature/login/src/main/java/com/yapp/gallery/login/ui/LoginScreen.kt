@@ -32,7 +32,7 @@ import com.yapp.gallery.login.ui.LoginContract.*
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    val viewState : LoginState by viewModel.viewState.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -104,7 +104,7 @@ fun LoginScreen(
             }
 
             // 로딩 스크린
-            if (viewState is LoginState.Loading) {
+            if (isLoading) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()

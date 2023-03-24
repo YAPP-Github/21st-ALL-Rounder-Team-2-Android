@@ -20,8 +20,8 @@ class AuthRepositoryImpl @Inject constructor(
         emit(authPrefsDataSource.setIdToken(idToken))
     }.flowOn(dispatcher)
 
-    override fun getIdToken(): Flow<String> {
-        return authPrefsDataSource.getIdToken().catch { emit("") }
+    override suspend fun getIdToken(): String {
+        return authPrefsDataSource.getIdToken() ?: ""
     }
 
     override fun getRefreshedToken(): Flow<String> {

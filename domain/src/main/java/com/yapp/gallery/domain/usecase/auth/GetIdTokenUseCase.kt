@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetIdTokenUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    operator fun invoke() = authRepository.getIdToken()
+    suspend operator fun invoke() = authRepository.getIdToken()
 }

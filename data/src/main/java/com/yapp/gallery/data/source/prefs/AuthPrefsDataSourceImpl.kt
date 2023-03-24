@@ -9,10 +9,8 @@ import com.yapp.gallery.data.di.DataStoreModule
 import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AuthPrefsDataSourceImpl @Inject constructor(
@@ -46,8 +44,8 @@ class AuthPrefsDataSourceImpl @Inject constructor(
         awaitClose()
     }.flowOn(dispatcher)
 
-    override fun getIdToken(): Flow<String> =
+    override suspend fun getIdToken(): String? =
         dataStore.data.map { preferences ->
             preferences[DataStoreModule.idTokenKey] ?: ""
-        }.flowOn(dispatcher)
+        }.flowOn(dispatcher).firstOrNull()
 }

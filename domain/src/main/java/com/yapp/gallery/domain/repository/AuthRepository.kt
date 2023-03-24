@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 interface AuthRepository {
     fun setLoginType(loginType: String) : Flow<Unit>
     fun setIdToken(idToken: String) : Flow<Unit>
-    fun getIdToken() : Flow<String>
+    suspend fun getIdToken() : String
     fun getRefreshedToken() : Flow<String>
 }
