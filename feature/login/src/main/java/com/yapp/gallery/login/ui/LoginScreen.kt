@@ -1,6 +1,5 @@
 package com.yapp.gallery.login.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +33,21 @@ fun LoginScreen(
 ) {
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
+    LoginScaffold(
+        isLoading = isLoading,
+        onGoogleLogin = { viewModel.setEvent(LoginEvent.OnGoogleLogin) },
+        onKakaoLogin = { viewModel.setEvent(LoginEvent.OnKakaoLogin) },
+        onNaverLogin = { viewModel.setEvent(LoginEvent.OnNaverLogin) }
+    )
+}
+
+@Composable
+private fun LoginScaffold(
+    isLoading: Boolean,
+    onGoogleLogin: () -> Unit,
+    onNaverLogin: () -> Unit,
+    onKakaoLogin: () -> Unit
+){
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) { padding ->
@@ -66,7 +80,7 @@ fun LoginScreen(
                 )
 
                 Text(
-                    text = stringResource(id = com.yapp.gallery.login.R.string.service_slogan),
+                    text = stringResource(id = R.string.service_slogan),
                     style = MaterialTheme.typography.h3.copy(
                         lineHeight = 24.sp, color = grey_d5d5d5),
                     textAlign = TextAlign.Center,
@@ -83,21 +97,21 @@ fun LoginScreen(
                         contentDescription = "kakao",
                         modifier = Modifier
                             .size(72.dp)
-                            .clickable(onClick = { viewModel.setEvent(LoginEvent.OnNaverLogin) })
+                            .clickable(onClick = onNaverLogin)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Image(painter = painterResource(id = R.drawable.ic_kakao_login),
                         contentDescription = "kakao",
                         modifier = Modifier
                             .size(72.dp)
-                            .clickable(onClick = { viewModel.setEvent(LoginEvent.OnKakaoLogin) })
+                            .clickable(onClick = onKakaoLogin)
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Image(painter = painterResource(id = R.drawable.ic_google_login),
                         contentDescription = "google",
                         modifier = Modifier
                             .size(72.dp)
-                            .clickable(onClick = { viewModel.setEvent(LoginEvent.OnGoogleLogin) })
+                            .clickable(onClick = onGoogleLogin)
                     )
                 }
                 Spacer(modifier = Modifier.height(120.dp))
@@ -127,12 +141,17 @@ fun LoginScreen(
 //fun Modifier.modifyIf(condition: Boolean, modify: Modifier.() -> Modifier) =
 //    if (condition) modify() else this
 
-@SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     GalleryTheme {
-        LoginScreen()
+        LoginScaffold(
+            isLoading = false,
+            onGoogleLogin = {  },
+            onNaverLogin = {  },
+            onKakaoLogin = { }
+        )
     }
 }
+
 
