@@ -1,78 +1,134 @@
 package com.yapp.gallery.login.ui
 
-import android.content.SharedPreferences
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yapp.gallery.common.model.BaseState
+import com.google.firebase.auth.FirebaseAuth
+import com.yapp.gallery.common.base.BaseStateViewModel
+import com.yapp.gallery.domain.usecase.auth.SetLoginInfoUseCase
 import com.yapp.gallery.domain.usecase.login.CreateUserUseCase
 import com.yapp.gallery.domain.usecase.login.PostKakaoLoginUseCase
 import com.yapp.gallery.domain.usecase.login.PostNaverLoginUseCase
+import com.yapp.gallery.login.ui.LoginContract.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val auth: FirebaseAuth,
     private val tokenKakaoLoginUseCase: PostKakaoLoginUseCase,
     private val tokenNaverLoginUseCase: PostNaverLoginUseCase,
     private val createUserUseCase: CreateUserUseCase,
-    private val sharedPreferences: SharedPreferences,
-) : ViewModel() {
-    private var _tokenState = MutableStateFlow<BaseState<String>>(BaseState.None)
-    val tokenState: StateFlow<BaseState<String>>
-        get() = _tokenState
+    private val setLoginInfoUseCase: SetLoginInfoUseCase,
+) : BaseStateViewModel<LoginState, LoginEvent, LoginSideEffect>() {
+    override val _viewState: MutableStateFlow<LoginState> = MutableStateFlow(LoginState.Initial)
 
-    private var _loginState = MutableStateFlow<BaseState<Long>>(BaseState.None)
-    val loginState: StateFlow<BaseState<Long>>
-        get() = _loginState
+    private val _loginType : MutableStateFlow<LoginType> = MutableStateFlow(LoginType.None)
 
-    fun postKakaoLogin(accessToken: String) {
-        Log.e("login 전", accessToken)
-        setLoading()
-        viewModelScope.launch {
-            runCatching { tokenKakaoLoginUseCase(accessToken) }
-                .onSuccess {
-                    _tokenState.value = BaseState.Success(it)
+    private fun postKakaoLogin(accessToken: String) {
+        setViewState(LoginState.Loading)
+        tokenKakaoLoginUseCase(accessToken)
+            .onEach {
+                setViewState(LoginState.TokenSuccess(it))
+                _loginType.value = LoginType.Kakao
+                firebaseTokenLogin(it)
+            }
+            .catch {
+                Timber.e("Login 오류 : ${it.message}")
+                setViewState(LoginState.TokenError(it.message))
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun postNaverLogin(accessToken: String) {
+        setViewState(LoginState.Loading)
+        tokenNaverLoginUseCase(accessToken)
+            .onEach {
+                setViewState(LoginState.TokenSuccess(it))
+                _loginType.value = LoginType.Naver
+                firebaseTokenLogin(it)
+            }
+            .catch {
+                Timber.e("Login 오류 : ${it.message}")
+                setViewState(LoginState.TokenError(it.message))
+            }
+            .launchIn(viewModelScope)
+    }
+
+    // 카카오, 네이버 로그인
+    private fun firebaseTokenLogin(firebaseToken: String) {
+        auth.signInWithCustomToken(firebaseToken)
+            .addOnCompleteListener { task ->
+                task.result.user?.apply {
+                    getIdToken(false).addOnCompleteListener { t ->
+                        setLoginInfo(uid, t.result?.token ?: "")
+                    }
                 }
-                .onFailure {
-                    Log.e("login 오류", it.message.toString())
-                    _tokenState.value = BaseState.Error(it.message)
+            }.addOnFailureListener {
+                setViewState(LoginState.LoginError(it.message))
+            }
+    }
+
+
+
+    private fun createUser(firebaseUserId: String) {
+        createUserUseCase(firebaseUserId)
+            .onEach {
+                setViewState(LoginState.LoginSuccess(it))
+                sendSideEffect(LoginSideEffect.NavigateToHome)
+            }
+            .catch {
+                Timber.e("Login 오류 : ${it.message}")
+                setViewState(LoginState.LoginError(it.message))
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun setLoginInfo(firebaseId: String, token : String){
+        setLoginInfoUseCase(getLoginTypeToString(), token)
+            .onEach { createUser(firebaseId) }
+            .launchIn(viewModelScope)
+    }
+
+    override fun handleEvents(event: LoginEvent) {
+        when(event){
+            is LoginEvent.OnGoogleLogin -> {
+                if (_viewState.value !is LoginState.Loading) {
+                    sendSideEffect(LoginSideEffect.LaunchGoogleLauncher)
                 }
+            }
+            is LoginEvent.OnKakaoLogin -> {
+                if (_viewState.value !is LoginState.Loading) {
+                    sendSideEffect(LoginSideEffect.LaunchKakaoLauncher)
+                }
+            }
+            is LoginEvent.OnNaverLogin -> {
+                if (_viewState.value !is LoginState.Loading) {
+                    sendSideEffect(LoginSideEffect.LaunchNaverLauncher)
+                }
+            }
+            is LoginEvent.OnLoginFailure -> {
+                setViewState(LoginState.TokenError(event.message))
+            }
+            is LoginEvent.OnCreateGoogleUser -> {
+                _loginType.value = LoginType.Google
+                setLoginInfo(event.firebaseId, event.idToken)
+            }
+            is LoginEvent.OnCreateKakaoUser -> {
+                postKakaoLogin(event.accessToken)
+            }
+            is LoginEvent.OnCreateNaverUser -> {
+                postNaverLogin(event.accessToken)
+            }
         }
     }
 
-    fun postNaverLogin(accessToken: String) {
-        setLoading()
-        viewModelScope.launch {
-            runCatching { tokenNaverLoginUseCase(accessToken) }
-                .onSuccess {
-                    _tokenState.value = BaseState.Success(it)
-                }
-                .onFailure {
-                    Log.e("login 오류", it.message.toString())
-                    _tokenState.value = BaseState.Error(it.message)
-                }
-        }
-    }
-
-    fun setLoading() {
-        _loginState.value = BaseState.Loading
-    }
-
-    fun createUser(firebaseUserId: String) {
-        viewModelScope.launch {
-            runCatching { createUserUseCase(firebaseUserId) }
-                .onSuccess {
-                    _loginState.value = BaseState.Success(it)
-                    sharedPreferences.edit().putLong("uid", it).apply()
-                }
-                .onFailure {
-                    Log.e("error", it.message.toString())
-                    _loginState.value = BaseState.Error(it.message)
-                }
+    private fun getLoginTypeToString() : String{
+        return when(_loginType.value){
+            LoginType.Google -> "google"
+            LoginType.Kakao -> "kakao"
+            LoginType.Naver -> "naver"
+            LoginType.None -> "none"
         }
     }
 }

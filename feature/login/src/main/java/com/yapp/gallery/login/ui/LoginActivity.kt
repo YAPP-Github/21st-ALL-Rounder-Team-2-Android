@@ -1,10 +1,7 @@
 package com.yapp.gallery.login.ui
 
-import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +9,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -23,10 +19,12 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
-import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.navigation.home.HomeNavigator
+import com.yapp.gallery.login.ui.LoginContract.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -37,8 +35,6 @@ class LoginActivity : ComponentActivity() {
     lateinit var auth: FirebaseAuth
     @Inject
     lateinit var homeNavigator: HomeNavigator
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
 
     @Inject
     lateinit var googleSignInClient: GoogleSignInClient
@@ -48,9 +44,6 @@ class LoginActivity : ComponentActivity() {
     private lateinit var naverResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var googleResultLauncher: ActivityResultLauncher<Intent>
 
-    private var isLoading = mutableStateOf(false)
-    private var loginType: String? = null
-
     private var backKeyPressedTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,41 +51,28 @@ class LoginActivity : ComponentActivity() {
         initResultLauncher()
         setContent {
             GalleryTheme {
-                LoginScreen(
-                    naverLogin = { naverLogin() },
-                    googleLogin = { googleSignIn() },
-                    kakaoLogin = { kakaoLogin() },
-                    isLoading = isLoading
-                )
+                LoginScreen(viewModel = viewModel)
             }
 
-            LaunchedEffect(viewModel.tokenState) {
-                viewModel.tokenState.collect {
-                    when (it) {
-                        is BaseState.Success -> {
-                            firebaseTokenLogin(it.value)
+            LaunchedEffect(viewModel.sideEffect){
+                viewModel.sideEffect.collectLatest {
+                    when(it){
+                        is LoginSideEffect.LaunchGoogleLauncher -> {
+                            googleSignIn()
                         }
-                        else -> {}
-                    }
-                }
-            }
-            LaunchedEffect(viewModel.loginState) {
-                viewModel.loginState.collect {
-                    when (it) {
-                        is BaseState.Success -> {
+                        is LoginSideEffect.LaunchKakaoLauncher -> {
+                            kakaoLogin()
+                        }
+                        is LoginSideEffect.LaunchNaverLauncher -> {
+                            naverLogin()
+                        }
+                        is LoginSideEffect.NavigateToHome -> {
                             navigateToHome()
-                            isLoading.value = false
                         }
-                        is BaseState.Loading -> {
-                            isLoading.value = true
-                        }
-                        is BaseState.Error -> {
-                            isLoading.value = false
-                        }
-                        else -> {}
                     }
                 }
             }
+
         }
     }
 
@@ -102,16 +82,21 @@ class LoginActivity : ComponentActivity() {
                 if (it.resultCode == RESULT_OK) {
                     val account = GoogleSignIn.getSignedInAccountFromIntent(it.data)
                     firebaseAuthWithGoogle(account.result)
-                    viewModel.setLoading()
+                } else {
+                    viewModel.setEvent(LoginEvent.OnLoginFailure("구글 로그인 실패"))
                 }
             }
+
         naverResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 when (result.resultCode) {
                     RESULT_OK -> {
                         NaverIdLoginSDK.getAccessToken()?.let {
-                            viewModel.postNaverLogin(it)
+                            viewModel.setEvent(LoginEvent.OnCreateNaverUser(it))
                         }
+                    }
+                    else -> {
+                        viewModel.setEvent(LoginEvent.OnLoginFailure("네이버 로그인 실패"))
                     }
                 }
             }
@@ -119,7 +104,6 @@ class LoginActivity : ComponentActivity() {
     }
 
     private fun googleSignIn() {
-        loginType = "google"
         val signInIntent = googleSignInClient.signInIntent
         googleResultLauncher.launch(signInIntent)
     }
@@ -128,45 +112,39 @@ class LoginActivity : ComponentActivity() {
         val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                Log.e("uid", task.result.user?.uid.toString())
                 task.result.user?.apply {
                     getIdToken(false).addOnCompleteListener { t ->
-                        sharedPreferences.edit().apply {
-                            putString("idToken", t.result.token)
-                            putString("loginType", "google")
-                        }.apply()
-
-                        uid.let { viewModel.createUser(it) }
+                        uid.let { viewModel.setEvent(LoginEvent.OnCreateGoogleUser(it, t.result.token?: "")) }
                     }
                 }
             } else {
-                Log.e("google 로그인", task.exception.toString())
+                viewModel.setEvent(LoginEvent.OnLoginFailure("구글 로그인 실패"))
             }
         }
     }
 
     private fun naverLogin() {
-        loginType = "naver"
         NaverIdLoginSDK.authenticate(this, naverResultLauncher)
     }
 
 
     private val kakaoCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
         if (error != null) {
-            Log.e(TAG, "카카오계정으로 로그인 실패", error)
+            Timber.e(error, "카카오계정으로 로그인 실패")
+            viewModel.setEvent(LoginEvent.OnLoginFailure("카카오 로그인 실패"))
         } else if (token != null) {
-            Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-            viewModel.postKakaoLogin(token.accessToken)
+            Timber.i("카카오계정으로 로그인 성공 " + token.accessToken)
+
+            viewModel.setEvent(LoginEvent.OnCreateKakaoUser(token.accessToken))
         }
     }
 
     private fun kakaoLogin() {
-        loginType = "kakao"
         // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
         if (kakaoClient.isKakaoTalkLoginAvailable(this)) {
             kakaoClient.loginWithKakaoTalk(this) { token, error ->
                 if (error != null) {
-                    Log.e(TAG, "카카오톡으로 로그인 실패", error)
+                    Timber.e(error, "카카오톡으로 로그인 실패")
 
                     // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
                     // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
@@ -177,33 +155,14 @@ class LoginActivity : ComponentActivity() {
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                     kakaoClient.loginWithKakaoAccount(this, callback = kakaoCallback)
                 } else if (token != null) {
-                    Log.i(TAG, "카카오톡으로 로그인 성공 ${token.accessToken}")
-                    viewModel.postKakaoLogin(token.accessToken)
+                    Timber.i("카카오톡으로 로그인 성공 " + token.accessToken)
+                    viewModel.setEvent(LoginEvent.OnCreateKakaoUser(token.accessToken))
                 }
             }
         } else {
             kakaoClient.loginWithKakaoAccount(this, callback = kakaoCallback)
         }
 
-    }
-
-    // 카카오, 네이버 로그인
-    private fun firebaseTokenLogin(firebaseToken: String) {
-        auth.signInWithCustomToken(firebaseToken)
-            .addOnCompleteListener { task ->
-                task.result.user?.apply {
-                    getIdToken(false).addOnCompleteListener { t ->
-                        with(sharedPreferences.edit()) {
-                            putString("idToken", t.result.token).apply()
-                            loginType?.let { putString("loginType", it).apply() }
-                            Log.e("loginType", loginType.toString())
-                        }
-                        uid.let { viewModel.createUser(it) }
-                    }
-                }
-            }.addOnFailureListener {
-
-            }
     }
 
     private fun navigateToHome() {

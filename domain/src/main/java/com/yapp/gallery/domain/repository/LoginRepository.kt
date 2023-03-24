@@ -1,8 +1,10 @@
 package com.yapp.gallery.domain.repository
 
+import kotlinx.coroutines.flow.Flow
+
 
 interface LoginRepository {
-    suspend fun kakaoLogin(accessToken : String) : String
-    suspend fun naverLogin(accessToken: String) : String
-    suspend fun createUser(firebaseUserId: String) : Long
+    fun kakaoLogin(accessToken : String) : Flow<String>
+    fun naverLogin(accessToken: String) : Flow<String>
+    fun createUser(firebaseUserId: String) : Flow<Long>
 }

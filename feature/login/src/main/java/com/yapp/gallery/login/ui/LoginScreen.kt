@@ -9,9 +9,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -21,19 +19,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.common.theme.color_gray300
 import com.yapp.gallery.common.theme.color_mainBlue
 import com.yapp.gallery.common.theme.grey_d5d5d5
 import com.yapp.gallery.login.R
+import com.yapp.gallery.login.ui.LoginContract.*
 
 @Composable
 fun LoginScreen(
-    naverLogin: () -> Unit,
-    googleLogin: () -> Unit,
-    kakaoLogin: () -> Unit,
-    isLoading: MutableState<Boolean>,
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
+    val viewState : LoginState by viewModel.viewState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -84,35 +83,28 @@ fun LoginScreen(
                         contentDescription = "kakao",
                         modifier = Modifier
                             .size(72.dp)
-                            .modifyIf(!isLoading.value) {
-                                clickable(onClick = naverLogin)
-                            }
+                            .clickable(onClick = { viewModel.setEvent(LoginEvent.OnNaverLogin) })
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Image(painter = painterResource(id = R.drawable.ic_kakao_login),
                         contentDescription = "kakao",
                         modifier = Modifier
                             .size(72.dp)
-                            .modifyIf(!isLoading.value) {
-                                clickable(onClick = kakaoLogin)
-                            }
+                            .clickable(onClick = { viewModel.setEvent(LoginEvent.OnKakaoLogin) })
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Image(painter = painterResource(id = R.drawable.ic_google_login),
                         contentDescription = "google",
                         modifier = Modifier
                             .size(72.dp)
-                            .modifyIf(!isLoading.value) {
-                                clickable(onClick = googleLogin)
-                            }
-
+                            .clickable(onClick = { viewModel.setEvent(LoginEvent.OnGoogleLogin) })
                     )
                 }
                 Spacer(modifier = Modifier.height(120.dp))
             }
 
             // 로딩 스크린
-            if (isLoading.value) {
+            if (viewState is LoginState.Loading) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -132,19 +124,15 @@ fun LoginScreen(
     }
 }
 
-fun Modifier.modifyIf(condition: Boolean, modify: Modifier.() -> Modifier) =
-    if (condition) modify() else this
+//fun Modifier.modifyIf(condition: Boolean, modify: Modifier.() -> Modifier) =
+//    if (condition) modify() else this
 
 @SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable
-fun LoginPreview(){
+fun LoginScreenPreview() {
     GalleryTheme {
-        LoginScreen(
-            naverLogin = { /*TODO*/ },
-            googleLogin = { /*TODO*/ },
-            kakaoLogin = { /*TODO*/ },
-            isLoading = mutableStateOf(false)
-        )
+        LoginScreen()
     }
 }
+

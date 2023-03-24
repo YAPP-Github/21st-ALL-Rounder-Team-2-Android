@@ -11,6 +11,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val authPrefsDataSource: AuthPrefsDataSource,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ) : AuthRepository{
+    // Todo : Firebase Token 한 시간 만료인걸 계산 -> 자동 리프레시?
     override fun setLoginType(loginType: String): Flow<Unit> = flow {
         emit(authPrefsDataSource.setLoginType(loginType))
     }.flowOn(dispatcher)
@@ -20,7 +21,7 @@ class AuthRepositoryImpl @Inject constructor(
     }.flowOn(dispatcher)
 
     override fun getIdToken(): Flow<String> {
-        return authPrefsDataSource.getIdToken()
+        return authPrefsDataSource.getIdToken().catch { emit("") }
     }
 
     override fun getRefreshedToken(): Flow<String> {
