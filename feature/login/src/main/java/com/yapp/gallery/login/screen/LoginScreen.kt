@@ -55,7 +55,6 @@ fun LoginScreen(
                             bottom.linkTo(typo.top, margin = 34.dp)
                         }
                 )
-
                 Image(
                     painter = painterResource(id = R.drawable.ic_typo),
                     contentDescription = "typo",
