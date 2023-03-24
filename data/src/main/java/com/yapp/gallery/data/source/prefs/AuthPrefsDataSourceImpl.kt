@@ -10,7 +10,6 @@ import com.yapp.gallery.data.di.DispatcherModule.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class AuthPrefsDataSourceImpl @Inject constructor(
@@ -32,6 +31,12 @@ class AuthPrefsDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun getLoginType(): Flow<String> =
+        dataStore.data.map { preferences ->
+            preferences[DataStoreModule.loginTypeKey] ?: ""
+        }.flowOn(dispatcher)
+
+
     override fun getRefreshedToken(): Flow<String> = callbackFlow {
         auth.currentUser?.getIdToken(true)?.addOnSuccessListener { result ->
             result.token?.let {
@@ -48,4 +53,11 @@ class AuthPrefsDataSourceImpl @Inject constructor(
         dataStore.data.map { preferences ->
             preferences[DataStoreModule.idTokenKey] ?: ""
         }.flowOn(dispatcher).firstOrNull()
+
+    override suspend fun deleteLoginInfo() {
+        dataStore.edit { preferences ->
+            preferences.remove(DataStoreModule.loginTypeKey)
+            preferences.remove(DataStoreModule.idTokenKey)
+        }
+    }
 }

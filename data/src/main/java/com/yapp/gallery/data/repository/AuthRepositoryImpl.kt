@@ -20,6 +20,10 @@ class AuthRepositoryImpl @Inject constructor(
         emit(authPrefsDataSource.setIdToken(idToken))
     }.flowOn(dispatcher)
 
+    override fun getLoginType(): Flow<String> {
+        return authPrefsDataSource.getLoginType()
+    }
+
     override suspend fun getIdToken(): String {
         return authPrefsDataSource.getIdToken() ?: ""
     }
@@ -30,4 +34,8 @@ class AuthRepositoryImpl @Inject constructor(
                 authPrefsDataSource.setIdToken(it)
             }
     }
+
+    override fun deleteLoginInfo(): Flow<Unit> = flow {
+        emit(authPrefsDataSource.deleteLoginInfo())
+    }.flowOn(dispatcher)
 }

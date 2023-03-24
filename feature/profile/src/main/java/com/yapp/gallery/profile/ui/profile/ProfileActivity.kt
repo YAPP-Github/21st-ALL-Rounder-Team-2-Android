@@ -1,13 +1,11 @@
 package com.yapp.gallery.profile.ui.profile
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.kakao.sdk.user.UserApiClient
-import com.navercorp.nid.NaverIdLoginSDK
 import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.navigation.login.LoginNavigator
 import com.yapp.gallery.profile.navigation.ProfileNavHost
@@ -23,48 +21,16 @@ class ProfileActivity : ComponentActivity() {
     @Inject lateinit var googleSignInClient: GoogleSignInClient
     @Inject lateinit var kakaoClient: UserApiClient
 
-    @Inject lateinit var sharedPreferences : SharedPreferences
-    private lateinit var loginType: String
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loginType = sharedPreferences.getString("loginType", "").toString()
         setContent {
             GalleryTheme {
-                ProfileNavHost(logout = { logout() }, context = this,
-                    navigateToLogin = { navigateToLogin() }, loginType = loginType
-                )
+                ProfileNavHost(
+                    navigateToLogin = { navigateToLogin() }, context = this)
             }
         }
     }
-
-    private fun logout(){
-        when(loginType){
-            "kakao" -> {
-                kakaoClient.logout {
-                    auth.signOut()
-                    finishAffinity()
-                    startActivity(loginNavigator.navigate(this))
-                }
-            }
-            "naver" -> {
-                NaverIdLoginSDK.logout().also {
-                    auth.signOut()
-                    finishAffinity()
-                    startActivity(loginNavigator.navigate(this))
-                }
-            }
-            else -> {
-                googleSignInClient.signOut().addOnCompleteListener {
-                    auth.signOut()
-                    finishAffinity()
-                    startActivity(loginNavigator.navigate(this))
-                }
-            }
-        }
-    }
-
 
 
     private fun navigateToLogin(){

@@ -20,12 +20,11 @@ import com.yapp.gallery.profile.ui.notice.NoticeScreen
 import com.yapp.gallery.profile.ui.profile.ProfileScreen
 import com.yapp.gallery.profile.ui.signout.SignOutCompleteScreen
 import com.yapp.gallery.profile.ui.signout.SignOutScreen
+import timber.log.Timber
 
 @Composable
 fun ProfileNavHost(
-    logout : () -> Unit,
     navigateToLogin : () -> Unit,
-    loginType: String,
     context: Activity
 ){
     val navHostController = rememberNavController()
@@ -38,7 +37,7 @@ fun ProfileNavHost(
                 navigateToNotice = { navHostController.navigate("notice")},
                 navigateToLegacy = { navHostController.navigate("legacy") },
                 navigateToSignOut = { navHostController.navigate("signOut")},
-                logout = { logout() },
+                navigateToLogin = { navigateToLogin() },
                 popBackStack = { popBackStack(context, navHostController) },
                 editedNicknameData = backStackEntry.savedStateHandle.getLiveData<String>("editedName")
             )
@@ -104,7 +103,6 @@ fun ProfileNavHost(
         composable("signOut"){
             SignOutScreen(
                 popBackStack = { popBackStack(context, navHostController) },
-                loginType = loginType,
                 signOut = {
                     navHostController.navigate("signOutComplete"){
                         launchSingleTop = true
@@ -122,12 +120,11 @@ fun ProfileNavHost(
 
 private fun popBackStack(
     context: Activity, navHostController: NavHostController
-){
-    Log.e("back", navHostController.backQueue.toString())
+) {
+    Timber.tag("back").e(navHostController.backQueue.toString())
     if (navHostController.previousBackStackEntry != null) {
         navHostController.popBackStack()
-    }
-    else{
+    } else {
         context.finish()
     }
 }

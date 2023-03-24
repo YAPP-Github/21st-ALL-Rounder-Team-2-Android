@@ -24,7 +24,7 @@ import com.yapp.gallery.common.theme.color_gray600
 @Composable
 fun ConfirmDialog(
     title: String,
-    subTitle: String?,
+    subTitle: String? = null,
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
     important: Boolean = false

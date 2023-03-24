@@ -22,7 +22,7 @@ import com.yapp.gallery.profile.R
 fun SignOutScreen(
     popBackStack: () -> Unit,
     signOut: () -> Unit,
-    loginType: String,
+    loginType: String = "google",
     viewModel: SignOutViewModel = hiltViewModel()
 ){
     Scaffold(
