@@ -4,17 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.yapp.gallery.home.ui.home.HomeActivity
 import com.yapp.gallery.login.ui.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
-    private val viewModel by viewModels<SplashViewModel>()
+    @Inject lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         //
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -24,14 +26,12 @@ class SplashActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        setContent {
-            LaunchedEffect(viewModel.splashSideEffect){
-                viewModel.splashSideEffect.collect{
-                    when(it){
-                        is SplashEffect.MoveToHome -> moveToHomeLogin(true)
-                        is SplashEffect.MoveToLogin -> moveToHomeLogin(false)
-                    }
-                }
+        lifecycleScope.launch {
+            delay(1000)
+            auth.currentUser?.let {
+                moveToHomeLogin(true)
+            } ?: run {
+                moveToHomeLogin(false)
             }
         }
     }
