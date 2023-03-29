@@ -10,7 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,16 +21,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.yapp.gallery.home.ui.home.HomeContract.*
 import com.yapp.gallery.common.theme.color_gray600
 import com.yapp.gallery.common.util.WebViewUtils
 import com.yapp.gallery.common.util.WebViewUtils.cookieManager
 import com.yapp.gallery.common.util.webview.NavigateJsObject
-import com.yapp.gallery.common.util.webview.WebViewState
 import com.yapp.gallery.home.R
-import org.json.JSONObject
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun HomeScreen(
+fun HomeRoute(
     navigateToRecord: () -> Unit,
     navigateToProfile: () -> Unit,
     navigateToCalendar: () -> Unit,
@@ -38,19 +39,15 @@ fun HomeScreen(
     context: Activity,
     viewModel: HomeViewModel = hiltViewModel()
 ){
-    LaunchedEffect(viewModel.homeSideEffect){
-        viewModel.homeSideEffect.collect {
-            when(it.action){
-                "NAVIGATE_TO_EDIT" -> navigateToRecord()
-                "NAVIGATE_TO_MY" -> navigateToProfile()
-                "NAVIGATE_TO_CALENDAR" -> navigateToCalendar()
-                "NAVIGATE_TO_EXHIBITION_DETAIL" -> {
-                    it.payload?.let { p ->
-                        val exhibitId = JSONObject(p).getLong("id")
-                        navigateToInfo(exhibitId)
-                    }
-                }
-                else -> {}
+    val homeState : HomeState by viewModel.viewState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(viewModel.sideEffect){
+        viewModel.sideEffect.collectLatest {
+            when(it){
+                is HomeSideEffect.NavigateToRecord -> navigateToRecord()
+                is HomeSideEffect.NavigateToProfile -> navigateToProfile()
+                is HomeSideEffect.NavigateToCalendar -> navigateToCalendar()
+                is HomeSideEffect.NavigateToInfo -> navigateToInfo(it.postId)
             }
         }
     }
@@ -63,7 +60,7 @@ fun HomeScreen(
         webViewClient = WebViewUtils.webViewClient
         webChromeClient = WebViewUtils.webChromeClient
         addJavascriptInterface(
-            NavigateJsObject { action, payload -> viewModel.setSideEffect(action, payload) }
+            NavigateJsObject { action, payload -> viewModel.setEvent(HomeEvent.OnWebViewClick(action, payload)) }
             , "android")
         settings.run {
             setBackgroundColor(0)
@@ -75,17 +72,16 @@ fun HomeScreen(
         }
     }
 
-    HomeWebView(
-        homeState = viewModel.homeState.collectAsState().value,
+    HomeScreen(
+        homeState = homeState,
         webView = webView,
-        onReload = { viewModel.getRefreshedToken() }
+        onReload = { viewModel.setEvent(HomeEvent.OnLoadAgain) }
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun HomeWebView(
-    homeState : WebViewState,
+private fun HomeScreen(
+    homeState : HomeState,
     webView : WebView,
     onReload : () -> Unit
 ){
@@ -100,39 +96,13 @@ private fun HomeWebView(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (homeState is WebViewState.Disconnected){
-                Text(
-                    text = stringResource(id = R.string.home_network_error),
-                    style = MaterialTheme.typography.h3.copy(
-                        color = color_gray600,
-                        lineHeight = 24.sp
-                    ),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // 네트워크 재요청 버튼
-                Surface(shape = RoundedCornerShape(71.dp),
-                    color = MaterialTheme.colors.background,
-                    border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
-                    onClick = onReload
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.home_network_reload_btn),
-                        style = MaterialTheme.typography.h3.copy(
-                            color = Color(0xFFA7C5F9), fontWeight = FontWeight.Medium
-                        ),
-                        modifier = Modifier.padding(
-                            horizontal = 24.dp, vertical = 12.dp
-                        )
-                    )
-                }
-
+            if (homeState is HomeState.Disconnected){
+                HomeDisconnectedScreen(onReload)
             } else {
                 AndroidView(
                     factory = { webView },
                     update = {
-                        if (homeState is WebViewState.Connected) {
+                        if (homeState is HomeState.Connected) {
                             it.loadUrl(baseUrl, mapOf("Authorization" to homeState.idToken))
                         }
                     }
@@ -142,3 +112,35 @@ private fun HomeWebView(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun HomeDisconnectedScreen(
+    onReload : () -> Unit
+){
+    Text(
+        text = stringResource(id = R.string.home_network_error),
+        style = MaterialTheme.typography.h3.copy(
+            color = color_gray600,
+            lineHeight = 24.sp
+        ),
+        textAlign = TextAlign.Center
+    )
+    Spacer(modifier = Modifier.height(20.dp))
+
+    // 네트워크 재요청 버튼
+    Surface(shape = RoundedCornerShape(71.dp),
+        color = MaterialTheme.colors.background,
+        border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
+        onClick = onReload
+    ) {
+        Text(
+            text = stringResource(id = R.string.home_network_reload_btn),
+            style = MaterialTheme.typography.h3.copy(
+                color = Color(0xFFA7C5F9), fontWeight = FontWeight.Medium
+            ),
+            modifier = Modifier.padding(
+                horizontal = 24.dp, vertical = 12.dp
+            )
+        )
+    }
+}
