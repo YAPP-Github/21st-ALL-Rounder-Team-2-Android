@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetRefreshedTokenUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    operator fun invoke() = authRepository.getRefreshedToken()
+    suspend operator fun invoke() = authRepository.getRefreshedToken()
 }

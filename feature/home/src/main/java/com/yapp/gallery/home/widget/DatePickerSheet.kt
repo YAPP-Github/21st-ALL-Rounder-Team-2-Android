@@ -14,8 +14,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.ListItemPicker
+import com.yapp.gallery.common.theme.GalleryTheme
 import com.yapp.gallery.common.theme.color_gray900
 import com.yapp.gallery.common.theme.color_mainGreen
 import com.yapp.gallery.common.theme.color_popUpBottom
@@ -65,14 +67,16 @@ fun DatePickerSheet(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth().background(color = color_popUpBottom),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = color_popUpBottom),
     ) {
         TextButton(onClick = { onDateSet("${yearIndex.value - 2 + todayYear}/${monthIndex.value + 1}/${dayIndex.value + 1}") },
             modifier = Modifier
-            .align(Alignment.End)
-            .padding(
-                top = 8.dp, end = 12.dp
-            )
+                .align(Alignment.End)
+                .padding(
+                    top = 8.dp, end = 12.dp
+                )
         ) {
             Text("완료", style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Medium))
         }
@@ -163,4 +167,12 @@ fun calculateDayLimit(curYear: Int, curMonth: Int) : Int{
         else -> 31
     }
 
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DatePickerSheetPreview() {
+    GalleryTheme {
+        DatePickerSheet(onDateSet = {})
+    }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.yapp.gallery.common.util.webview.NavigatePayload
 import com.yapp.gallery.common.util.webview.WebViewState
 import com.yapp.gallery.domain.usecase.auth.GetRefreshedTokenUseCase
+import com.yapp.gallery.domain.usecase.auth.GetValidTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
+    private val getRefreshedTokenUseCase: GetRefreshedTokenUseCase
 ) : ViewModel() {
     private var _homeSideEffect = Channel<NavigatePayload>()
     val homeSideEffect = _homeSideEffect.receiveAsFlow()
@@ -28,16 +29,15 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getRefreshedToken(){
-        getRefreshedTokenUseCase()
-            .catch {
-                Log.e("error", it.message.toString())
-                _homeState.value = WebViewState.Disconnected
-            }
-            .onEach {
-                Log.e("success", it)
-                _homeState.value = WebViewState.Connected(it)
-            }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            runCatching { getRefreshedTokenUseCase() }
+                .onSuccess {
+                    _homeState.value = WebViewState.Connected(it)
+                }
+                .onFailure {
+                    _homeState.value = WebViewState.Disconnected
+                }
+        }
     }
 
 

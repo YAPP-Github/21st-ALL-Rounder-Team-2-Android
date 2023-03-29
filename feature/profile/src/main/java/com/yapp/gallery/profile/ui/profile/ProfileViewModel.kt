@@ -1,6 +1,5 @@
 package com.yapp.gallery.profile.ui.profile
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
@@ -63,32 +62,34 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun logout(){
-        getLoginTypeUseCase().first{
-            when(it){
-                "kakao" -> {
-                    kakaoClient.logout {
-                        auth.signOut()
-                    }
-                }
-                "naver" -> {
-                    NaverIdLoginSDK.logout().also {
-                        auth.signOut()
-                    }
-                }
-                else -> {
-                    googleSignInClient.signOut().addOnCompleteListener {
-                        auth.signOut()
-                    }
+        when (getLoginTypeUseCase()) {
+            "kakao" -> {
+                kakaoClient.logout {
+                    auth.signOut()
                 }
             }
-            deleteLoginInfoUseCase()
-                .catch {
-                    Timber.e(it.message.toString()) }
-                .collect()
-
-            sendSideEffect(ProfileSideEffect.NavigateToLogin)
-            return@first true
+            "naver" -> {
+                NaverIdLoginSDK.logout().also {
+                    auth.signOut()
+                }
+            }
+            "google" -> {
+                googleSignInClient.signOut().addOnCompleteListener {
+                    auth.signOut()
+                }
+            }
+            else -> {
+                // 오류 발생 -> 일단 auth signout만
+                auth.signOut()
+            }
         }
+        deleteLoginInfoUseCase()
+            .catch {
+                Timber.e(it.message.toString())
+            }
+            .collect()
+
+        sendSideEffect(ProfileSideEffect.NavigateToLogin)
     }
 
     override fun handleEvents(event: ProfileEvent) {

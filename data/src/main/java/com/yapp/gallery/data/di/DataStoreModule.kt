@@ -16,6 +16,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
     val idTokenKey = stringPreferencesKey("idToken")
+    val idTokenExpireKey = stringPreferencesKey("idTokenExpire")
     val loginTypeKey = stringPreferencesKey("loginType")
 
     @Provides

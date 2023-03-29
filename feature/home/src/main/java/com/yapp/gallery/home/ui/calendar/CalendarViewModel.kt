@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val getRefreshedTokenUseCase: GetRefreshedTokenUseCase,
+    private val getRefreshedTokenUseCase: GetRefreshedTokenUseCase
 ) : ViewModel() {
     private val _calendarSideEffect = Channel<NavigatePayload>()
     val calendarSideEffect = _calendarSideEffect.receiveAsFlow()
@@ -28,16 +28,17 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun getRefreshedToken(){
-        getRefreshedTokenUseCase()
-            .catch {
-                Log.e("error", it.message.toString())
-                _calendarState.value = WebViewState.Disconnected
-            }
-            .onEach {
-                Log.e("success", it)
-                _calendarState.value = WebViewState.Connected(it)
-            }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            runCatching { getRefreshedTokenUseCase() }
+                .onSuccess {
+                    Log.e("success", it)
+                    _calendarState.value = WebViewState.Connected(it)
+                }
+                .onFailure {
+                    Log.e("error", it.message.toString())
+                    _calendarState.value = WebViewState.Disconnected
+                }
+        }
     }
 
     fun setSideEffect(action: String, payload : String?){
