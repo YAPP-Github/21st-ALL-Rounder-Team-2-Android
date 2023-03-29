@@ -3,7 +3,6 @@ package com.yapp.gallery.profile.navigation
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -12,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.yapp.gallery.profile.ui.category.CategoryManageScreen
+import com.yapp.gallery.profile.ui.category.CategoryManageRoute
 import com.yapp.gallery.profile.ui.legacy.LegacyScreen
 import com.yapp.gallery.profile.ui.nickname.NicknameScreen
 import com.yapp.gallery.profile.ui.notice.NoticeDetailScreen
@@ -43,7 +42,7 @@ fun ProfileNavHost(
             )
         }
         composable("manage"){
-            CategoryManageScreen(popBackStack = { popBackStack(context, navHostController) })
+            CategoryManageRoute(popBackStack = { popBackStack(context, navHostController) })
         }
         composable(
             route = "nickname?nickname={nickname}",

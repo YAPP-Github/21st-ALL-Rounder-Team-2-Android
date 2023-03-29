@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
@@ -47,16 +48,18 @@ import com.yapp.gallery.profile.utils.DraggableItem
 import com.yapp.gallery.profile.utils.rememberDragDropState
 import com.yapp.gallery.profile.widget.CategoryEditDialog
 import com.yapp.gallery.profile.widget.CustomSnackbarHost
+import com.yapp.gallery.profile.ui.category.CategoryManageContract.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @Composable
-fun CategoryManageScreen(
+internal fun CategoryManageRoute(
     popBackStack: () -> Unit,
     viewModel: CategoryManageViewModel = hiltViewModel(),
 ) {
-    val categoryScreenState: BaseState<Boolean> by viewModel.categoryManageState.collectAsState()
+    val categoryManageState: CategoryManageState by viewModel.viewState.collectAsStateWithLifecycle()
+    val categoryState: BaseState<Boolean> by viewModel.categoryState.collectAsStateWithLifecycle()
 
     val categoryCreateDialogShown = remember { mutableStateOf(false) }
 
@@ -64,6 +67,7 @@ fun CategoryManageScreen(
 
     val snackState = remember { SnackbarHostState() }
     val context = LocalContext.current
+
     LaunchedEffect(Unit) {
         viewModel.errors.collect { error ->
             snackState.showSnackbar(
@@ -72,6 +76,48 @@ fun CategoryManageScreen(
         }
     }
 
+    // 카테고리 생성 다이얼로그
+    if (categoryCreateDialogShown.value) {
+        CategoryCreateDialog(onCreateCategory = { viewModel.setEvent(CategoryManageEvent.OnAddClick(it)) },
+            onDismissRequest = { categoryCreateDialogShown.value = false },
+            checkCategory = { viewModel.setEvent(CategoryManageEvent.CheckAddable(it)) },
+            categoryState = categoryState
+        )
+    }
+
+    CategoryManageScreen(
+        categoryManageState = categoryManageState,
+        categoryState = categoryState,
+        categoryCreateDialogShown = categoryCreateDialogShown,
+        categoryList = viewModel.categoryList,
+        categoryPostStateList = viewModel.categoryPostStateList,
+        onReorder = { from, to -> viewModel.setEvent(CategoryManageEvent.OnReorderCategory(from, to)) },
+        onEditCategory = { category, name -> viewModel.setEvent(CategoryManageEvent.OnEditClick(category, name)) },
+        onExpandCategory = { position -> viewModel.setEvent(CategoryManageEvent.OnExpandClick(position)) },
+        onCheckEditable = { origin, edited -> viewModel.setEvent(CategoryManageEvent.CheckEditable(origin, edited)) },
+        onDeleteCategory = { category -> viewModel.setEvent(CategoryManageEvent.OnDeleteClick(category)) },
+        snackState = snackState,
+        scope = scope,
+        popBackStack = popBackStack
+    )
+}
+
+@Composable
+private fun CategoryManageScreen(
+    categoryManageState: CategoryManageState,
+    categoryState: BaseState<Boolean>,
+    categoryPostStateList: List<CategoryPostState>,
+    categoryCreateDialogShown: MutableState<Boolean>,
+    categoryList: List<CategoryItem>,
+    onReorder: (Int, Int) -> Unit,
+    onEditCategory : (CategoryItem, String) -> Unit,
+    onExpandCategory : (Int) -> Unit,
+    onCheckEditable : (String, String) -> Unit,
+    onDeleteCategory : (CategoryItem) -> Unit,
+    snackState : SnackbarHostState,
+    scope: CoroutineScope,
+    popBackStack: () -> Unit,
+){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -98,13 +144,13 @@ fun CategoryManageScreen(
             actions = {
                 TextButton(
                     onClick = {
-                        if (viewModel.categoryList.size < 5) categoryCreateDialogShown.value = true
+                        if (categoryList.size < 5) categoryCreateDialogShown.value = true
                         else scope.launch {
                             snackState.showSnackbar(
                                 message = "최대 5개까지 생성 가능해요!", duration = SnackbarDuration.Short
                             )
                         }
-                    }, enabled = categoryScreenState != BaseState.Loading
+                    }, enabled = categoryManageState !is CategoryManageState.Loading
                 ) {
                     Text(
                         text = stringResource(id = R.string.category_add),
@@ -120,9 +166,16 @@ fun CategoryManageScreen(
         ) {
             // 카테고리 정보 뷰
             CategoryListView(
-                categoryScreenState = categoryScreenState,
-                viewModel = viewModel,
-                categoryCreateDialogShown = categoryCreateDialogShown,
+                categoryManageState = categoryManageState,
+                categoryState = categoryState,
+                categoryPostStateList = categoryPostStateList,
+                onReorder = { from, to -> onReorder(from, to) },
+                onExpandCategory = onExpandCategory,
+                onEditCategory = onEditCategory,
+                onCheckEditable = onCheckEditable,
+                onDeleteCategory =  onDeleteCategory,
+                onCreateButtonClicked = { categoryCreateDialogShown.value = true },
+                categoryList = categoryList,
                 scope = scope
             )
 
@@ -134,38 +187,32 @@ fun CategoryManageScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 CustomSnackbarHost(snackbarHostState = snackState)
             }
-
-            // 카테고리 생성 다이얼로그
-
-            if (categoryCreateDialogShown.value) {
-                CategoryCreateDialog(onCreateCategory = { viewModel.createCategory(it) },
-                    onDismissRequest = { categoryCreateDialogShown.value = false },
-                    checkCategory = { viewModel.checkCategory(it) },
-                    categoryState = viewModel.categoryState.collectAsState().value
-                )
-            }
         }
-
     }
-
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CategoryListView(
-    categoryScreenState: BaseState<Boolean>,
-    viewModel : CategoryManageViewModel,
-    categoryCreateDialogShown: MutableState<Boolean>,
+    categoryManageState: CategoryManageState,
+    categoryPostStateList: List<CategoryPostState>,
+    categoryState: BaseState<Boolean>,
+    onReorder : (Int, Int) -> Unit,
+    onEditCategory : (CategoryItem, String) -> Unit,
+    onExpandCategory : (Int) -> Unit,
+    onCheckEditable : (String, String) -> Unit,
+    onDeleteCategory : (CategoryItem) -> Unit,
+    onCreateButtonClicked: () -> Unit,
+    categoryList: List<CategoryItem>,
     scope: CoroutineScope,
     listState: LazyListState = rememberLazyListState(),
 ) {
-    val dragDropState = rememberDragDropState(lazyListState = listState) { from, to ->
-        viewModel.reorderItem(from, to)
-    }
+    val dragDropState = rememberDragDropState(lazyListState = listState) { from, to -> onReorder(from, to) }
+
     var overscrollJob by remember { mutableStateOf<Job?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        if ((categoryScreenState as? BaseState.Success<Boolean>)?.value == true) {
+        if (categoryManageState is CategoryManageState.Success) {
             Spacer(modifier = Modifier.height(36.dp))
 
             LazyColumn(state = listState, modifier = Modifier.pointerInput(dragDropState) {
@@ -193,20 +240,24 @@ private fun CategoryListView(
                         overscrollJob?.cancel()
                     })
             }) {
-                itemsIndexed(viewModel.categoryList) { index, item ->
+                itemsIndexed(categoryList) { index, item ->
                     // Draggable Item
                     DraggableItem(dragDropState = dragDropState, index = index) { isDragging ->
                         val elevation by animateDpAsState(if (isDragging) 10.dp else 0.dp)
                         CategoryListTile(
                             category = item,
-                            categoryPostState = viewModel.categoryPostState[index],
+                            categoryState = categoryState,
+                            categoryPostState = categoryPostStateList[index],
+                            onExpandCategory = onExpandCategory,
+                            onEditCategory = onEditCategory,
+                            onDeleteCategory = onDeleteCategory,
+                            onCheckEditable = onCheckEditable,
                             elevation = elevation,
-                            viewModel = viewModel,
                             index = index
                         )
                     }
                     // Divider
-                    if (index != viewModel.categoryList.size - 1) {
+                    if (index != categoryList.size - 1) {
                         Divider(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -223,44 +274,14 @@ private fun CategoryListView(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (categoryScreenState is BaseState.Loading) {
+                if (categoryManageState is CategoryManageState.Loading) {
                     // 로딩 중
                     CircularProgressIndicator(
                         modifier = Modifier.size(50.dp), color = color_mainBlue
                     )
                 } else {
                     // 카테고리 리스트가 빈 리스트인 경우
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.category_manage_empty_guide),
-                            style = MaterialTheme.typography.h3.copy(
-                                color = color_gray600,
-                                lineHeight = 24.sp
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // 카테고리 만들기 버튼
-                        Surface(shape = RoundedCornerShape(71.dp),
-                            color = MaterialTheme.colors.background,
-                            border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
-                            onClick = { categoryCreateDialogShown.value = true }) {
-                            Text(
-                                text = stringResource(id = R.string.category_manage_create),
-                                style = MaterialTheme.typography.h3.copy(
-                                    color = Color(0xFFA7C5F9), fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier.padding(
-                                    horizontal = 24.dp, vertical = 12.dp
-                                )
-                            )
-                        }
-                    }
+                    CategoryEmptyView(onCreateButtonClicked = onCreateButtonClicked)
                 }
             }
         }
@@ -268,11 +289,15 @@ private fun CategoryListView(
 }
 
 @Composable
-fun CategoryListTile(
+private fun CategoryListTile(
     category: CategoryItem,
+    categoryState : BaseState<Boolean>,
     categoryPostState : CategoryPostState,
+    onEditCategory : (CategoryItem, String) -> Unit,
+    onExpandCategory : (Int) -> Unit,
+    onCheckEditable : (String, String) -> Unit,
+    onDeleteCategory : (CategoryItem) -> Unit,
     elevation: Dp,
-    viewModel: CategoryManageViewModel,
     index: Int
 ) {
     val categoryEditDialogShown = remember { mutableStateOf(false) }
@@ -293,7 +318,7 @@ fun CategoryListTile(
                 .fillMaxWidth()
         ) {
             val (button, row, text1, text2) = createRefs()
-            IconButton(onClick = { viewModel.expandCategory(index) },
+            IconButton(onClick = { onExpandCategory(index) },
                 modifier = Modifier
                     .size(18.dp)
                     .constrainAs(button) {
@@ -333,7 +358,7 @@ fun CategoryListTile(
                     style = MaterialTheme.typography.h4.copy(color = color_gray500),
                     modifier = Modifier
                         .clickable {
-                            viewModel.checkEditable(category.name, category.name)
+                            onCheckEditable(category.name, category.name)
                             categoryEditDialogShown.value = true
                         }
                         .padding(8.dp))
@@ -407,7 +432,7 @@ fun CategoryListTile(
                 subTitle = stringResource(id = R.string.category_delete_guide),
                 onDismissRequest = { categoryDeleteDialogShown.value = false },
                 onConfirm = {
-                    viewModel.deleteCategory(category)
+                    onDeleteCategory(category)
                     categoryDeleteDialogShown.value = false
                 })
         }
@@ -417,10 +442,49 @@ fun CategoryListTile(
         if (categoryEditDialogShown.value) {
             CategoryEditDialog(
                 category = category.name,
-                onEditCategory = { viewModel.editCategory(category, it) },
+                onEditCategory = { onEditCategory(category, it) },
                 onDismissRequest = { categoryEditDialogShown.value = false },
-                checkEditable = { it1, it2 -> viewModel.checkEditable(it1, it2) },
-                categoryState = viewModel.categoryState.collectAsState().value
+                checkEditable = { it1, it2 -> onCheckEditable(it1, it2) },
+                categoryState = categoryState
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun CategoryEmptyView(
+    onCreateButtonClicked: () -> Unit
+){
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(id = R.string.category_manage_empty_guide),
+            style = MaterialTheme.typography.h3.copy(
+                color = color_gray600,
+                lineHeight = 24.sp
+            ),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // 카테고리 만들기 버튼
+        Surface(shape = RoundedCornerShape(71.dp),
+            color = MaterialTheme.colors.background,
+            border = BorderStroke(1.dp, color = Color(0xFFA7C5F9)),
+            onClick = onCreateButtonClicked
+        ) {
+            Text(
+                text = stringResource(id = R.string.category_manage_create),
+                style = MaterialTheme.typography.h3.copy(
+                    color = Color(0xFFA7C5F9), fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.padding(
+                    horizontal = 24.dp, vertical = 12.dp
+                )
             )
         }
     }

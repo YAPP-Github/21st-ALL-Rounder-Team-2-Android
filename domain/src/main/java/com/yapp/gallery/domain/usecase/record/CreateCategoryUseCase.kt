@@ -6,5 +6,5 @@ import javax.inject.Inject
 class CreateCategoryUseCase @Inject constructor(
     private val repository: ExhibitRecordRepository
 ) {
-    suspend operator fun invoke(category: String) = repository.createCategory(category)
+    operator fun invoke(category: String) = repository.createCategory(category)
 }
