@@ -36,19 +36,24 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.theme.*
 import com.yapp.gallery.common.widget.CategoryCreateDialog
 import com.yapp.gallery.common.widget.CenterTopAppBar
 import com.yapp.gallery.common.widget.ConfirmDialog
+import com.yapp.gallery.domain.entity.category.PostContent
 import com.yapp.gallery.domain.entity.home.CategoryItem
 import com.yapp.gallery.profile.R
+import com.yapp.gallery.profile.ui.category.CategoryManageContract.*
 import com.yapp.gallery.profile.utils.DraggableItem
 import com.yapp.gallery.profile.utils.rememberDragDropState
 import com.yapp.gallery.profile.widget.CategoryEditDialog
 import com.yapp.gallery.profile.widget.CustomSnackbarHost
-import com.yapp.gallery.profile.ui.category.CategoryManageContract.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -96,6 +101,7 @@ internal fun CategoryManageRoute(
         onExpandCategory = { position -> viewModel.setEvent(CategoryManageEvent.OnExpandClick(position)) },
         onCheckEditable = { origin, edited -> viewModel.setEvent(CategoryManageEvent.CheckEditable(origin, edited)) },
         onDeleteCategory = { category -> viewModel.setEvent(CategoryManageEvent.OnDeleteClick(category)) },
+        onLoadError = { viewModel.setEvent(CategoryManageEvent.OnLoadError(it)) },
         snackState = snackState,
         scope = scope,
         popBackStack = popBackStack
@@ -114,6 +120,7 @@ private fun CategoryManageScreen(
     onExpandCategory : (Int) -> Unit,
     onCheckEditable : (String, String) -> Unit,
     onDeleteCategory : (CategoryItem) -> Unit,
+    onLoadError: (Int) -> Unit,
     snackState : SnackbarHostState,
     scope: CoroutineScope,
     popBackStack: () -> Unit,
@@ -150,7 +157,7 @@ private fun CategoryManageScreen(
                                 message = "최대 5개까지 생성 가능해요!", duration = SnackbarDuration.Short
                             )
                         }
-                    }, enabled = categoryManageState !is CategoryManageState.Loading
+                    }, enabled = categoryManageState is CategoryManageState.Success || categoryManageState is CategoryManageState.Empty
                 ) {
                     Text(
                         text = stringResource(id = R.string.category_add),
@@ -175,6 +182,7 @@ private fun CategoryManageScreen(
                 onCheckEditable = onCheckEditable,
                 onDeleteCategory =  onDeleteCategory,
                 onCreateButtonClicked = { categoryCreateDialogShown.value = true },
+                onLoadError = onLoadError,
                 categoryList = categoryList,
                 scope = scope
             )
@@ -203,6 +211,7 @@ private fun CategoryListView(
     onCheckEditable : (String, String) -> Unit,
     onDeleteCategory : (CategoryItem) -> Unit,
     onCreateButtonClicked: () -> Unit,
+    onLoadError: (Int) -> Unit,
     categoryList: List<CategoryItem>,
     scope: CoroutineScope,
     listState: LazyListState = rememberLazyListState(),
@@ -252,6 +261,7 @@ private fun CategoryListView(
                             onEditCategory = onEditCategory,
                             onDeleteCategory = onDeleteCategory,
                             onCheckEditable = onCheckEditable,
+                            onLoadError = onLoadError,
                             elevation = elevation,
                             index = index
                         )
@@ -274,7 +284,7 @@ private fun CategoryListView(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (categoryManageState is CategoryManageState.Loading) {
+                if (categoryManageState is CategoryManageState.Initial) {
                     // 로딩 중
                     CircularProgressIndicator(
                         modifier = Modifier.size(50.dp), color = color_mainBlue
@@ -297,6 +307,7 @@ private fun CategoryListTile(
     onExpandCategory : (Int) -> Unit,
     onCheckEditable : (String, String) -> Unit,
     onDeleteCategory : (CategoryItem) -> Unit,
+    onLoadError: (Int) -> Unit,
     elevation: Dp,
     index: Int
 ) {
@@ -384,45 +395,13 @@ private fun CategoryListTile(
 
         }
         if (categoryPostState is CategoryPostState.Expanded) {
-            val data = categoryPostState.categoryPost.content
-            // 카테고리에 담긴 전시 정보
-            if (data.isNotEmpty()) {
-                // 전시 정보가 존재 하는 경우
-                Spacer(modifier = Modifier.height(24.dp))
-                LazyRow(modifier = Modifier.padding(start = 48.dp, end = 16.dp)) {
-                    items(data) { item ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(end = 6.dp)
-                        ) {
-                            AsyncImage(
-                                model = item.mainImage,
-                                error = painterResource(id = R.drawable.bg_image_placeholder),
-                                placeholder = painterResource(id = R.drawable.bg_image_placeholder),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .clip(RoundedCornerShape(4.5.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = item.name, style = MaterialTheme.typography.h4.copy(
-                                    fontWeight = FontWeight.Medium, color = color_gray300
-                                )
-                            )
-                        }
-                    }
-                }
-            } else {
-                Spacer(modifier = Modifier.height(40.dp))
-                Text(
-                    text = stringResource(id = R.string.category_exhibit_empty),
-                    style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Medium),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+            // 카테고리 하나 하나당 Page 데이터 발생
+            // 누를 때 마다 collect 하게
+            val data = categoryPostState.postFlow.collectAsLazyPagingItems()
+            if (data.loadState.refresh is LoadState.Error){
+                onLoadError(index)
             }
+            CategoryPostPagingView(posts = data)
         }
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -487,6 +466,95 @@ private fun CategoryEmptyView(
                 )
             )
         }
+    }
+}
+
+@Composable
+private fun CategoryPostPagingView(
+    posts : LazyPagingItems<PostContent>,
+){
+    Spacer(modifier = Modifier.height(24.dp))
+    when(posts.loadState.refresh){
+        is LoadState.Loading -> {
+            // 로딩 중
+        }
+        is LoadState.Error -> {
+            // 에러 아이템
+//            CategoryPostEmpty()
+        }
+
+        else -> {
+            if (posts.itemCount == 0){
+                CategoryPostEmpty()
+            }
+            else {
+                LazyRow{
+                    items(posts){post ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(end = 6.dp)
+                        ) {
+                            AsyncImage(
+                                model = post?.mainImage,
+                                error = painterResource(id = R.drawable.bg_image_placeholder),
+                                placeholder = painterResource(id = R.drawable.bg_image_placeholder),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(4.5.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            post?.name?.let {
+                                Text(
+                                    text = it, style = MaterialTheme.typography.h4.copy(
+                                        fontWeight = FontWeight.Medium, color = color_gray300
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+    }
+//
+//        when (posts.loadState.append) { // Pagination
+//            is LoadState.Error -> {
+//                //state.error to get error message
+//            }
+//            is LoadState.Loading -> { // Pagination Loading UI
+//                item {
+//                    Column(
+//                        modifier = Modifier
+//                            .fillMaxWidth(),
+//                        horizontalAlignment = Alignment.CenterHorizontally,
+//                        verticalArrangement = Arrangement.Center,
+//                    ) {
+//                        Text(text = "Pagination Loading")
+//
+//                        CircularProgressIndicator(color = Color.Black)
+//                    }
+//                }
+//            }
+//            else -> {}
+//        }
+    }
+}
+
+@Composable
+private fun CategoryPostEmpty(){
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.category_exhibit_empty),
+            style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Medium),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

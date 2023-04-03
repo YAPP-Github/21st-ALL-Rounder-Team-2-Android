@@ -59,6 +59,7 @@ dependencies {
     implementation libs.timber
     implementation libs.bundles.auth
     implementation libs.bundles.coil
+    implementation libs.bundles.paging
 
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps

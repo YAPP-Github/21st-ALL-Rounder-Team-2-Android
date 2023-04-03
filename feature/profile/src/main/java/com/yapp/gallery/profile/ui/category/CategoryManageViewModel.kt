@@ -2,8 +2,8 @@ package com.yapp.gallery.profile.ui.category
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.yapp.gallery.common.base.BaseStateViewModel
-import com.yapp.gallery.profile.ui.category.CategoryManageContract.*
 import com.yapp.gallery.common.model.BaseState
 import com.yapp.gallery.common.model.UiText
 import com.yapp.gallery.domain.entity.home.CategoryItem
@@ -14,6 +14,7 @@ import com.yapp.gallery.domain.usecase.category.GetCategoryPostUseCase
 import com.yapp.gallery.domain.usecase.record.CreateCategoryUseCase
 import com.yapp.gallery.domain.usecase.record.GetCategoryListUseCase
 import com.yapp.gallery.profile.R
+import com.yapp.gallery.profile.ui.category.CategoryManageContract.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -39,9 +40,9 @@ class CategoryManageViewModel @Inject constructor(
         get() = _categoryList
 
     // 카테고리 각각 상태
-    private var _categoryPostList = mutableStateListOf<CategoryPostState>()
+    private var _categoryPostStateList = mutableStateListOf<CategoryPostState>()
     val categoryPostStateList : List<CategoryPostState>
-        get() = _categoryPostList
+        get() = _categoryPostStateList
 
     // 카테고리 자체 상태
     private var _categoryState = MutableStateFlow<BaseState<Boolean>>(BaseState.None)
@@ -60,13 +61,15 @@ class CategoryManageViewModel @Inject constructor(
     private fun getCategoryList(){
         getCategoryListUseCase()
             .catch {
-
+                setViewState(CategoryManageState.Error)
             }
             .onEach {
                 _categoryList.addAll(it)
                 // 각 카테고리 상태 추가
                 it.forEach { category ->
-                    _categoryPostList.add(CategoryPostState.Initial(category))
+                    _categoryPostStateList.add(
+                        CategoryPostState.Initial(getCategoryPostUseCase(category.id).cachedIn(viewModelScope))
+                    )
                 }
                 setViewState(CategoryManageState.Success)
             }
@@ -122,7 +125,7 @@ class CategoryManageViewModel @Inject constructor(
             }
             .onEach {
                 _categoryList.add(CategoryItem(it, categoryName, categoryList.size, 0).also { c ->
-                    _categoryPostList.add(CategoryPostState.Initial(c))
+                    _categoryPostStateList.add(CategoryPostState.Initial(getCategoryPostUseCase(c.id).cachedIn(viewModelScope)))
                 })
                 setViewState(CategoryManageState.Success)
             }
@@ -144,7 +147,7 @@ class CategoryManageViewModel @Inject constructor(
         // 달라진게 있으면 재정렬
         if (from != to){
             _categoryList.add(to, _categoryList.removeAt(from))
-            _categoryPostList.add(to, _categoryPostList.removeAt(from))
+            _categoryPostStateList.add(to, _categoryPostStateList.removeAt(from))
 
             changeSequenceUseCase(_categoryList)
                 .catch {
@@ -168,31 +171,31 @@ class CategoryManageViewModel @Inject constructor(
 
     // 카테고리 별 세부 전시 조회
     private fun expandCategory(index: Int){
-        when (_categoryPostList[index]){
-            // 확장 하며 데이터 받아오기
+        when (_categoryPostStateList[index]){
             is CategoryPostState.Initial -> {
-                val postId = (_categoryPostList[index] as CategoryPostState.Initial).categoryItem.id
-                getCategoryPostUseCase(postId = postId)
-                    // Todo : 추후 페이지 네이션 확장
-                    .catch {
-                        Timber.tag("categoryPosterror").e(it.message.toString())
-                        _errorChannel.send(UiText.StringResource(R.string.network_error))
-                    }
-                    .onEach {
-                        _categoryPostList[index] = CategoryPostState.Expanded(it)
-                    }
-                    .launchIn(viewModelScope)
+                _categoryPostStateList[index] = CategoryPostState.Expanded(
+                    (_categoryPostStateList[index] as CategoryPostState.Initial).postFlow
+                )
             }
             // 단순 확장 Or not
             else ->{
-                val postDetail = if (_categoryPostList[index] is CategoryPostState.Expanded)
-                    (_categoryPostList[index] as CategoryPostState.Expanded).categoryPost
-                else (_categoryPostList[index] as CategoryPostState.UnExpanded).categoryPost
+                val postDetail = if (_categoryPostStateList[index] is CategoryPostState.Expanded)
+                    (_categoryPostStateList[index] as CategoryPostState.Expanded).postFlow
+                else (_categoryPostStateList[index] as CategoryPostState.UnExpanded).postFlow
 
-                _categoryPostList[index] = if (_categoryPostList[index] is CategoryPostState.Expanded)
+                _categoryPostStateList[index] = if (_categoryPostStateList[index] is CategoryPostState.Expanded)
                     CategoryPostState.UnExpanded(postDetail)
                 else CategoryPostState.Expanded(postDetail)
             }
+        }
+    }
+
+    private fun pagingLoadError(index: Int){
+        viewModelScope.launch {
+            _errorChannel.send(UiText.StringResource(R.string.network_error))
+//            _categoryPostStateList[index] = CategoryPostState.UnExpanded(
+//                (_categoryPostStateList[index] as CategoryPostState.Expanded).postFlow
+//            )
         }
     }
 
@@ -207,6 +210,7 @@ class CategoryManageViewModel @Inject constructor(
             is CategoryManageEvent.OnDeleteClick -> deleteCategory(event.categoryItem)
             is CategoryManageEvent.OnExpandClick -> expandCategory(event.index)
             is CategoryManageEvent.OnReorderCategory -> reorderItem(event.from, event.to)
+            is CategoryManageEvent.OnLoadError -> pagingLoadError(event.position)
         }
     }
 }

@@ -7,9 +7,9 @@ import com.yapp.gallery.domain.entity.home.CategoryItem
 class CategoryManageContract {
     sealed class CategoryManageState : ViewModelContract.State{
         object Initial : CategoryManageState()
-        object Loading : CategoryManageState()
         object Success : CategoryManageState()
         object Empty : CategoryManageState()
+        object Error : CategoryManageState()
     }
 
     sealed class CategoryManageEvent : ViewModelContract.Event{
@@ -20,6 +20,7 @@ class CategoryManageContract {
         data class CheckEditable(val origin: String, val edited: String) : CategoryManageEvent()
         data class CheckAddable(val category: String) : CategoryManageEvent()
         data class OnReorderCategory(val from: Int, val to: Int) : CategoryManageEvent()
+        data class OnLoadError(val position: Int) : CategoryManageEvent()
     }
 
     sealed class CategoryManageSideEffect : ViewModelContract.SideEffect{

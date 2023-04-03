@@ -55,6 +55,7 @@ dependencies {
     implementation libs.firebase.auth.ktx
     implementation libs.bundles.room
     implementation libs.androidx.datastore
+    implementation libs.paging.runtime
     annotationProcessor libs.room.compiler
     kapt libs.room.compiler
     kapt libs.bundles.hilt.compilers

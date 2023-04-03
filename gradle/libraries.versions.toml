@@ -39,6 +39,9 @@ imagePicker = "1.5.5"
 #timber
 timber = "5.0.1"
 
+# paging
+paging = "3.1.1"
+paging-compose="1.0.0-alpha18"
 [libraries]
 
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -96,6 +99,10 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
+paging-runtime = { module = "androidx.paging:paging-runtime-ktx", version.ref = "paging" }
+paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging-compose" }
+paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
+
 [bundles]
 auth = [ "firebase-auth-ktx", "gms-auth", "kakao", "naver"]
 
@@ -116,3 +123,4 @@ room = ["room-ktx", "room-paging", "room-runtime"]
 
 retrofit = [ "retrofit", "retrofit-convertor-gson"]
 okhttp3 = ["okhttp3", "okhttp3-logging"]
+paging = ["paging-runtime", "paging-compose"]

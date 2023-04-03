@@ -6,6 +6,5 @@ import javax.inject.Inject
 class GetCategoryPostUseCase @Inject constructor(
     private val repository: CategoryManageRepository
 ) {
-    operator fun invoke(pageNum : Int = 0, size: Int = 20, postId: Long)
-        = repository.getCategoryPost(pageNum, size, postId)
+    operator fun invoke(postId: Long) = repository.getCategoryPost(postId)
 }

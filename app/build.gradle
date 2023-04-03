@@ -70,6 +70,7 @@ dependencies {
     implementation libs.bundles.compose
     implementation libs.bundles.hilt.deps
     implementation libs.androidx.core.splashscreen
+    implementation libs.timber
     kapt libs.bundles.hilt.compilers
 }
 
